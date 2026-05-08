@@ -1,9 +1,10 @@
 # Project Status: Yangdo Tax Calculator AI
 
-## Current Version: v4.0.0
-**Last Updated:** 2026-05-09 02:01:00
+## Current Version: v4.0.1
+**Last Updated:** 2026-05-09 02:02:00
 
 ## Recent Changes
+- **v4.0.1**: 용어 정정 - [취득 원인 정의]를 보다 직관적인 **[취득 종류]**로 변경.
 - **v4.0.0**: **구조적 대개편 (Structural Overhaul)** - [취득 원인]을 계산의 최상위 부모 정보로 격상. 전문가용 신고 프로세스(취득->보유->양도) 논리 완성.
 - **v3.5.2**: Structural UI 개편 - [취득 원인] 선택을 기본정보 탭 최상단으로 이동.
 - **v3.5.1**: Marked Inheritance (상속) and Gift (증여) acquisitions as [Comming Soon !] in the UI to focus on 매매 logic stability.
