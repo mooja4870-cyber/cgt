@@ -17,10 +17,15 @@
 - **Workflow Optimization**: Consolidated "Tax Exemption" tab into the main calculation results flow.
 
 ## Pending Tasks
-- [x] Remove asterisks (*) from remaining mandatory labels (Selling Price, Acquisition Price, etc.) for consistency.
+- [x] Establish and Register Deployment Rules (KI: tax_calculator_rules).
 - [ ] Implement 'Land' and 'Building' calculation logic (currently placeholders).
 - [ ] Mobile responsive audit for the 3-column grid.
 - [ ] Data persistence (LocalStorage) enhancements.
+
+## Development Rules
+- **Rule 01**: Every update must pass a Node-based syntax check before delivery.
+- **Rule 02**: Browser verification with cache bypass is mandatory for version bumps.
+- **Rule 03**: Extensionless URL support (--ext html) must be maintained in the dev server.
 
 ## Technical Notes
 - Core Logic: `_updateCalc()` in `yangdo_tax_calculator_v2_5.html`.
