@@ -1,10 +1,11 @@
 # Project Status: Yangdo Tax Calculator AI
 
-## Current Version: v3.2
-**Last Updated:** 2026-05-08 23:29:00
+## Current Version: v3.2.1
+**Last Updated:** 2026-05-08 23:30:00
 
 ## Recent Changes
-- **v3.2**: Unified versioning across UI and Audit Report.
+- **v3.2.1**: Removed all mandatory indicator asterisks (*) from UI labels (Static/Dynamic).
+- **v3.2.0**: Unified versioning across UI and Audit Report; Agent takeover.
 - **3-Column Expert Report**: Implemented "Label | Value | Expert Note" layout for professional insights.
 - **Logic Correction**: Fixed high-value housing (12억) taxable gain proration based on selling price.
 - **LTDC Breakdown**: Added a toggleable 6-step breakdown for long-term holding deductions.
@@ -12,7 +13,7 @@
 - **Workflow Optimization**: Consolidated "Tax Exemption" tab into the main calculation results flow.
 
 ## Pending Tasks
-- [ ] Remove asterisks (*) from remaining mandatory labels (Selling Price, Acquisition Price, etc.) for consistency.
+- [x] Remove asterisks (*) from remaining mandatory labels (Selling Price, Acquisition Price, etc.) for consistency.
 - [ ] Implement 'Land' and 'Building' calculation logic (currently placeholders).
 - [ ] Mobile responsive audit for the 3-column grid.
 - [ ] Data persistence (LocalStorage) enhancements.
