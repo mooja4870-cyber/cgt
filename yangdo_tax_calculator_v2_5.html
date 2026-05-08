@@ -493,36 +493,82 @@
       color: #E65100;
     }
 
-    /* 장특공제 상세 내역 박스 */
+    /* 상세보기 박스 (v3.4.2: 프리미엄 스타일) */
+    .detail-box,
     .ltdc-breakdown {
       display: none;
-      grid-column: 1 / span 3; /* 3단 전체 차지 */
-      background: #fdf6ed;
-      border: 1px solid #ffcc80;
-      border-radius: 8px;
-      padding: 15px;
-      margin: 10px 0;
-      font-size: 11px;
-      line-height: 1.6;
-      color: #795548;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+      grid-column: 1 / span 3;
+      background: linear-gradient(135deg, #fefefe 0%, #f8f9fb 100%);
+      border: 1px solid #e0e4ea;
+      border-left: 3px solid #1D9E75;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin: 6px 0 10px;
+      font-size: 12px;
+      line-height: 1.7;
+      color: #444;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      animation: detailSlide 0.25s ease-out;
     }
+    @keyframes detailSlide {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .detail-box table,
     .ltdc-breakdown table {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 4px 0 6px;
     }
+    .detail-box td,
     .ltdc-breakdown td {
-      padding: 2px 0;
+      padding: 7px 4px;
+      font-size: 12px;
+      color: #555;
+      border-bottom: 1px solid #f0f0f0;
     }
-    .ltdc-breakdown .step-num {
-      color: #e65100;
-      font-weight: 700;
-      margin-right: 4px;
+    .detail-box tr:last-child td,
+    .ltdc-breakdown tr:last-child td {
+      border-bottom: none;
     }
+    .detail-box td:first-child,
+    .ltdc-breakdown td:first-child {
+      font-weight: 500;
+      color: #333;
+    }
+    .detail-box .val,
     .ltdc-breakdown .val {
       font-weight: 700;
       color: #1a1a1a;
       text-align: right;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.3px;
+    }
+    .detail-box .formula,
+    .ltdc-breakdown .formula {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #f0f7f4;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #2E7D32;
+      line-height: 1.6;
+      border: 1px solid #c8e6c9;
+    }
+    .ltdc-breakdown .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      background: #e65100;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 50%;
+      margin-right: 6px;
     }
     
     .flg {
