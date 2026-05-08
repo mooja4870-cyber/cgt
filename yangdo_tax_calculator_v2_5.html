@@ -3655,7 +3655,8 @@
       const taxGain_p = taxGain / nOwners;
       const ltdc_p = nonTaxFull ? 0 : taxGain_p * ltdcReff;
       const basic_p = nonTaxFull ? 0 : 250; // 인당 연 250만 공제
-      const taxBase_p = Math.max(0, taxGain_p - ltdc_p - basic_p);
+      const incomePerPerson = Math.max(0, taxGain_p - ltdc_p); // 인당 양도소득금액
+      const taxBase_p = Math.max(0, incomePerPerson - basic_p);
 
       let rate_p = 0, ded_p = 0, sur_p = 0;
       if (nonTaxFull) {
