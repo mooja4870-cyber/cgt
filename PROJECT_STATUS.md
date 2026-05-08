@@ -1,14 +1,12 @@
 # Project Status: Yangdo Tax Calculator AI
 
-## Current Version: v3.3.2
-**Last Updated:** 2026-05-08 23:45:00
+## Current Version: v3.4.0
+**Last Updated:** 2026-05-09 01:15:00
 
 ## Recent Changes
+- **v3.4.0**: Implemented "View Details ▾" for ALL calculation steps in the Result Report and enhanced data persistence.
 - **v3.3.2**: Refined Joint Ownership report to follow NTS standard (Total -> Prorated Per-Person).
 - **v3.3.1**: Fixed critical 'sur is not defined' error in calculation engine.
-- **v3.2.2**: Synced internal history array (HISTORY) and version strings across the app.
-- **v3.2.1**: Removed all mandatory indicator asterisks (*) from UI labels (Static/Dynamic).
-- **v3.2.0**: Unified versioning across UI and Audit Report; Agent takeover.
 - **3-Column Expert Report**: Implemented "Label | Value | Expert Note" layout for professional insights.
 - **Logic Correction**: Fixed high-value housing (12억) taxable gain proration based on selling price.
 - **LTDC Breakdown**: Added a toggleable 6-step breakdown for long-term holding deductions.
