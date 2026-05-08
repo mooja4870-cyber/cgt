@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>양도세 AI 계산기 v3.2.1 — 물건종류별 전문가용 양도소득세 계산</title>
+  <title>양도세 AI 계산기 v3.3.0 — 물건종류별 전문가용 양도소득세 계산</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/tabler-icons.min.css">
   <style>
@@ -1154,7 +1154,7 @@
       <div class="hdr-left">
         <div class="badge">🧮</div>
         <div>
-          <div class="hdr-title">양도세 AI 계산기 <span style="color:#1D9E75; font-weight:700;">PRO v3.2.1</span></div>
+          <div class="hdr-title">양도세 AI 계산기 <span style="color:#1D9E75; font-weight:700;">PRO v3.3.0</span></div>
           <div class="hdr-sub">물건종류별 전문가용 정밀 계산기</div>
         </div>
       </div>
@@ -2068,9 +2068,18 @@
 
     const HISTORY = [
       {
+        version: 'v3.3.0',
+        date: '2026년 5월 8일 23시 35분',
+        current: true,
+        items: [
+          { icon: '👥', title: '공동명의 인별 과세 로직 도입', desc: '명의자 수(N명)에 따른 양도차익 안분 및 인별 기본공제(250만원) 중복 적용 기능을 추가했습니다.' },
+          { icon: '📉', title: '절세 효과 가이드', desc: '공동명의 시 세율 구간 하락에 따른 절세 효과를 리포트에서 즉시 확인할 수 있습니다.' },
+        ]
+      },
+      {
         version: 'v3.2.1',
         date: '2026년 5월 8일 23시 30분',
-        current: true,
+        current: false,
         items: [
           { icon: '🎨', title: '입력폼 UI 정밀화', desc: '모든 입력 항목의 불필요한 필수 표시(*)를 제거하여 전문가용 앱에 걸맞은 깔끔한 레이아웃을 구현했습니다.' },
           { icon: '⚙️', title: '동적 라벨 로직 최적화', desc: 'JavaScript로 생성되는 가변형 라벨에서도 일관된 디자인이 유지되도록 코드를 정비했습니다.' },
@@ -2761,7 +2770,29 @@
         `;
       }
       
-      // 3순위: 주택 구분 (매도 시점)
+      // 3순위: 소유 명의 및 인원 (v3.3.0)
+      typeFields += `
+        <div class="sec" style="margin-top: 1rem;">소유 명의 및 인원
+          <span class="tip-wrap">
+            <span class="tip-icon" tabindex="0">?</span>
+            <span class="tip-box">
+              <strong>인별 과세 원칙:</strong><br>
+              양도소득세는 소유자별로 각각 계산합니다. 공동명의 시 양도차익이 분산되어 낮은 세율 구간이 적용될 확률이 높고, <strong>기본공제 250만원도 명의자별로 각각</strong> 적용되어 절세에 유리합니다.
+            </span>
+          </span>
+        </div>
+        <div class="chips" id="ownerCountChips" style="margin-bottom: 8px;">
+          <div class="chip on" data-value="1" onclick="setChip(this, 'ownerCount')">단독명의</div>
+          <div class="chip" data-value="2" onclick="setChip(this, 'ownerCount')">공동명의 (2인)</div>
+          <div class="chip" data-value="etc" onclick="setChip(this, 'ownerCount')">N인 (직접입력)</div>
+        </div>
+        <div id="ownerEtcWrap" style="display:none; margin-bottom:12px;">
+          <div class="lbl">명의자 수 (명)</div>
+          <input type="number" id="ownerCountInput" class="inp" placeholder="3" min="1" onchange="updateCalc()">
+        </div>
+      `;
+      
+      // 4순위: 주택 구분 (매도 시점)
       if (config.hasHouseCount) {
         typeFields += `
           <div class="sec" style="margin-top: 1rem;">주택 구분
@@ -3063,6 +3094,11 @@
       if (type === 'residence') window.residence = value;
       if (type === 'adjusted') window.adjusted = value;
       if (type === 'acqType') { window.acqType = value; updateAcqTypeUI(value); }
+      if (type === 'ownerCount') {
+        window.ownerCountType = value;
+        const etc = document.getElementById('ownerEtcWrap');
+        if (etc) etc.style.display = (value === 'etc' ? 'block' : 'none');
+      }
       updateCalc();
       saveState();
     }
@@ -3590,47 +3626,61 @@
 
       // 중과 대상이면 장기보유특별공제 배제 (소득세법 제104조)
       const ltdcReff = isSurchargeCase ? 0 : ltdcR;
-      const ltdc = nonTaxFull ? 0 : taxGain * ltdcReff;
-      const basic = nonTaxFull ? 0 : 250;
-      const taxBase = Math.max(0, taxGain - ltdc - basic);
+      // ── 공동명의 안분 및 세액 계산 (v3.3.0) ────────────────────────
+      let nOwners = 1;
+      const oct = window.ownerCountType || '1';
+      if (oct === '2') nOwners = 2;
+      else if (oct === 'etc') nOwners = Math.max(1, parseInt(document.getElementById('ownerCountInput')?.value) || 1);
 
-      let rate = 0, ded = 0, sur = 0;
+      // 인별로 나누어 계산 (인별 과세 원칙)
+      const gain_p = gain / nOwners;
+      const taxGain_p = taxGain / nOwners;
+      const ltdc_p = nonTaxFull ? 0 : taxGain_p * ltdcReff;
+      const basic_p = nonTaxFull ? 0 : 250; // 인당 연 250만 공제
+      const taxBase_p = Math.max(0, taxGain_p - ltdc_p - basic_p);
+
+      let rate_p = 0, ded_p = 0, sur_p = 0;
       if (nonTaxFull) {
-        rate = 0; ded = 0; sur = 0;
+        rate_p = 0; ded_p = 0; sur_p = 0;
       } else if (holdM < 12) {
-        rate = 0.70; ded = 0;
+        rate_p = 0.70; ded_p = 0;
       } else if (holdM < 24) {
-        rate = 0.60; ded = 0;
+        rate_p = 0.60; ded_p = 0;
       } else {
-        if (taxBase <= 1400) { rate = 0.06; ded = 0; }
-        else if (taxBase <= 5000) { rate = 0.15; ded = 126; }
-        else if (taxBase <= 8800) { rate = 0.24; ded = 576; }
-        else if (taxBase <= 15000) { rate = 0.35; ded = 1544; }
-        else if (taxBase <= 30000) { rate = 0.38; ded = 1994; }
-        else if (taxBase <= 50000) { rate = 0.40; ded = 2594; }
-        else if (taxBase <= 100000) { rate = 0.42; ded = 3594; }
-        else { rate = 0.45; ded = 6594; }
+        if (taxBase_p <= 1400) { rate_p = 0.06; ded_p = 0; }
+        else if (taxBase_p <= 5000) { rate_p = 0.15; ded_p = 126; }
+        else if (taxBase_p <= 8800) { rate_p = 0.24; ded_p = 576; }
+        else if (taxBase_p <= 15000) { rate_p = 0.35; ded_p = 1544; }
+        else if (taxBase_p <= 30000) { rate_p = 0.38; ded_p = 1994; }
+        else if (taxBase_p <= 50000) { rate_p = 0.40; ded_p = 2594; }
+        else if (taxBase_p <= 100000) { rate_p = 0.42; ded_p = 3594; }
+        else { rate_p = 0.45; ded_p = 6594; }
         
-        const adjVal = window.adjusted || 'no';
-        // ── 다주택자 중과 유예 종료: 2026-05-10부터 중과세율 재적용 ──
-        // 2022-05-10 ~ 2026-05-09 양도분: 한시적 중과 배제(소득세법 부칙)
-        // 2026-05-10 이후 양도분: 원칙적 중과세율 재적용
         if (isSurchargeActive) {
-          if (config.hasHouseCount && (window.houseCount === '2gen' || window.houseCount === '2rent_notmet') && isRegulated) sur = 0.20;
-          if (config.hasHouseCount && window.houseCount === '3') sur = 0.30;
+          if (config.hasHouseCount && (window.houseCount === '2gen' || window.houseCount === '2rent_notmet') && isRegulated) sur_p = 0.20;
+          if (config.hasHouseCount && window.houseCount === '3') sur_p = 0.30;
         }
       }
 
-      const incTax = Math.max(0, taxBase * (rate + sur) - ded);
-      const locTax = Math.round(incTax * 0.10);
-      const total = Math.round(incTax) + locTax;
+      const incTax_p = Math.max(0, taxBase_p * (rate_p + sur_p) - ded_p);
+      const locTax_p = Math.round(incTax_p * 0.10);
+      const total_p = Math.round(incTax_p) + locTax_p;
+      
+      // 총합
+      const total = total_p * nOwners;
+      const taxBase = taxBase_p * nOwners;
+      const ltdc = ltdc_p * nOwners;
+      const basic = basic_p * nOwners;
+      const incTax = incTax_p * nOwners;
+      const locTax = locTax_p * nOwners;
+      
       const eff = gain > 0 ? (total / gain * 100) : 0;
 
       const fmt = n => Math.round(n).toLocaleString('ko-KR');
 
       document.getElementById('metBox').innerHTML = `
         <div class="met"><div class="metl">양도차익</div><div class="metv g">${fmt(gain)}만</div></div>
-        <div class="met"><div class="metl">과세표준</div><div class="metv g">${fmt(taxBase)}만</div></div>
+        <div class="met"><div class="metl">과세표준(합계)</div><div class="metv g">${fmt(taxBase)}만</div></div>
         <div class="met"><div class="metl">총 납부세액</div><div class="metv r">${nonTaxFull ? '0 (비과세)' : fmt(total) + '만'}</div></div>
       `;
 
@@ -3641,7 +3691,7 @@
         <div style="margin-top: 1.5rem; background: #fff; border: 1.5px solid #e0e0e0; border-radius: 12px; overflow: hidden;">
           <div style="padding: 12px 16px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 13px; font-weight: 700; color: #333;">🔍 비과세 요건 정밀 진단 (Audit Report)</span>
-            <span style="font-size: 11px; color: #1D9E75; font-weight: 600;">PRO v3.2.1</span>
+            <span style="font-size: 11px; color: #1D9E75; font-weight: 600;">PRO v3.3.0</span>
           </div>
           <div style="padding: 16px;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
@@ -3692,6 +3742,7 @@
       
       const rows = [
         { lbl: '양도가액', val: fmt(sp) + '만원', note: '실제 계약서상 거래된 총 매도 금액입니다.', cls: '' },
+        { lbl: '명의자 수', val: nOwners + '명', note: nOwners > 1 ? `지분 1/${nOwners}씩 균등 배분을 가정하여 인별로 계산합니다.` : '단독 소유주 기준으로 계산합니다.', cls: nOwners > 1 ? 'g' : '' },
         { lbl: '취득가액', val: fmt(bp) + '만원', note: '취득세, 중개보수 등 부대비용이 포함된 가액입니다.', cls: pm === 'convert' ? 'w' : '' },
         { lbl: '필요경비', val: fmt(ex) + '만원', note: '자본적 지출 등 세법상 인정되는 실제 경비 합계입니다.', cls: '' },
         { lbl: '양도차익', val: fmt(gain) + '만원', note: '전체 수익 금액입니다.', cls: 'g' }
@@ -3709,7 +3760,7 @@
         </div>
         <div id="ltdcDetailBox" class="ltdc-breakdown">
           <div style="font-weight:700; margin-bottom:8px; color:#e65100; display:flex; align-items:center; gap:6px;">
-            <span style="font-size:16px;">📊</span> 장기보유특별공제 6단계 산출 근거
+            <span style="font-size:16px;">📊</span> 장기보유특별공제 6단계 산출 근거 ${nOwners > 1 ? '(합계)' : ''}
           </div>
           <table>
             <tr><td><span class="step-num">1</span> 전체 양도차익</td><td class="val">${fmt(gain)}만</td></tr>
@@ -3727,13 +3778,17 @@
       `;
 
       const bottomRows = [
-        { lbl: '기본공제', val: '△' + fmt(basic) + '만원', note: '연간 1인당 1회 적용되는 인적 공제입니다.', cls: '' },
-        { lbl: '과세표준', val: fmt(taxBase) + '만원', note: '세율을 곱하기 전 최종 과세 대상 금액입니다.', cls: 'g' },
-        { lbl: '적용세율', val: (nonTaxFull ? '-' : Math.round((rate + sur) * 100) + '%' + (sur > 0 ? ' (중과)' : '')), note: '과세표준 구간에 따른 누진세율이 적용되었습니다.', cls: '' },
-        { lbl: '양도소득세', val: fmt(incTax) + '만원', note: '산출된 소득세(국세) 금액입니다.', cls: '' },
-        { lbl: '지방소득세', val: fmt(locTax) + '만원', note: '소득세의 10%가 부과되는 지방세입니다.', cls: '' },
+        { lbl: '기본공제', val: '△' + fmt(basic) + '만원', note: `연간 1인당 250만원씩 ${nOwners}명 적용되었습니다.`, cls: '' },
+        { lbl: '과세표준 (합계)', val: fmt(taxBase) + '만원', note: '세율을 곱하기 전 각 명의자별 과표의 합계입니다.', cls: 'g' },
+        { lbl: '적용세율 (인별)', val: (nonTaxFull ? '-' : Math.round((rate_p + sur_p) * 100) + '%' + (sur_p > 0 ? ' (중과)' : '')), note: `분산된 인별 과세표준(${fmt(taxBase_p)}만) 기준 누진세율입니다.`, cls: '' },
+        { lbl: '양도소득세 (합계)', val: fmt(incTax) + '만원', note: '산출된 소득세(국세) 총액입니다.', cls: '' },
+        { lbl: '지방소득세 (합계)', val: fmt(locTax) + '만원', note: '소득세의 10%가 부과되는 지방세 총액입니다.', cls: '' },
         { lbl: '납부세액 합계', val: (nonTaxFull ? '0원' : fmt(total) + '만원'), note: '국세와 지방세를 합산한 최종 납부 금액입니다.', cls: 'r' }
       ];
+
+      if (nOwners > 1 && !nonTaxFull) {
+        bottomRows.push({ lbl: '인당 예상 세액', val: fmt(total_p) + '만원', note: `공동명의자 1인당 약 ${fmt(total_p)}만원씩 납부하게 됩니다.`, cls: 'w' });
+      }
 
       let rowsHtml = rows.map(r => `
         <div class="rrow">
@@ -3873,6 +3928,8 @@
         newHouseDateY:  document.getElementById('newHouseDate-y')?.value || '',
         newHouseDateM:  document.getElementById('newHouseDate-m')?.value || '',
         newHouseDateD:  document.getElementById('newHouseDate-d')?.value || '',
+        ownerCountType: window.ownerCountType || '1',
+        ownerCountCustom: document.getElementById('ownerCountInput')?.value || '',
       };
       if (!isStorageAvailable()) { showSaveBadge(false); return; }
       try {
@@ -3974,6 +4031,15 @@
       restoreChip('residenceChips',  s.residence);  window.residence  = s.residence  || '3';
       restoreChip('adjustedChips',   s.adjusted);   window.adjusted   = s.adjusted   || 'no';
       restoreChip('acqTypeChips',    s.acqType);    window.acqType    = s.acqType    || 'buy';
+      restoreChip('ownerCountChips', s.ownerCountType); window.ownerCountType = s.ownerCountType || '1';
+      
+      const etcWrap = document.getElementById('ownerEtcWrap');
+      const etcInp = document.getElementById('ownerCountInput');
+      if (etcWrap && etcInp && s.ownerCountType === 'etc') {
+        etcWrap.style.display = 'block';
+        etcInp.value = s.ownerCountCustom || '';
+      }
+
       updateAcqTypeUI(window.acqType);
 
       // ⑤ 주소 드롭다운 3단계 복원
