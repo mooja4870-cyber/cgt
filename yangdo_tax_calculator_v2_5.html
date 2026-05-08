@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>양도세 AI 계산기 v3.3.1 — 물건종류별 전문가용 양도소득세 계산</title>
+  <title>양도세 AI 계산기 v3.3.2 — 물건종류별 전문가용 양도소득세 계산</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/tabler-icons.min.css">
   <style>
@@ -1154,7 +1154,7 @@
       <div class="hdr-left">
         <div class="badge">🧮</div>
         <div>
-          <div class="hdr-title">양도세 AI 계산기 <span style="color:#1D9E75; font-weight:700;">PRO v3.3.1</span></div>
+          <div class="hdr-title">양도세 AI 계산기 <span style="color:#1D9E75; font-weight:700;">PRO v3.3.2</span></div>
           <div class="hdr-sub">물건종류별 전문가용 정밀 계산기</div>
         </div>
       </div>
@@ -2068,17 +2068,17 @@
 
     const HISTORY = [
       {
-        version: 'v3.3.1',
-        date: '2026년 5월 8일 23시 38분',
+        version: 'v3.3.2',
+        date: '2026년 5월 8일 23시 45분',
         current: true,
         items: [
-          { icon: '🚀', title: '계산 엔진 안정화', desc: '공동명의 로직 적용 중 발생한 변수 참조 오류(sur is not defined)를 해결하고 계산 안정성을 확보했습니다.' },
-          { icon: '🛡️', title: '예외 처리 강화', desc: '특수 상황에서 계산기가 멈추지 않도록 내부 렌더링 로직의 안정성을 보강했습니다.' },
+          { icon: '⚖️', title: '국세청 고가주택 안분 로직 적용', desc: '전체 과세대상 차익 산출 후 인별 안분(나누기 N)을 수행하는 국세청 표준 계산 순서를 리포트에 반영했습니다.' },
+          { icon: '📊', title: '리포트 항목 인별 중심으로 개편', desc: '명의자 1인당 안분된 차익, 인당 장특공제, 인당 과표를 우선 노출하여 신고 편의성을 높였습니다.' },
         ]
       },
       {
-        version: 'v3.3.0',
-        date: '2026년 5월 8일 23시 35분',
+        version: 'v3.3.1',
+        date: '2026년 5월 8일 23시 38분',
         current: false,
         items: [
           { icon: '👥', title: '공동명의 인별 과세 로직 도입', desc: '명의자 수(N명)에 따른 양도차익 안분 및 인별 기본공제(250만원) 중복 적용 기능을 추가했습니다.' },
@@ -3702,7 +3702,7 @@
         <div style="margin-top: 1.5rem; background: #fff; border: 1.5px solid #e0e0e0; border-radius: 12px; overflow: hidden;">
           <div style="padding: 12px 16px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 13px; font-weight: 700; color: #333;">🔍 비과세 요건 정밀 진단 (Audit Report)</span>
-            <span style="font-size: 11px; color: #1D9E75; font-weight: 600;">PRO v3.3.1</span>
+            <span style="font-size: 11px; color: #1D9E75; font-weight: 600;">PRO v3.3.2</span>
           </div>
           <div style="padding: 16px;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
@@ -3749,52 +3749,53 @@
       `;
 
       // ── 결과 카드 생성 (3컬럼 전문가 리포트 형식) ──────────────────────────
+      // ── 결과 카드 생성 (v3.3.2: 국세청 표준 안분 리포트 형식) ──────────────────────────
       const taxableRatio = sp > 120000 ? ((sp - 120000) / sp * 100) : 100;
       
       const rows = [
-        { lbl: '양도가액', val: fmt(sp) + '만원', note: '실제 계약서상 거래된 총 매도 금액입니다.', cls: '' },
-        { lbl: '명의자 수', val: nOwners + '명', note: nOwners > 1 ? `지분 1/${nOwners}씩 균등 배분을 가정하여 인별로 계산합니다.` : '단독 소유주 기준으로 계산합니다.', cls: nOwners > 1 ? 'g' : '' },
-        { lbl: '취득가액', val: fmt(bp) + '만원', note: '취득세, 중개보수 등 부대비용이 포함된 가액입니다.', cls: pm === 'convert' ? 'w' : '' },
-        { lbl: '필요경비', val: fmt(ex) + '만원', note: '자본적 지출 등 세법상 인정되는 실제 경비 합계입니다.', cls: '' },
-        { lbl: '양도차익', val: fmt(gain) + '만원', note: '전체 수익 금액입니다.', cls: 'g' }
+        { lbl: '양도가액 (총액)', val: fmt(sp) + '만원', note: '실제 계약서상 총 매도 금액입니다.', cls: '' },
+        { lbl: '명의자 수', val: nOwners + '명', note: `균등 지분(1/${nOwners}) 안분 원칙을 적용합니다.`, cls: 'g' },
+        { lbl: '전체 양도차익', val: fmt(gain) + '만원', note: '비과세/고가 여부와 상관없는 전체 매매 차익입니다.', cls: '' }
       ];
 
+      // 고가주택일 경우 전체 과세대상 차익 먼저 표시
       if (sp > 120000 && config.hasHouseCount) {
-        rows.push({ lbl: '고가물건 과세대상 차익', val: fmt(taxGain) + '만원', note: '12억 초과분에 대해 안분 계산된 과세 대상 수익입니다.', cls: '' });
+        rows.push({ lbl: '전체 과세대상 차익', val: fmt(taxGain) + '만원', note: '12억 초과분에 대해 안분된 전체 과세 대상 수익입니다.', cls: '' });
       }
+
+      // ★ 핵심: 인당 안분 차익 (국세청 계산 순환의 핵심 지점)
+      rows.push({ lbl: '인당 안분 차익', val: fmt(taxGain_p) + '만원', note: '명의자 1인당 배분된 실질 과세 대상 차익입니다.', cls: 'g' });
 
       let ltdcHtml = `
         <div class="rrow" onclick="toggleLtdcDetail()" style="cursor: pointer; border-bottom: none;">
-          <span class="rlbl">장기보유특별공제</span>
-          <span class="rval">△${fmt(ltdc)}만원</span>
-          <span class="rnote">1세대 1주택 등 보유·거주 기간별 특별 혜택입니다. <span style="text-decoration:underline;">상세보기 ▾</span></span>
+          <span class="rlbl">인당 장특공제</span>
+          <span class="rval">△${fmt(ltdc_p)}만원</span>
+          <span class="rnote">1인당 지분에 대한 보유·거주 특별 혜택입니다. <span style="text-decoration:underline;">상세보기 ▾</span></span>
         </div>
         <div id="ltdcDetailBox" class="ltdc-breakdown">
           <div style="font-weight:700; margin-bottom:8px; color:#e65100; display:flex; align-items:center; gap:6px;">
-            <span style="font-size:16px;">📊</span> 장기보유특별공제 6단계 산출 근거 ${nOwners > 1 ? '(합계)' : ''}
+            <span style="font-size:16px;">📊</span> 장기보유특별공제 6단계 산출 근거 (인당)
           </div>
           <table>
             <tr><td><span class="step-num">1</span> 전체 양도차익</td><td class="val">${fmt(gain)}만</td></tr>
-            <tr><td><span class="step-num">2</span> 양도가액(매도가격)</td><td class="val">${fmt(sp)}만</td></tr>
-            <tr><td><span class="step-num">3</span> 과세 대상 비율 <small style="color:#999;">(12억 초과분)</small></td><td class="val">${taxableRatio.toFixed(2)}%</td></tr>
-            <tr><td><span class="step-num">4</span> 과세대상 양도차익 <small style="color:#999;">(①×③)</small></td><td class="val">${fmt(taxGain)}만</td></tr>
-            <tr><td><span class="step-num">5</span> 적용 공제율</td><td class="val">${Math.round(ltdcReff * 100)}%</td></tr>
+            <tr><td><span class="step-num">2</span> 과세대상 차익 (총합)</td><td class="val">${fmt(taxGain)}만</td></tr>
+            <tr><td><span class="step-num">3</span> 1인당 안분 차익 (②÷${nOwners})</td><td class="val">${fmt(taxGain_p)}만</td></tr>
+            <tr><td><span class="step-num">4</span> 적용 공제율</td><td class="val">${Math.round(ltdcReff * 100)}%</td></tr>
             <tr style="border-top:1px dashed #ffcc80; margin-top:6px;">
-              <td style="font-weight:700; padding-top:6px;"><span class="step-num">6</span> 최종 공제액 <small style="color:#999;">(④×⑤)</small></td>
-              <td class="val" style="color:#d32f2f; font-size:13px; padding-top:6px;">${fmt(ltdc)}만원</td>
+              <td style="font-weight:700; padding-top:6px;"><span class="step-num">5</span> 인당 최종 공제액 (③×④)</td>
+              <td class="val" style="color:#d32f2f; font-size:13px; padding-top:6px;">${fmt(ltdc_p)}만원</td>
             </tr>
           </table>
-          <div style="margin-top:10px; font-size:10px; color:#888; line-height:1.4;">※ 1세대 1주택 비과세 요건 충족 시 12억 초과분에 대해서만 공제가 적용됩니다.</div>
+          <div style="margin-top:10px; font-size:10px; color:#888; line-height:1.4;">※ 국세청 규정에 따라 과세대상 차익 안분 후 장특공제를 적용합니다.</div>
         </div>
       `;
 
       const bottomRows = [
-        { lbl: '기본공제', val: '△' + fmt(basic) + '만원', note: `연간 1인당 250만원씩 ${nOwners}명 적용되었습니다.`, cls: '' },
-        { lbl: '과세표준 (합계)', val: fmt(taxBase) + '만원', note: '세율을 곱하기 전 각 명의자별 과표의 합계입니다.', cls: 'g' },
-        { lbl: '적용세율 (인별)', val: (nonTaxFull ? '-' : Math.round((rate_p + sur_p) * 100) + '%' + (sur_p > 0 ? ' (중과)' : '')), note: `분산된 인별 과세표준(${fmt(taxBase_p)}만) 기준 누진세율입니다.`, cls: '' },
-        { lbl: '양도소득세 (합계)', val: fmt(incTax) + '만원', note: '산출된 소득세(국세) 총액입니다.', cls: '' },
-        { lbl: '지방소득세 (합계)', val: fmt(locTax) + '만원', note: '소득세의 10%가 부과되는 지방세 총액입니다.', cls: '' },
-        { lbl: '납부세액 합계', val: (nonTaxFull ? '0원' : fmt(total) + '만원'), note: '국세와 지방세를 합산한 최종 납부 금액입니다.', cls: 'r' }
+        { lbl: '인당 기본공제', val: '△' + fmt(basic_p) + '만원', note: '명의자 1인당 연 1회 적용되는 인적 공제입니다.', cls: '' },
+        { lbl: '인당 과세표준', val: fmt(taxBase_p) + '만원', note: '세율을 곱하기 전 인당 최종 과세 금액입니다.', cls: 'g' },
+        { lbl: '적용세율 (인별)', val: (nonTaxFull ? '-' : Math.round((rate_p + sur_p) * 100) + '%' + (sur_p > 0 ? ' (중과)' : '')), note: `안분된 과세표준(${fmt(taxBase_p)}만) 기준 누진세율입니다.`, cls: '' },
+        { lbl: '인당 산출세액', val: fmt(total_p) + '만원', note: '명의자 1인이 납부할 소득세+지방세 합계입니다.', cls: 'r' },
+        { lbl: '전체 납부세액', val: (nonTaxFull ? '0원' : fmt(total) + '만원'), note: `명의자 ${nOwners}명의 세금을 모두 합산한 총액입니다.`, cls: 'r', style: 'border-top: 1.5px solid #d32f2f; margin-top: 10px; padding-top: 10px; font-weight: 800;' }
       ];
 
       if (nOwners > 1 && !nonTaxFull) {

@@ -1,11 +1,11 @@
 # Project Status: Yangdo Tax Calculator AI
 
-## Current Version: v3.3.1
-**Last Updated:** 2026-05-08 23:38:00
+## Current Version: v3.3.2
+**Last Updated:** 2026-05-08 23:45:00
 
 ## Recent Changes
+- **v3.3.2**: Refined Joint Ownership report to follow NTS standard (Total -> Prorated Per-Person).
 - **v3.3.1**: Fixed critical 'sur is not defined' error in calculation engine.
-- **v3.3.0**: Implemented Joint Ownership (공동명의) logic with per-person basic deduction (250m) and taxable gain proration.
 - **v3.2.2**: Synced internal history array (HISTORY) and version strings across the app.
 - **v3.2.1**: Removed all mandatory indicator asterisks (*) from UI labels (Static/Dynamic).
 - **v3.2.0**: Unified versioning across UI and Audit Report; Agent takeover.
