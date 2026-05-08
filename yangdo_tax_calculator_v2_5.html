@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>양도세 AI 계산기 v3.3.0 — 물건종류별 전문가용 양도소득세 계산</title>
+  <title>양도세 AI 계산기 v3.3.1 — 물건종류별 전문가용 양도소득세 계산</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/tabler-icons.min.css">
   <style>
@@ -1154,7 +1154,7 @@
       <div class="hdr-left">
         <div class="badge">🧮</div>
         <div>
-          <div class="hdr-title">양도세 AI 계산기 <span style="color:#1D9E75; font-weight:700;">PRO v3.3.0</span></div>
+          <div class="hdr-title">양도세 AI 계산기 <span style="color:#1D9E75; font-weight:700;">PRO v3.3.1</span></div>
           <div class="hdr-sub">물건종류별 전문가용 정밀 계산기</div>
         </div>
       </div>
@@ -2068,9 +2068,18 @@
 
     const HISTORY = [
       {
+        version: 'v3.3.1',
+        date: '2026년 5월 8일 23시 38분',
+        current: true,
+        items: [
+          { icon: '🚀', title: '계산 엔진 안정화', desc: '공동명의 로직 적용 중 발생한 변수 참조 오류(sur is not defined)를 해결하고 계산 안정성을 확보했습니다.' },
+          { icon: '🛡️', title: '예외 처리 강화', desc: '특수 상황에서 계산기가 멈추지 않도록 내부 렌더링 로직의 안정성을 보강했습니다.' },
+        ]
+      },
+      {
         version: 'v3.3.0',
         date: '2026년 5월 8일 23시 35분',
-        current: true,
+        current: false,
         items: [
           { icon: '👥', title: '공동명의 인별 과세 로직 도입', desc: '명의자 수(N명)에 따른 양도차익 안분 및 인별 기본공제(250만원) 중복 적용 기능을 추가했습니다.' },
           { icon: '📉', title: '절세 효과 가이드', desc: '공동명의 시 세율 구간 하락에 따른 절세 효과를 리포트에서 즉시 확인할 수 있습니다.' },
@@ -3666,13 +3675,15 @@
       const locTax_p = Math.round(incTax_p * 0.10);
       const total_p = Math.round(incTax_p) + locTax_p;
       
-      // 총합
+      // 전역 참조용 변수 정의 (v3.3.1 오류 수정)
+      const rate = rate_p;
+      const sur = sur_p;
+      const incTax = incTax_p * nOwners;
+      const locTax = locTax_p * nOwners;
       const total = total_p * nOwners;
       const taxBase = taxBase_p * nOwners;
       const ltdc = ltdc_p * nOwners;
       const basic = basic_p * nOwners;
-      const incTax = incTax_p * nOwners;
-      const locTax = locTax_p * nOwners;
       
       const eff = gain > 0 ? (total / gain * 100) : 0;
 
@@ -3691,7 +3702,7 @@
         <div style="margin-top: 1.5rem; background: #fff; border: 1.5px solid #e0e0e0; border-radius: 12px; overflow: hidden;">
           <div style="padding: 12px 16px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 13px; font-weight: 700; color: #333;">🔍 비과세 요건 정밀 진단 (Audit Report)</span>
-            <span style="font-size: 11px; color: #1D9E75; font-weight: 600;">PRO v3.3.0</span>
+            <span style="font-size: 11px; color: #1D9E75; font-weight: 600;">PRO v3.3.1</span>
           </div>
           <div style="padding: 16px;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
