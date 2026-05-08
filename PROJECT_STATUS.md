@@ -1,9 +1,10 @@
 # Project Status: Yangdo Tax Calculator AI
 
-## Current Version: v3.2.1
-**Last Updated:** 2026-05-08 23:30:00
+## Current Version: v3.2.2
+**Last Updated:** 2026-05-08 23:31:00
 
 ## Recent Changes
+- **v3.2.2**: Synced internal history array (HISTORY) and version strings across the app.
 - **v3.2.1**: Removed all mandatory indicator asterisks (*) from UI labels (Static/Dynamic).
 - **v3.2.0**: Unified versioning across UI and Audit Report; Agent takeover.
 - **3-Column Expert Report**: Implemented "Label | Value | Expert Note" layout for professional insights.
