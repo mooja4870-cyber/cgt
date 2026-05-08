@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>양도세 AI 계산기 v3.2 — 물건종류별 전문가용 양도소득세 계산</title>
+  <title>양도세 AI 계산기 v3.2.1 — 물건종류별 전문가용 양도소득세 계산</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/tabler-icons.min.css">
   <style>
@@ -1154,7 +1154,7 @@
       <div class="hdr-left">
         <div class="badge">🧮</div>
         <div>
-          <div class="hdr-title">양도세 AI 계산기 <span style="color:#1D9E75; font-weight:700;">PRO v3.2</span></div>
+          <div class="hdr-title">양도세 AI 계산기 <span style="color:#1D9E75; font-weight:700;">PRO v3.2.1</span></div>
           <div class="hdr-sub">물건종류별 전문가용 정밀 계산기</div>
         </div>
       </div>
@@ -2068,9 +2068,18 @@
 
     const HISTORY = [
       {
-        version: 'v3.2',
-        date: '2026년 5월 8일 23시 25분',
+        version: 'v3.2.1',
+        date: '2026년 5월 8일 23시 30분',
         current: true,
+        items: [
+          { icon: '🎨', title: '입력폼 UI 정밀화', desc: '모든 입력 항목의 불필요한 필수 표시(*)를 제거하여 전문가용 앱에 걸맞은 깔끔한 레이아웃을 구현했습니다.' },
+          { icon: '⚙️', title: '동적 라벨 로직 최적화', desc: 'JavaScript로 생성되는 가변형 라벨에서도 일관된 디자인이 유지되도록 코드를 정비했습니다.' },
+        ]
+      },
+      {
+        version: 'v3.2.0',
+        date: '2026년 5월 8일 23시 25분',
+        current: false,
         items: [
           { icon: '📊', title: '전문가용 3컬럼 리포트 도입', desc: '항목명 | 수치 | 전문가 비고(멘토링) 3단 구성으로 가로 공간 활용 및 전문성 강화' },
           { icon: '⚖️', title: '고가주택 판정 및 계산 정밀화', desc: '12억 초과 고가주택 판정 기준을 매도가액으로 정확히 수정하고 안분 계산식을 보완했습니다.' },
@@ -3632,7 +3641,7 @@
         <div style="margin-top: 1.5rem; background: #fff; border: 1.5px solid #e0e0e0; border-radius: 12px; overflow: hidden;">
           <div style="padding: 12px 16px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 13px; font-weight: 700; color: #333;">🔍 비과세 요건 정밀 진단 (Audit Report)</span>
-            <span style="font-size: 11px; color: #1D9E75; font-weight: 600;">PRO v3.2</span>
+            <span style="font-size: 11px; color: #1D9E75; font-weight: 600;">PRO v3.2.1</span>
           </div>
           <div style="padding: 16px;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
