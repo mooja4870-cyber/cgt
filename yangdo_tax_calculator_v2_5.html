@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>양도세 AI 계산기 v3.5.1 — 물건종류별 전문가용 양도소득세 계산</title>
+  <title>양도세 AI 계산기 v3.5.2 — 물건종류별 전문가용 양도소득세 계산</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/tabler-icons.min.css">
   <style>
@@ -1200,7 +1200,7 @@
       <div class="hdr-left">
         <div class="badge">🧮</div>
         <div>
-          <div class="hdr-title">양도세 AI 계산기 <span style="color:#1D9E75; font-weight:700;">PRO v3.5.1</span></div>
+          <div class="hdr-title">양도세 AI 계산기 <span style="color:#1D9E75; font-weight:700;">PRO v3.5.2</span></div>
           <div class="hdr-sub">물건종류별 전문가용 정밀 계산기</div>
         </div>
       </div>
@@ -1319,7 +1319,14 @@
       <div class="body">
         <!-- TAB 0: 기본정보 -->
         <div class="pg on">
-          <div class="sec">물건정보</div>
+          <!-- v3.5.2: 취득 원인을 최상단으로 이동 -->
+          <div class="sec">
+            <div class="sec-ttl" style="background:#f0f7f4; color:#2E7D32;">1. 취득 원인 정의</div>
+            <div class="chips" id="acqTypeChips"></div>
+            <div id="acqTypeGuide" style="margin-top:8px; font-size:11px; line-height:1.6; color:#666;"></div>
+          </div>
+
+          <div class="sec" style="margin-top:1.5rem;">2. 물건 및 보유 현황</div>
           <div id="itemDisplay" style="padding: 10px; background: #E1F5EE; border-radius: 8px; margin-bottom: 1rem; font-size: 12px; font-weight: 600; color: #0F6E56;"></div>
           
           <div class="g2">
@@ -1365,14 +1372,8 @@
         
         <!-- TAB 1: 가액·경비 -->
         <div class="pg">
-
-          <!-- ① 취득 유형 (먼저) -->
-          <div class="sec">취득 유형</div>
-          <div class="chips" id="acqTypeChips"></div>
-          <div id="acqTypeGuide" style="margin-top:8px; margin-bottom:1.25rem; padding:8px 12px; border-radius:6px; font-size:11px; line-height:1.6;"></div>
-
-          <!-- ② 가액 입력 (취득 유형에 따라 동적) -->
-          <div class="sec">가액 입력</div>
+          <!-- ① 거래 가액 입력 -->
+          <div class="sec">거래 가액 입력</div>
 
           <!-- 양도가액은 모든 유형 공통 -->
           <div class="g2" style="margin-bottom:0.75rem;">
@@ -2114,14 +2115,16 @@
 
     const HISTORY = [
       {
-        version: 'v3.5.1',
-        date: '2026년 5월 9일 01시 45분',
+        version: 'v3.5.2',
+        date: '2026년 5월 9일 01시 48분',
         current: true,
         items: [
-          { icon: '🚧', title: '상속/증여 취득 기능 유예', desc: '상속 및 증여 취득 계산 로직의 완성도를 위해 당분간 [Comming Soon !] 상태로 전환했습니다.' },
-          { icon: '✍️', title: '용어 표기 정정', desc: '리포트 내 보유/거주 기간 등 텍스트의 띄어쓰기를 표준에 맞춰 정정했습니다.' },
+          { icon: '🏗️', title: '계산 구조적 설계 개편', desc: '세무 신고 원칙에 따라 [취득 원인(매매/상속/증여)]을 기본정보 탭 최상단으로 이동하여 계산의 근간을 먼저 정의하도록 개편했습니다.' },
+          { icon: '🚧', title: '상속/증여 기능 준비', desc: '최상단으로 이동된 상속/증여 기능은 정밀 로직 반영을 위해 당분간 [Comming Soon !] 상태로 유지됩니다.' },
         ]
       },
+      {
+        version: 'v3.5.1',
       {
         version: 'v3.4.4',
         date: '2026년 5월 9일 01시 37분',
@@ -2766,13 +2769,13 @@
     function initializeForm() {
       const config = itemConfig[selectedItem];
       
-      // 유형별 필드 생성 (시간순: 매수→보유→매도)
+      // 유형별 필드 생성 (v3.5.2: 취득 원인 상단 이동에 따른 넘버링 조정)
       let typeFields = '';
       
-      // 1순위: 조정대상지역 (매수 시점)
+      // 3순위: 조정대상지역 (매수 시점)
       if (config.hasAdjusted) {
         typeFields += `
-          <div class="sec">조정대상지역
+          <div class="sec" style="margin-top: 1.5rem;">3. 조정대상지역 판정 (취득 시점)
             <span class="tip-wrap">
               <span class="tip-icon" tabindex="0">?</span>
               <span class="tip-box">
@@ -2826,10 +2829,10 @@
         `;
       }
       
-      // 2순위: 거주기간 구분 (보유 중)
+      // 4순위: 거주기간 구분 (보유 중)
       if (config.hasResidence) {
         typeFields += `
-          <div class="sec" style="margin-top: 1rem;">거주기간
+          <div class="sec" style="margin-top: 1.5rem;">4. 실거주 기간 (보유 중)
             <span class="tip-wrap">
               <span class="tip-icon" tabindex="0">?</span>
               <span class="tip-box">
@@ -2853,9 +2856,9 @@
         `;
       }
       
-      // 3순위: 소유 명의 및 인원 (v3.3.0)
+      // 5순위: 소유 명의 및 인원 (v3.3.0)
       typeFields += `
-        <div class="sec" style="margin-top: 1rem;">소유 명의 및 인원
+        <div class="sec" style="margin-top: 1.5rem;">5. 소유 명의 및 인원
           <span class="tip-wrap">
             <span class="tip-icon" tabindex="0">?</span>
             <span class="tip-box">
@@ -2875,10 +2878,10 @@
         </div>
       `;
       
-      // 4순위: 주택 구분 (매도 시점)
+      // 6순위: 주택 구분 (매도 시점)
       if (config.hasHouseCount) {
         typeFields += `
-          <div class="sec" style="margin-top: 1rem;">주택 구분
+          <div class="sec" style="margin-top: 1.5rem;">6. 주택 보유 수 (양도 시점)
             <span class="tip-wrap">
               <span class="tip-icon" tabindex="0">?</span>
               <span class="tip-box">
@@ -2977,13 +2980,13 @@
       
       const acqChips = document.getElementById('acqTypeChips');
       if (acqChips) {
+        const cur = window.acqType || 'buy';
         acqChips.innerHTML = `
-          <div class="chip on" data-value="buy" onclick="setChip(this, 'acqType')">매매 취득</div>
-          <div class="chip" data-value="inherit" onclick="alert('상속 취득 기능은 정밀 로직 반영을 위해 Comming Soon ! 상태입니다.')" style="opacity:0.6;">상속 취득 (Comming Soon !)</div>
-          <div class="chip" data-value="gift" onclick="alert('증여 취득 기능은 정밀 로직 반영을 위해 Comming Soon ! 상태입니다.')" style="opacity:0.6;">증여 취득 (Comming Soon !)</div>
+          <div class="chip ${cur === 'buy' ? 'on' : ''}" data-value="buy" onclick="setChip(this, 'acqType')">🏠 매매 취득</div>
+          <div class="chip ${cur === 'inherit' ? 'on' : ''}" data-value="inherit" onclick="alert('상속 취득 기능은 정밀 로직 반영을 위해 Comming Soon ! 상태입니다.')" style="opacity:0.6;">📜 상속 취득 (Soon !)</div>
+          <div class="chip ${cur === 'gift' ? 'on' : ''}" data-value="gift" onclick="alert('증여 취득 기능은 정밀 로직 반영을 위해 Comming Soon ! 상태입니다.')" style="opacity:0.6;">🎁 증여 취득 (Soon !)</div>
         `;
-        window.acqType = 'buy';
-        updateAcqTypeUI('buy');
+        updateAcqTypeUI(cur);
       }
     }
 
@@ -3323,7 +3326,6 @@
         extraWrap.style.display = 'none';
         extraContent.innerHTML = '';
       }
-      
       updateCalc();
       saveState();
     };
@@ -3777,7 +3779,7 @@
         <div style="margin-top: 1.5rem; background: #fff; border: 1.5px solid #e0e0e0; border-radius: 12px; overflow: hidden;">
           <div style="padding: 12px 16px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 13px; font-weight: 700; color: #333;">🔍 비과세 요건 정밀 진단 (Audit Report)</span>
-            <span style="font-size: 11px; color: #1D9E75; font-weight: 600;">PRO v3.5.1</span>
+            <span style="font-size: 11px; color: #1D9E75; font-weight: 600;">PRO v3.5.2</span>
           </div>
           <div style="padding: 16px;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
