@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>양도세 AI 계산기 v4.0.2 — 물건종류별 전문가용 양도소득세 계산</title>
+  <title>양도세 AI 계산기 v308 — 인트로 화면 추가·버튼 화면전환 수정</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/tabler-icons.min.css">
   <style>
@@ -124,6 +124,11 @@
       display: block;
       animation: fadeIn 0.2s ease-in;
     }
+
+    #introPage.pg.on {
+      display: flex;
+      animation: none;
+    }
     
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(4px); }
@@ -133,7 +138,7 @@
     .sec {
       font-size: 11px;
       font-weight: 600;
-      color: #999;
+      color: #1a1a1a;
       letter-spacing: 0.05em;
       margin-bottom: 0.75rem;
       padding-bottom: 6px;
@@ -189,6 +194,8 @@
       white-space: normal;
       text-transform: none;
       letter-spacing: 0;
+      max-height: 70vh;
+      overflow-y: auto;
     }
     .tip-box::before {
       content: '';
@@ -311,6 +318,12 @@
       font-weight: 600;
     }
 
+    /* 취득종류 칩 전용: 가로 66% 축소 */
+    .chip-acq {
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+
     /* 칩 hover 툴팁 */
     .chip-tip {
       display: none;
@@ -349,6 +362,13 @@
     .hint {
       font-size: 11px;
       color: #999;
+      margin-top: 4px;
+    }
+
+    /* 증여·상속 패널 내 힌트: lbl과 동일 크기·색상 */
+    .hint-panel {
+      font-size: 11px;
+      color: #555;
       margin-top: 4px;
     }
     
@@ -1192,16 +1212,55 @@
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
+
+    .font-view-toggle {
+      position: fixed;
+      top: max(10px, env(safe-area-inset-top));
+      right: 10px;
+      z-index: 100000;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      padding: 5px;
+      background: rgba(255,255,255,0.94);
+      border: 1px solid rgba(29,158,117,0.35);
+      border-radius: 10px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+      backdrop-filter: blur(8px);
+    }
+
+    .font-view-toggle button {
+      border: 1px solid #1D9E75;
+      background: #fff;
+      color: #0F6E56;
+      border-radius: 7px;
+      padding: 6px 9px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .font-view-toggle button.on {
+      background: #1D9E75;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
+  <div class="font-view-toggle" id="fontViewToggle" aria-label="글자 크기 보기 설정">
+    <button type="button" id="fontViewBigBtn" onclick="setFontViewMode(true)">크게 보기</button>
+    <button type="button" id="fontViewBaseBtn" class="on" onclick="setFontViewMode(false)">기본 보기</button>
+  </div>
   <div class="app">
     <div class="hdr">
       <div class="hdr-left">
         <div class="badge">🧮</div>
         <div>
-          <div class="hdr-title">양도세 AI 계산기 <span style="color:#1D9E75; font-weight:700;">PRO v4.0.2</span></div>
-          <div class="hdr-sub">물건종류별 전문가용 정밀 계산기</div>
+          <div class="hdr-title">양도세 AI 계산기</div>
+          <div class="hdr-sub" style="color:#1D9E75; font-weight:700; font-size:12px;">v308</div>
         </div>
       </div>
       <div style="display: flex; gap: 10px; align-items: center;">
@@ -1209,21 +1268,962 @@
       </div>
     </div>
 
+    <!-- ══════════════════════════════════════════════════════════
+         인트로 화면 (사용 가이드 앞)
+    ══════════════════════════════════════════════════════════ -->
+    <div id="introPage" class="pg on" style="display:flex;">
+      <style>
+        /* 인트로 활성 시 헤더/탭 숨기기 */
+        .intro-hdr-hidden { display: none !important; }
+
+        /* ── 인트로 전체 ── */
+        #introPage {
+          position: relative;
+          background: #0D1F1A;
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+        }
+
+        /* 상단 히어로 */
+        .intro-hero {
+          position: relative;
+          background: linear-gradient(160deg, #1a3a2e 0%, #0D1F1A 60%);
+          padding: 2.5rem 1.5rem 2rem;
+          overflow: hidden;
+        }
+        .intro-hero::before {
+          content: '';
+          position: absolute;
+          top: -60px; right: -60px;
+          width: 240px; height: 240px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(29,158,117,0.18) 0%, transparent 70%);
+          pointer-events: none;
+        }
+        .intro-hero::after {
+          content: '';
+          position: absolute;
+          bottom: -40px; left: -40px;
+          width: 180px; height: 180px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(29,158,117,0.10) 0%, transparent 70%);
+          pointer-events: none;
+        }
+        .intro-eyebrow {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: rgba(29,158,117,0.18);
+          border: 1px solid rgba(29,158,117,0.35);
+          color: #4DD9A8;
+          font-size: 11px;
+          font-weight: 700;
+          padding: 5px 12px;
+          border-radius: 20px;
+          margin-bottom: 1.2rem;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+        }
+        .intro-headline {
+          font-size: 28px;
+          font-weight: 900;
+          color: #ffffff;
+          line-height: 1.25;
+          margin-bottom: 0.5rem;
+          letter-spacing: -0.8px;
+        }
+        .intro-headline .hl {
+          color: #4DD9A8;
+        }
+        .intro-sub {
+          font-size: 14px;
+          color: rgba(255,255,255,0.55);
+          line-height: 1.65;
+          margin-bottom: 1.8rem;
+        }
+
+        /* 핵심 메시지 카드 */
+        .intro-main-card {
+          background: linear-gradient(135deg, #1D9E75 0%, #0F6E56 100%);
+          border-radius: 18px;
+          padding: 22px 20px;
+          margin-bottom: 1rem;
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 8px 32px rgba(29,158,117,0.35);
+        }
+        .intro-main-card::before {
+          content: '⚡';
+          position: absolute;
+          top: -10px; right: 14px;
+          font-size: 64px;
+          opacity: 0.12;
+          transform: rotate(15deg);
+        }
+        .intro-main-card-label {
+          font-size: 10px;
+          font-weight: 800;
+          color: rgba(255,255,255,0.65);
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          margin-bottom: 8px;
+        }
+        .intro-main-card-text {
+          font-size: 16px;
+          font-weight: 700;
+          color: #ffffff;
+          line-height: 1.55;
+        }
+        .intro-main-card-text strong {
+          background: rgba(255,255,0,0.22);
+          color: #FFEE88;
+          padding: 1px 4px;
+          border-radius: 4px;
+        }
+
+        /* 바디 영역 */
+        .intro-body {
+          background: #111f18;
+          padding: 1.25rem 1.5rem;
+        }
+
+        /* 특징 리스트 */
+        .intro-feat-title {
+          font-size: 11px;
+          font-weight: 700;
+          color: rgba(255,255,255,0.35);
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          margin-bottom: 12px;
+        }
+        .intro-feat-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          padding: 14px 0;
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .intro-feat-item:last-child { border-bottom: none; }
+        .intro-feat-icon {
+          width: 36px; height: 36px;
+          border-radius: 10px;
+          background: rgba(29,158,117,0.15);
+          border: 1px solid rgba(29,158,117,0.25);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 17px;
+          flex-shrink: 0;
+        }
+        .intro-feat-body {}
+        .intro-feat-name {
+          font-size: 14px;
+          font-weight: 700;
+          color: #e8f5f0;
+          margin-bottom: 3px;
+        }
+        .intro-feat-desc {
+          font-size: 12px;
+          color: rgba(255,255,255,0.45);
+          line-height: 1.55;
+        }
+        .intro-feat-desc strong { color: #4DD9A8; font-weight: 700; }
+
+        /* 경고 배너 */
+        .intro-warn-banner {
+          background: rgba(255,204,0,0.08);
+          border: 1px solid rgba(255,204,0,0.25);
+          border-radius: 12px;
+          padding: 14px 16px;
+          margin: 1rem 0;
+          display: flex;
+          gap: 10px;
+          align-items: flex-start;
+        }
+        .intro-warn-icon {
+          font-size: 18px;
+          flex-shrink: 0;
+          margin-top: 1px;
+        }
+        .intro-warn-text {
+          font-size: 12px;
+          color: rgba(255,220,80,0.85);
+          line-height: 1.65;
+        }
+        .intro-warn-text strong { color: #FFD84D; }
+
+        /* CTA 버튼 */
+        .intro-cta-wrap {
+          padding: 1rem 1.5rem 1.5rem;
+          background: #111f18;
+          border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .intro-cta-btn {
+          display: block;
+          width: 100%;
+          background: linear-gradient(135deg, #1D9E75 0%, #0F8060 100%);
+          color: white;
+          font-size: 16px;
+          font-weight: 800;
+          padding: 16px;
+          border-radius: 14px;
+          border: none;
+          cursor: pointer;
+          text-align: center;
+          letter-spacing: -0.3px;
+          box-shadow: 0 6px 24px rgba(29,158,117,0.4);
+          transition: all 0.2s;
+          font-family: inherit;
+          margin-bottom: 10px;
+        }
+        .intro-cta-btn:hover, .intro-cta-btn:active {
+          background: linear-gradient(135deg, #22b887 0%, #117a5e 100%);
+          transform: translateY(-1px);
+          box-shadow: 0 8px 28px rgba(29,158,117,0.5);
+        }
+        .intro-cta-btn-outline {
+          display: block;
+          width: 100%;
+          background: transparent;
+          color: #4DD9A8;
+          font-size: 15px;
+          font-weight: 700;
+          padding: 14px;
+          border-radius: 14px;
+          border: 1.5px solid rgba(29,158,117,0.5);
+          cursor: pointer;
+          text-align: center;
+          letter-spacing: -0.3px;
+          transition: all 0.2s;
+          font-family: inherit;
+        }
+        .intro-cta-btn-outline:hover, .intro-cta-btn-outline:active {
+          background: rgba(29,158,117,0.12);
+          border-color: #1D9E75;
+          transform: translateY(-1px);
+        }
+        .intro-cta-sub {
+          text-align: center;
+          font-size: 11px;
+          color: rgba(255,255,255,0.3);
+          margin-top: 8px;
+          line-height: 1.5;
+        }
+
+        /* 들어오는 애니메이션 */
+        @keyframes introFadeUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .intro-anim-1 { animation: introFadeUp 0.5s ease-out 0.05s both; }
+        .intro-anim-2 { animation: introFadeUp 0.5s ease-out 0.2s both; }
+        .intro-anim-3 { animation: introFadeUp 0.5s ease-out 0.35s both; }
+        .intro-anim-4 { animation: introFadeUp 0.5s ease-out 0.5s both; }
+        .intro-anim-5 { animation: introFadeUp 0.5s ease-out 0.65s both; }
+        .intro-anim-6 { animation: introFadeUp 0.5s ease-out 0.8s both; }
+      </style>
+
+      <!-- 히어로 섹션 -->
+      <div class="intro-hero">
+        <div class="intro-eyebrow intro-anim-1">🏠 양도소득세 정밀 계산기</div>
+        <div style="display:flex; align-items:flex-start; gap:12px;" class="intro-anim-2">
+          <div class="intro-headline" style="flex:1; margin-bottom:0;">
+            전문 세무사도<br>꺼려하는 양도소득세,<br><span class="hl">AI가 대신합니다</span>
+          </div>
+          <div class="intro-sub" style="flex:0 0 auto; text-align:right; margin-bottom:0; padding-top:4px;">
+            <strong style="color:#FF4444; font-weight:800; font-size:13px; line-height:1.6;">고액 양도차익의 신고는<br>숙련된 세무사조차<br>수임을 부담스러워하는<br>최고 난이도입니다.</strong>
+          </div>
+        </div>
+        <div class="intro-main-card intro-anim-4">
+          <div class="intro-main-card-label">이 앱의 핵심 차이</div>
+          <div class="intro-main-card-text">
+            시중 계산기는 <strong>러프한 추정값</strong>만 보여줍니다.<br>
+            이 앱은 취득 시점별 <strong>조정대상지역·투기지역·투기과열지구 이력</strong>,
+            상속·증여 이월과세, 다주택 중과까지 <strong>실제 과세 로직 그대로</strong> 반영합니다.
+          </div>
+        </div>
+      </div>
+
+      <!-- 특징 리스트 -->
+      <div class="intro-body">
+        <div class="intro-feat-title intro-anim-4">다른 계산기와 무엇이 다른가요</div>
+
+        <div class="intro-feat-item intro-anim-4">
+          <div class="intro-feat-icon">🗺️</div>
+          <div class="intro-feat-body">
+            <div class="intro-feat-name">조정지역 이력 자동 판단</div>
+            <div class="intro-feat-desc">취득일 기준으로 <strong>조정대상지역·투기지역·투기과열지구</strong> 해당 여부를 자동 반영합니다.</div>
+          </div>
+        </div>
+
+        <div class="intro-feat-item intro-anim-5">
+          <div class="intro-feat-icon">🎁</div>
+          <div class="intro-feat-body">
+            <div class="intro-feat-name">상속·증여 특례 계산</div>
+            <div class="intro-feat-desc">상속·증여 취득의 <strong>이월과세·취득가액 특례</strong>까지 세법 기준대로 계산합니다.</div>
+          </div>
+        </div>
+
+        <div class="intro-feat-item intro-anim-5">
+          <div class="intro-feat-icon">📊</div>
+          <div class="intro-feat-body">
+            <div class="intro-feat-name">장특공제 자동 계산</div>
+            <div class="intro-feat-desc">보유·거주 기간에 따른 <strong>장기보유특별공제</strong>를 자동으로 계산합니다.</div>
+          </div>
+        </div>
+
+        <div class="intro-feat-item intro-anim-6">
+          <div class="intro-feat-icon">🏢</div>
+          <div class="intro-feat-body">
+            <div class="intro-feat-name">다주택 중과세율 반영</div>
+            <div class="intro-feat-desc">2주택 +20%p, 3주택 이상 +30%p 등 <strong>다주택자 중과</strong> 기준을 실제 세법대로 적용합니다.</div>
+          </div>
+        </div>
+
+        <div class="intro-warn-banner intro-anim-6">
+          <div class="intro-warn-icon">⚠️</div>
+          <div class="intro-warn-text">
+            이 앱의 계산 결과는 <strong>최대한 실제에 가깝게</strong> 연구·개발된 참고용 추정치입니다.<br>
+            <strong>최종 신고·납부 전 반드시 전문 세무사와 상담</strong>하시기 바랍니다.
+          </div>
+        </div>
+
+        <!-- 태그 배지들 -->
+        <div style="display:flex; flex-wrap:wrap; gap:7px; margin-top:0.5rem;" class="intro-anim-6">
+          <span style="background:rgba(29,158,117,0.15); border:1px solid rgba(29,158,117,0.3); color:#4DD9A8; font-size:11px; font-weight:700; padding:5px 12px; border-radius:20px;">✓ 조정지역 이력 자동판단</span>
+          <span style="background:rgba(29,158,117,0.15); border:1px solid rgba(29,158,117,0.3); color:#4DD9A8; font-size:11px; font-weight:700; padding:5px 12px; border-radius:20px;">✓ 상속·증여 특례</span>
+          <span style="background:rgba(29,158,117,0.15); border:1px solid rgba(29,158,117,0.3); color:#4DD9A8; font-size:11px; font-weight:700; padding:5px 12px; border-radius:20px;">✓ 장특공제 자동계산</span>
+          <span style="background:rgba(255,80,80,0.12); border:1px solid rgba(255,100,80,0.3); color:#FF9980; font-size:11px; font-weight:700; padding:5px 12px; border-radius:20px;">⚠ 최종 신고는 세무사와</span>
+        </div>
+      </div>
+
+      <!-- CTA 버튼 -->
+      <div class="intro-cta-wrap intro-anim-6">
+        <button class="intro-cta-btn" onclick="startFromIntro()">
+          사용 가이드 보기 →
+        </button>
+        <button class="intro-cta-btn-outline" onclick="skipToCalc()">
+          바로 양도세 계산하기 →
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- 인트로 함수: introPage 밖 전역 스코프에 선언 -->
+    <script>
+      // 페이지 로드 시 헤더 숨기기
+      document.addEventListener('DOMContentLoaded', function() {
+        var hdr = document.querySelector('.hdr');
+        var tabs = document.querySelector('.tabs');
+        if (hdr) hdr.style.display = 'none';
+        if (tabs) tabs.style.display = 'none';
+      });
+
+      function _showHeaderTabs() {
+        var hdr = document.querySelector('.hdr');
+        var tabs = document.querySelector('.tabs');
+        if (hdr) hdr.style.display = '';
+        if (tabs) tabs.style.display = '';
+      }
+
+      function startFromIntro() {
+        document.getElementById('introPage').style.display = 'none';
+        _showHeaderTabs();
+        var guide = document.getElementById('guidePage');
+        guide.style.display = 'block';
+        guide.classList.add('on');
+        // 첫 슬라이드 진입 시 ← 인트로 버튼 초기화
+        var prevBtn = document.getElementById('guidePrevBtn');
+        if (prevBtn) {
+          prevBtn.textContent = '← 인트로';
+          prevBtn.onclick = goBackToIntro;
+          prevBtn.style.display = '';
+        }
+      }
+
+      function skipToCalc() {
+        document.getElementById('introPage').style.display = 'none';
+        _showHeaderTabs();
+        document.getElementById('guidePage').style.display = 'none';
+        document.getElementById('guidePage').classList.remove('on');
+        var itemSelect = document.getElementById('itemSelectPage');
+        itemSelect.style.display = 'block';
+        itemSelect.classList.add('on');
+      }
+
+      function goToGuideFromItemSelect() {
+        // 물건선택 화면 숨기기
+        var itemSelect = document.getElementById('itemSelectPage');
+        itemSelect.style.display = 'none';
+        itemSelect.classList.remove('on');
+        // 가이드 페이지 열기 (슬라이드 1번으로 초기화)
+        var guide = document.getElementById('guidePage');
+        guide.style.display = 'block';
+        guide.classList.add('on');
+        // 슬라이드 초기화
+        if (typeof _guideIdx !== 'undefined') {
+          document.querySelectorAll('.guide-slide').forEach((s, i) => s.classList.toggle('on', i === 0));
+          document.querySelectorAll('.guide-dot').forEach((d, i) => d.classList.toggle('on', i === 0));
+          _guideIdx = 0;
+          var prevBtn = document.getElementById('guidePrevBtn');
+          var nextBtn = document.getElementById('guideNextBtn');
+          if (prevBtn) { prevBtn.textContent = '← 인트로'; prevBtn.onclick = goBackToIntro; prevBtn.style.display = ''; }
+          if (nextBtn) { nextBtn.textContent = '다음 →'; nextBtn.style.background = '#1D9E75'; nextBtn.onclick = () => stepGuide(1); }
+        }
+      }
+    </script>
+
+    <!-- ══════════════════════════════════════════════════════════
+         사용 가이드 (온보딩 슬라이드)
+    ══════════════════════════════════════════════════════════ -->
+    <div id="guidePage" class="pg">
+      <style>
+        .guide-wrap {
+          display: flex;
+          flex-direction: column;
+          height: calc(100vh - 56px); /* 헤더 높이 제외 */
+          background: #f8f7f2;
+          overflow: hidden;
+        }
+        .guide-slides {
+          flex: 1;
+          overflow: hidden;
+          position: relative;
+        }
+        .guide-slide {
+          display: none;
+          height: 100%;
+          overflow-y: auto;
+          padding: 28px 22px 16px;
+          box-sizing: border-box;
+          animation: gSlideIn 0.25s ease-out;
+        }
+        .guide-slide.on { display: block; }
+        @keyframes gSlideIn {
+          from { opacity: 0; transform: translateX(30px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes gSlideInBack {
+          from { opacity: 0; transform: translateX(-30px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        .guide-slide.back { animation: gSlideInBack 0.25s ease-out; }
+
+        /* 슬라이드 공통 레이아웃 */
+        .gs-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: #E1F5EE;
+          color: #0F6E56;
+          font-size: 11px;
+          font-weight: 700;
+          padding: 4px 10px;
+          border-radius: 20px;
+          margin-bottom: 16px;
+          letter-spacing: 0.04em;
+        }
+        .gs-title {
+          font-size: 22px;
+          font-weight: 800;
+          color: #1a1a1a;
+          line-height: 1.3;
+          margin-bottom: 8px;
+          letter-spacing: -0.5px;
+        }
+        .gs-sub {
+          font-size: 14px;
+          color: #666;
+          line-height: 1.6;
+          margin-bottom: 24px;
+        }
+        .gs-card {
+          background: white;
+          border-radius: 14px;
+          padding: 18px 18px;
+          margin-bottom: 12px;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+          border: 1px solid #f0f0f0;
+        }
+        .gs-card-title {
+          font-size: 15px;
+          font-weight: 700;
+          color: #1a1a1a;
+          margin-bottom: 6px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .gs-card-body {
+          font-size: 14px;
+          color: #555;
+          line-height: 1.7;
+        }
+        .gs-card-body strong { color: #1a1a1a; }
+        .gs-highlight {
+          background: linear-gradient(135deg, #1D9E75 0%, #0F6E56 100%);
+          color: white;
+          border-radius: 14px;
+          padding: 20px 18px;
+          margin-bottom: 12px;
+          box-shadow: 0 4px 20px rgba(29,158,117,0.25);
+        }
+        .gs-highlight .gs-card-title { color: white; }
+        .gs-highlight .gs-card-body { color: rgba(255,255,255,0.88); }
+        .gs-row {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 12px;
+        }
+        .gs-row > .gs-card {
+          flex: 1;
+          margin-bottom: 0;
+        }
+        .gs-tag {
+          display: inline-block;
+          font-size: 11px;
+          font-weight: 700;
+          padding: 2px 8px;
+          border-radius: 6px;
+          margin-right: 4px;
+          margin-bottom: 4px;
+        }
+        .gs-tag.green { background: #E1F5EE; color: #0F6E56; }
+        .gs-tag.orange { background: #FFF3E0; color: #E65100; }
+        .gs-tag.blue { background: #E3F2FD; color: #1565C0; }
+        .gs-tag.red { background: #FFEBEE; color: #C62828; }
+        .gs-warn {
+          background: #FFF8E1;
+          border: 1px solid #FFE082;
+          border-radius: 10px;
+          padding: 14px 16px;
+          font-size: 13px;
+          color: #795548;
+          line-height: 1.6;
+          margin-bottom: 12px;
+        }
+        .gs-step {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          margin-bottom: 14px;
+        }
+        .gs-step-num {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: #1D9E75;
+          color: white;
+          font-size: 13px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+        .gs-step-body { flex: 1; }
+        .gs-step-title {
+          font-size: 15px;
+          font-weight: 700;
+          color: #1a1a1a;
+          margin-bottom: 3px;
+        }
+        .gs-step-desc {
+          font-size: 13px;
+          color: #666;
+          line-height: 1.6;
+        }
+
+        /* 하단 네비게이션 */
+        .guide-nav {
+          padding: 14px 20px 20px;
+          background: white;
+          border-top: 0.5px solid #e8e8e8;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          flex-shrink: 0;
+        }
+        .guide-dots {
+          display: flex;
+          justify-content: center;
+          gap: 7px;
+        }
+        .guide-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #ddd;
+          transition: all 0.2s;
+          cursor: pointer;
+        }
+        .guide-dot.on {
+          background: #1D9E75;
+          width: 22px;
+          border-radius: 4px;
+        }
+        .guide-btn-row {
+          display: flex;
+          gap: 8px;
+        }
+        .guide-btn {
+          flex: 1;
+          padding: 13px;
+          border-radius: 10px;
+          border: none;
+          font-size: 15px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.15s;
+          font-family: inherit;
+        }
+        .guide-btn.prev {
+          background: #f0f0f0;
+          color: #666;
+          flex: 0.6;
+        }
+        .guide-btn.prev:hover { background: #e0e0e0; }
+        .guide-btn.next {
+          background: #1D9E75;
+          color: white;
+        }
+        .guide-btn.next:hover { background: #1a8a68; }
+        .guide-btn.skip {
+          background: transparent;
+          color: #aaa;
+          font-size: 13px;
+          font-weight: 500;
+          text-align: center;
+          padding: 4px;
+          flex: 1;
+          border: none;
+          cursor: pointer;
+          font-family: inherit;
+        }
+        .guide-btn.skip:hover { color: #666; }
+        .guide-skip-row {
+          display: flex;
+          justify-content: center;
+        }
+      </style>
+
+      <div class="guide-wrap">
+        <!-- 슬라이드 영역 -->
+        <div class="guide-slides">
+
+          <!-- ── SLIDE 1: 환영 / 앱 소개 ── -->
+          <div class="guide-slide on" data-slide="0">
+            <div class="gs-badge">📖 사용 가이드 1 / 5</div>
+            <div class="gs-title">양도세 AI 계산기에<br>오신 것을 환영합니다 👋</div>
+            <div class="gs-sub">부동산을 팔 때 내야 하는 <strong>양도소득세</strong>를<br>빠르고 정확하게 계산해 드립니다.</div>
+
+            <div class="gs-highlight">
+              <div class="gs-card-title">🧮 이 앱으로 할 수 있는 것</div>
+              <div class="gs-card-body">
+                · 양도차익 및 세액 자동 계산<br>
+                · 1세대 1주택 <strong style="color:#90EE90;">비과세 여부</strong> 자동 판단<br>
+                · 장기보유특별공제 자동 적용<br>
+                · 다주택자 <strong style="color:#FFCC80;">중과세율</strong> 반영<br>
+                · 상속·증여 취득 특례 계산
+              </div>
+            </div>
+
+            <div class="gs-card">
+              <div class="gs-card-title">⚠️ 반드시 확인하세요</div>
+              <div class="gs-card-body">
+                이 계산기는 <strong>참고용 추정치</strong>입니다.<br>
+                실제 신고 전 반드시 <strong>세무사와 상담</strong>하시기 바랍니다.
+              </div>
+            </div>
+
+            <div class="gs-card">
+              <div class="gs-card-title">📋 현재 지원 물건</div>
+              <div class="gs-card-body">
+                <span class="gs-tag green">✅ 주택</span> 아파트·단독·다가구 등<br>
+                <span class="gs-tag orange">🔜 분양권</span> <span class="gs-tag orange">🔜 건물</span> <span class="gs-tag orange">🔜 토지</span> 준비 중
+              </div>
+            </div>
+          </div>
+
+          <!-- ── SLIDE 2: 입력 순서 안내 ── -->
+          <div class="guide-slide" data-slide="1">
+            <div class="gs-badge">📖 사용 가이드 2 / 5</div>
+            <div class="gs-title">이렇게 입력하면<br>됩니다 📝</div>
+            <div class="gs-sub">총 3단계 탭을 순서대로 채워주세요.<br>어려운 항목은 자동으로 계산됩니다.</div>
+
+            <div class="gs-step">
+              <div class="gs-step-num">1</div>
+              <div class="gs-step-body">
+                <div class="gs-step-title">기본정보 탭</div>
+                <div class="gs-step-desc">
+                  취득 종류 (매매·상속·증여) 선택 →<br>
+                  취득일·양도일 입력 →<br>
+                  조정대상지역·주택 수 선택
+                </div>
+              </div>
+            </div>
+            <div class="gs-step">
+              <div class="gs-step-num">2</div>
+              <div class="gs-step-body">
+                <div class="gs-step-title">가액·경비 탭</div>
+                <div class="gs-step-desc">
+                  양도가액·취득가액 입력 →<br>
+                  필요경비 (취득세·중개수수료 자동계산) →<br>
+                  환산취득가액 모드도 지원
+                </div>
+              </div>
+            </div>
+            <div class="gs-step">
+              <div class="gs-step-num">3</div>
+              <div class="gs-step-body">
+                <div class="gs-step-title">계산결과 탭</div>
+                <div class="gs-step-desc">
+                  양도차익 → 장특공제 → 과세표준 →<br>
+                  세율 → 납부세액 순으로 표시.<br>
+                  <strong>비과세 해당 시 자동 안내.</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="gs-warn">
+              💡 <strong>입력값은 자동 저장</strong>됩니다. 페이지를 새로고침하거나 홈으로 돌아가도 마지막 입력값이 유지됩니다.
+            </div>
+          </div>
+
+          <!-- ── SLIDE 3: 취득일·양도일 기준 ── -->
+          <div class="guide-slide" data-slide="2">
+            <div class="gs-badge">📖 사용 가이드 3 / 5</div>
+            <div class="gs-title">취득일·양도일은<br>언제를 입력하나요? 📅</div>
+            <div class="gs-sub">세법상 기준이 따로 있습니다.<br>계약일이 아닌 <strong>잔금일</strong>이 원칙입니다.</div>
+
+            <div class="gs-highlight">
+              <div class="gs-card-title">🏦 매매의 경우 (원칙)</div>
+              <div class="gs-card-body">
+                <strong style="color:#90EE90;">잔금(대금)을 청산한 날</strong> = 취득일·양도일<br><br>
+                · 잔금 전에 등기이전 완료 시 → <strong style="color:#FFCC80;">등기접수일</strong><br>
+                · 잔금일 불분명 시 → <strong style="color:#FFCC80;">등기접수일</strong><br>
+                <span style="font-size:12px; opacity:0.85;">근거: 소득세법 §98, 시행령 §162</span>
+              </div>
+            </div>
+
+            <div class="gs-row">
+              <div class="gs-card">
+                <div class="gs-card-title">📜 상속</div>
+                <div class="gs-card-body" style="font-size:13px;">
+                  <strong>상속 개시일</strong><br>
+                  (피상속인 사망일)
+                </div>
+              </div>
+              <div class="gs-card">
+                <div class="gs-card-title">🎁 증여</div>
+                <div class="gs-card-body" style="font-size:13px;">
+                  <strong>증여 등기<br>접수일</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="gs-warn">
+              ⚠️ <strong>계약일 ≠ 취득일</strong><br>
+              계약서에 서명한 날(계약일)은 취득일이 아닙니다. 잔금을 주고받은 날을 기준으로 입력하세요.
+            </div>
+          </div>
+
+          <!-- ── SLIDE 4: 비과세·절세 핵심 ── -->
+          <div class="guide-slide" data-slide="3">
+            <div class="gs-badge">📖 사용 가이드 4 / 5</div>
+            <div class="gs-title">비과세 받으려면<br>어떻게 하나요? 🏠</div>
+            <div class="gs-sub">1세대 1주택 비과세는 요건이 까다롭습니다.<br>핵심만 정리했습니다.</div>
+
+            <div class="gs-card">
+              <div class="gs-card-title">✅ 기본 요건</div>
+              <div class="gs-card-body">
+                <span class="gs-tag green">1세대</span><span class="gs-tag green">1주택</span><span class="gs-tag green">보유 2년↑</span><br><br>
+                · <strong>보유 2년 이상</strong> (양도일 기준)<br>
+                · 취득 시 <strong>조정대상지역</strong>이면 추가로<br>
+                &nbsp;&nbsp;<strong>거주 2년 이상</strong> 필수
+              </div>
+            </div>
+
+            <div class="gs-card">
+              <div class="gs-card-title">💡 12억 초과 고가주택</div>
+              <div class="gs-card-body">
+                양도가액이 <strong>12억 원 초과</strong>이면<br>
+                초과분에 대해서만 세금이 부과됩니다.<br>
+                <span class="gs-tag blue">비과세 + 과세 안분 적용</span>
+              </div>
+            </div>
+
+            <div class="gs-card">
+              <div class="gs-card-title">📊 장기보유특별공제</div>
+              <div class="gs-card-body">
+                보유·거주 기간이 길수록 공제율이 높아집니다.<br>
+                <span class="gs-tag green">보유 연 2%</span> <span class="gs-tag blue">거주 연 2%</span><br>
+                최대 <strong>80%</strong>까지 공제 가능<br>
+                <span style="font-size:12px; color:#999;">(1세대1주택 고가주택 기준)</span>
+              </div>
+            </div>
+
+            <div class="gs-warn">
+              ⚠️ <strong>다주택자 중과</strong><br>
+              2026년 5월 10일 이후 양도 시<br>
+              2주택 +20%p, 3주택 이상 +30%p 중과세율 적용 재개.
+            </div>
+          </div>
+
+          <!-- ── SLIDE 5: 시작하기 ── -->
+          <div class="guide-slide" data-slide="4">
+            <div class="gs-badge">📖 사용 가이드 5 / 5</div>
+            <div class="gs-title">준비됐습니다! 🎉<br>지금 바로 시작하세요</div>
+            <div class="gs-sub">계산에 필요한 것들을 미리 준비하면<br>더 빠르게 진행할 수 있습니다.</div>
+
+            <div class="gs-card">
+              <div class="gs-card-title">📂 미리 준비하면 좋은 것들</div>
+              <div class="gs-card-body">
+                <span class="gs-tag green">필수</span> 매매계약서 (취득·양도 잔금일 확인)<br>
+                <span class="gs-tag green">필수</span> 등기부등본 (등기접수일 확인)<br>
+                <span class="gs-tag blue">권장</span> 취득세 납부 영수증<br>
+                <span class="gs-tag blue">권장</span> 부동산 중개수수료 영수증<br>
+                <span class="gs-tag orange">필요시</span> 기준시가 확인 (국토부 공시지가)
+              </div>
+            </div>
+
+            <div class="gs-card">
+              <div class="gs-card-title">🔗 유용한 링크</div>
+              <div class="gs-card-body">
+                <a href="https://www.nts.go.kr" target="_blank" style="color:#1D9E75; font-weight:600; text-decoration:none;">국세청 홈택스 →</a> 양도세 신고·납부<br>
+                <a href="https://www.realtyprice.kr" target="_blank" style="color:#1D9E75; font-weight:600; text-decoration:none;">부동산 공시가격 알리미 →</a> 기준시가 조회<br>
+                <a href="https://call.nts.go.kr/call/taxInfo/selectTaxInfo.do?mi=2007" target="_blank" style="color:#1D9E75; font-weight:600; text-decoration:none;">국세청 양도세 Q&A →</a> 자주묻는 20개
+              </div>
+            </div>
+
+            <div class="gs-highlight">
+              <div class="gs-card-title">🚀 계산 시작하기</div>
+              <div class="gs-card-body">
+                아래 <strong style="color:#FFCC80;">「계산 시작」</strong> 버튼을 누르면<br>
+                물건 종류 선택 화면으로 이동합니다.
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /guide-slides -->
+
+        <!-- 하단 네비게이션 -->
+        <div class="guide-nav">
+          <div class="guide-dots">
+            <div class="guide-dot on" onclick="goGuide(0)"></div>
+            <div class="guide-dot" onclick="goGuide(1)"></div>
+            <div class="guide-dot" onclick="goGuide(2)"></div>
+            <div class="guide-dot" onclick="goGuide(3)"></div>
+            <div class="guide-dot" onclick="goGuide(4)"></div>
+          </div>
+          <div class="guide-btn-row">
+            <button class="guide-btn prev" id="guidePrevBtn" onclick="stepGuide(-1)">← 이전</button>
+            <button class="guide-btn next" id="guideNextBtn" onclick="stepGuide(1)">다음 →</button>
+          </div>
+          <div class="guide-skip-row">
+            <button class="guide-btn skip" onclick="skipGuide()">건너뛰고 바로 시작 →</button>
+          </div>
+        </div>
+      </div><!-- /guide-wrap -->
+
+      <script>
+        let _guideIdx = 0;
+        const _GUIDE_TOTAL = 5;
+
+        function goGuide(idx, back) {
+          const slides = document.querySelectorAll('.guide-slide');
+          const dots   = document.querySelectorAll('.guide-dot');
+          slides[_guideIdx].classList.remove('on', 'back');
+          _guideIdx = idx;
+          slides[_guideIdx].classList.remove('back');
+          if (back) slides[_guideIdx].classList.add('back');
+          slides[_guideIdx].classList.add('on');
+          dots.forEach((d, i) => d.classList.toggle('on', i === _guideIdx));
+
+          const prevBtn = document.getElementById('guidePrevBtn');
+          const nextBtn = document.getElementById('guideNextBtn');
+
+          // 슬라이드 0에서 ← 이전 = 인트로로
+          if (_guideIdx === 0) {
+            prevBtn.textContent = '← 인트로';
+            prevBtn.onclick = goBackToIntro;
+          } else {
+            prevBtn.textContent = '← 이전';
+            prevBtn.onclick = () => stepGuide(-1);
+          }
+          prevBtn.style.display = '';
+
+          if (_guideIdx === _GUIDE_TOTAL - 1) {
+            nextBtn.textContent = '🚀 계산 시작';
+            nextBtn.style.background = '#E8650A';
+            nextBtn.onclick = skipGuide;
+          } else {
+            nextBtn.textContent = '다음 →';
+            nextBtn.style.background = '#1D9E75';
+            nextBtn.onclick = () => stepGuide(1);
+          }
+        }
+
+        function stepGuide(dir) {
+          const next = _guideIdx + dir;
+          if (next < 0) { goBackToIntro(); return; }
+          if (next >= _GUIDE_TOTAL) return;
+          goGuide(next, dir < 0);
+        }
+
+        function goBackToIntro() {
+          // 가이드 숨기고 인트로 다시 표시
+          var guide = document.getElementById('guidePage');
+          guide.style.display = 'none';
+          guide.classList.remove('on');
+          var intro = document.getElementById('introPage');
+          intro.style.display = 'flex';
+          intro.classList.add('on');
+          // 헤더 다시 숨기기
+          var hdr = document.querySelector('.hdr');
+          var tabs = document.querySelector('.tabs');
+          if (hdr) hdr.style.display = 'none';
+          if (tabs) tabs.style.display = 'none';
+          // 가이드 슬라이드 초기화
+          _guideIdx = 0;
+          document.querySelectorAll('.guide-slide').forEach((s, i) => {
+            s.classList.toggle('on', i === 0);
+          });
+          document.querySelectorAll('.guide-dot').forEach((d, i) => {
+            d.classList.toggle('on', i === 0);
+          });
+        }
+
+        function skipGuide() {
+          document.getElementById('guidePage').style.display = 'none';
+          document.getElementById('guidePage').classList.remove('on');
+          var itemSelect = document.getElementById('itemSelectPage');
+          itemSelect.style.display = 'block';
+          itemSelect.classList.add('on');
+        }
+      </script>
+    </div>
+
     <!-- 초기 물건종류 선택 페이지 -->
-    <div id="itemSelectPage" class="pg on">
+    <div id="itemSelectPage" class="pg">
       <div class="body">
         <div style="margin-bottom: 2rem;">
-          <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 0.5rem;">양도 물건의 종류를 선택해 주세요</h2>
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:0.5rem;">
+            <h2 style="font-size: 18px; font-weight: 600; margin:0;">양도 물건의 종류를 선택해 주세요</h2>
+            <button onclick="goToGuideFromItemSelect()" style="flex-shrink:0; padding:6px 14px; background:#E1F5EE; color:#0F6E56; border:1.5px solid #1D9E75; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap;">📖 사용 가이드</button>
+          </div>
           <p style="font-size: 12px; color: #999;">선택한 물건종류에 따라 계산 방식이 달라집니다</p>
         </div>
         
         <div class="item-select-container">
           <!-- 분양권 -->
-          <div class="item-card disabled" onclick="showComingSoon()">
+          <div class="item-card disabled" onclick="showComingSoonPopup('분양권')">
             <div class="item-card-icon">📝</div>
             <div class="item-card-title">분양권</div>
             <div class="item-card-desc">아파트·주택의 분양권을 양도하는 경우. 취득일은 계약일, 양도일은 소유권 이전일 기준</div>
-            <div class="item-card-coming-soon">Coming Soon !</div>
           </div>
           
           <!-- 주택 -->
@@ -1252,19 +2252,17 @@
           </div>
           
           <!-- 건물 -->
-          <div class="item-card disabled" onclick="showComingSoon()">
+          <div class="item-card disabled" onclick="showComingSoonPopup('건물')">
             <div class="item-card-icon">🏢</div>
             <div class="item-card-title">건물</div>
             <div class="item-card-desc">점포, 사무실, 상가 등 거주 목적 외 건물. 감가상각 반영, 비과세 없음</div>
-            <div class="item-card-coming-soon">Coming Soon !</div>
           </div>
           
           <!-- 토지 -->
-          <div class="item-card disabled" onclick="showComingSoon()">
+          <div class="item-card disabled" onclick="showComingSoonPopup('토지')">
             <div class="item-card-icon">🌍</div>
             <div class="item-card-title">토지</div>
             <div class="item-card-desc">농지, 임야, 상업지구, 주택지 등 토지 양도. 장기보유특별공제 적용 가능 (3년 이상)</div>
-            <div class="item-card-coming-soon">Coming Soon !</div>
           </div>
         </div>
 
@@ -1272,34 +2270,7 @@
         <div class="nts-banner">
           <div class="nts-banner-title">🎯 국세청에 국세상담 하러 가실까요!</div>
           <div class="nts-banner-subtitle">양도소득세 자주묻는 Q&A를 카테고리별로 확인하세요</div>
-          
-          <div class="nts-categories-grid">
-            <div class="nts-category-card" onclick="showComingSoon()">
-              <div class="nts-category-icon">✅</div>
-              <div class="nts-category-title">비과세</div>
-              <div class="nts-category-count">7개</div>
-            </div>
-            
-            <div class="nts-category-card" onclick="showComingSoon()">
-              <div class="nts-category-icon">📅</div>
-              <div class="nts-category-title">보유기간</div>
-              <div class="nts-category-count">5개</div>
-            </div>
-            
-            <div class="nts-category-card" onclick="showComingSoon()">
-              <div class="nts-category-icon">📊</div>
-              <div class="nts-category-title">세율·공제</div>
-              <div class="nts-category-count">6개</div>
-            </div>
-            
-            <div class="nts-category-card" onclick="showComingSoon()">
-              <div class="nts-category-icon">📋</div>
-              <div class="nts-category-title">신고·납부</div>
-              <div class="nts-category-count">2개</div>
-            </div>
-          </div>
-          
-          <button class="btn btn-nts" onclick="showComingSoon()">💡 20개 항목 모두 보기</button>
+
         </div>
       </div>
     </div>
@@ -1321,17 +2292,33 @@
         <div class="pg on">
           <!-- v4.0.1: 용어 정정 (취득 종류) -->
           <div class="sec">
-            <div class="sec-ttl" style="background:#f0f7f4; color:#2E7D32;">1. 취득 종류</div>
+            <div class="sec-ttl">1. 취득 종류</div>
             <div class="chips" id="acqTypeChips"></div>
-            <div id="acqTypeGuide" style="margin-top:8px; font-size:11px; line-height:1.6; color:#666;"></div>
           </div>
+          <div id="acqTypeGuide" style="margin-top:8px; font-size:11px; line-height:1.6; color:#666; text-align:left; padding:10px 14px; border-radius:8px;"></div>
+          <div id="acqTypeExtraPanelAnchor"></div>
 
           <div class="sec" style="margin-top:1.5rem;">2. 물건 및 보유 현황</div>
           <div id="itemDisplay" style="padding: 10px; background: #E1F5EE; border-radius: 8px; margin-bottom: 1rem; font-size: 12px; font-weight: 600; color: #0F6E56;"></div>
           
           <div class="g2">
             <div>
-              <div class="lbl">취득일</div>
+              <div class="lbl" id="acquireDateLbl" style="display:flex;align-items:center;gap:4px;"><span class="lbl-text">취득일</span>
+                <span class="tip-wrap" id="acquireDateTipWrap">
+                  <span class="tip-icon" tabindex="0">?</span>
+                  <span class="tip-box" style="width:280px;">
+                    <strong>📌 매매 취득일 기준 (소득세법 §98, 시행령 §162)</strong><br>
+                    <strong style="color:#90EE90;">원칙 :</strong> 잔금(대금)을 청산한 날<br>
+                    <strong style="color:#FFD700;">예외 ①</strong> 잔금 전에 소유권이전등기를 마친 경우 → <strong>등기접수일</strong><br>
+                    <strong style="color:#FFD700;">예외 ②</strong> 잔금일이 불분명한 경우 → <strong>등기·등록접수일</strong><br>
+                    <strong style="color:#FFD700;">예외 ③</strong> 장기할부 조건 → 등기·인도·사용수익일 중 빠른 날<br>
+                    <br>
+                    <strong style="color:#FFA07A;">실무 포인트:</strong><br>
+                    · 잔금일과 등기접수일이 다를 경우, <strong>더 이른 날</strong>이 취득일이 됩니다.<br>
+                    · 계약서상 잔금일이 등기접수일로부터 1개월을 초과하면 등기접수일 사용.
+                  </span>
+                </span>
+              </div>
               <div class="date-parts" id="acquireDate-wrap">
                 <input type="text" class="date-part" id="acquireDate-y" maxlength="4" placeholder="YYYY" inputmode="numeric">
                 <span class="date-sep">-</span>
@@ -1342,7 +2329,22 @@
               </div>
             </div>
             <div>
-              <div class="lbl">양도일</div>
+              <div class="lbl" style="display:flex;align-items:center;gap:4px;"><span class="lbl-text">양도일</span>
+                <span class="tip-wrap">
+                  <span class="tip-icon" tabindex="0">?</span>
+                  <span class="tip-box" style="width:280px;">
+                    <strong>📌 매매 양도일 기준 (소득세법 §98, 시행령 §162)</strong><br>
+                    <strong style="color:#90EE90;">원칙 :</strong> 잔금(대금)을 청산한 날<br>
+                    <strong style="color:#FFD700;">예외 ①</strong> 잔금 전에 소유권이전등기를 마친 경우 → <strong>등기접수일</strong><br>
+                    <strong style="color:#FFD700;">예외 ②</strong> 잔금일이 불분명한 경우 → <strong>등기·등록접수일</strong><br>
+                    <strong style="color:#FFD700;">예외 ③</strong> 장기할부 조건 → 등기·인도·사용수익일 중 빠른 날<br>
+                    <br>
+                    <strong style="color:#FFA07A;">실무 포인트:</strong><br>
+                    · 계약일(가계약일) ≠ 양도일. 반드시 <strong>잔금일 또는 등기접수일</strong> 중 빠른 날 기준.<br>
+                    · 양도일은 <strong>예정신고 기한</strong>(양도일이 속한 달의 말일부터 2개월)과 세율 판정에도 영향.
+                  </span>
+                </span>
+              </div>
               <div class="date-parts" id="sellDate-wrap">
                 <input type="text" class="date-part" id="sellDate-y" maxlength="4" placeholder="YYYY" inputmode="numeric">
                 <span class="date-sep">-</span>
@@ -1379,7 +2381,7 @@
           <div class="g2" style="margin-bottom:0.75rem;">
             <div>
               <div class="lbl">양도가액 (만원)</div>
-              <input type="number" id="sellPrice" class="inp" placeholder="0" onchange="updateCalc()">
+              <input type="text" inputmode="numeric" id="sellPrice" class="inp" placeholder="0" oninput="updateCalc()">
             </div>
             <div id="priceModeWrap">
               <div class="lbl">취득가액 방식</div>
@@ -1395,11 +2397,11 @@
             <div class="g2">
               <div>
                 <div class="lbl">취득가액 (만원)</div>
-                <input type="number" id="buyPrice" class="inp" placeholder="0" onchange="calcAutoExpense(); updateCalc()">
+                <input type="text" inputmode="numeric" id="buyPrice" class="inp" placeholder="0" oninput="calcAutoExpense(); updateCalc()">
               </div>
               <div>
                 <div class="lbl">필요경비 (만원)</div>
-                <input type="number" id="expense" class="inp" placeholder="0" onchange="updateCalc()">
+                <input type="text" inputmode="numeric" id="expense" class="inp" placeholder="0" oninput="updateCalc()">
               </div>
             </div>
 
@@ -1446,17 +2448,17 @@
             <div class="g2">
               <div>
                 <div class="lbl">취득 당시 기준시가 (만원)</div>
-                <input type="number" id="stdPriceAcq" class="inp" placeholder="0" onchange="updateCalc()">
+                <input type="text" inputmode="numeric" id="stdPriceAcq" class="inp" placeholder="0" oninput="updateCalc()">
               </div>
               <div>
                 <div class="lbl">양도 당시 기준시가 (만원)</div>
-                <input type="number" id="stdPriceSell" class="inp" placeholder="0" onchange="updateCalc()">
+                <input type="text" inputmode="numeric" id="stdPriceSell" class="inp" placeholder="0" oninput="updateCalc()">
               </div>
             </div>
             <div class="g1">
               <div>
                 <div class="lbl">필요경비 (만원)</div>
-                <input type="number" id="expenseConvert" class="inp" placeholder="0" onchange="updateCalc()">
+                <input type="text" inputmode="numeric" id="expenseConvert" class="inp" placeholder="0" oninput="updateCalc()">
               </div>
             </div>
             <div style="margin-top: 1rem; padding: 1rem; background: #FFF3E0; border-radius: 6px; border-left: 3px solid #F57C00; font-size: 12px; color: #555;">
@@ -1499,6 +2501,15 @@
       <div class="hist-close" onclick="closeHistory()">×</div>
     </div>
     <div class="hist-content" id="histContent"></div>
+  </div>
+
+  <!-- Coming Soon 팝업 모달 -->
+  <div id="csPopupOverlay" onclick="closeComingSoonPopup()" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.45); z-index:2000;"></div>
+  <div id="csPopupModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; border-radius:16px; padding:28px 24px; width:300px; z-index:2001; box-shadow:0 8px 32px rgba(0,0,0,0.18); text-align:center;">
+    <div style="font-size:36px; margin-bottom:12px;">🚀</div>
+    <div id="csPopupTitle" style="font-size:16px; font-weight:700; color:#1a1a1a; margin-bottom:8px;"></div>
+    <div style="font-size:13px; color:#666; line-height:1.6; margin-bottom:20px;">현재 개발 중입니다.<br>빠른 시일 내에 제공해 드리겠습니다.</div>
+    <button onclick="closeComingSoonPopup()" style="padding:10px 28px; background:#1D9E75; color:white; border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;">확인</button>
   </div>
 
   <!-- Coming Soon 토스트 -->
@@ -2115,9 +3126,81 @@
 
     const HISTORY = [
       {
-        version: 'v4.0.2',
-        date: '2026년 5월 9일 02시 12분',
+        version: 'v308',
+        date: '2026년 5월 9일 19시 36분',
         current: true,
+        items: [
+          { icon: '🔙', title: '사용 가이드 → 인트로 복귀 버튼 추가', desc: '사용 가이드 1/5 슬라이드의 "← 이전" 버튼이 "← 인트로"로 표시되며, 클릭 시 인트로 화면으로 복귀합니다.' },
+        ]
+      },
+      {
+        version: 'v307',
+        date: '2026년 5월 9일 19시 00분',
+        current: false,
+        items: [
+          { icon: '🚀', title: '인트로 화면 신규 추가', desc: '앱 최초 진입 시 강렬한 다크 인트로 화면이 표시됩니다. "전문 세무사도 꺼려하는 양도소득세, AI가 대신합니다" 헤드라인 및 핵심 차별점 안내 포함.' },
+          { icon: '🔘', title: '인트로 버튼 2개 구성', desc: '"사용 가이드 보기 →" 클릭 시 5페이지 가이드로 이동, "바로 양도세 계산하기 →" 클릭 시 가이드 건너뛰고 물건선택 화면으로 바로 이동.' },
+          { icon: '🔴', title: '인트로 부제 볼드 빨강 처리', desc: '"고액 양도차익의 신고는 숙련된 세무사조차 수임을 부담스러워하는 최고 난이도입니다." 문구를 볼드 빨간색으로 강조.' },
+        ]
+      },
+      {
+        version: 'v306',
+        date: '2026년 5월 9일 18시 39분',
+        current: false,
+        items: [
+          { icon: '📅', title: '매매 취득일·양도일 기준 법규 툴팁', desc: '취득일·양도일 라벨 옆 ? 버튼을 추가했습니다. 마우스를 올리면 소득세법 §98 및 시행령 §162 근거(원칙: 잔금청산일, 예외: 등기접수일 등)가 상세히 표시됩니다. 상속·증여 선택 시에는 ? 버튼이 자동 숨김 처리됩니다.' },
+        ]
+      },
+      {
+        version: 'v303',
+        date: '2026년 5월 9일 17시 00분',
+        current: false,
+        items: [
+          { icon: '📜', title: '상속 취득일 레이블 동적 변경', desc: '상속 선택 시 "취득일" → "상속개시일(취득일)", 증여 선택 시 "증여받은 날(취득일)"로 자동 변경.' },
+          { icon: '🏠', title: '상속 — 공동상속 여부·지분 구분 추가', desc: '공동상속 소수지분자 선택 시 주택 수 제외 특례(소득세법 §89②) 자동 반영. 최대지분자는 주택 수 포함.' },
+          { icon: '🔀', title: '상속 — 양도 주택 구분 추가', desc: '상속주택 직접 양도 / 일반주택 양도(상속주택 보유 중) 선택. 후자 선택 시 1주택+1상속주택 특례(시행령 §155②) 자동 적용.' },
+          { icon: '📍', title: '증여 — 양도 시점 조정지역 항목 추가', desc: '기존 증여 시점 조정지역과 별도로, 다주택 중과 판정용 양도 시점 조정지역 입력 필드 추가.' },
+          { icon: '👨‍👩‍👧', title: '증여 — 동일세대원 증여 여부 추가', desc: '동일세대원으로부터 증여받은 경우 보유·거주기간 통산 가능성 안내 플래그 자동 표시.' },
+          { icon: '⚖️', title: '중과 판정 로직 개선', desc: '증여의 경우 양도 시점 조정지역 기준으로 중과세율 판정, 상속 소수지분 특례 시 houseCount 1로 간주하여 중과 배제.' },
+        ]
+      },
+      {
+        version: 'v302',
+        date: '2026년 5월 9일 16시 20분',
+        current: false,
+        items: [
+          { icon: '🎯', title: 'UI 개선 — 취득종류 칩 간소화', desc: '매매 취득·상속 취득·증여 취득 버튼 텍스트를 매매·상속·증여로 축약, 버튼 가로 크기 66% 축소.' },
+          { icon: '📐', title: '안내 박스 위치 재배치', desc: '상속/증여 선택 시 나타나는 안내 텍스트 박스를 칩 버튼 아래 전체 너비·좌측 정렬로 변경.' },
+          { icon: '📋', title: '상속/증여 추가 입력 패널 위치 개선', desc: '추가 정보 입력 패널이 취득종류 섹션 아래에 배치되도록 DOM 구조 개선.' },
+          { icon: '🎨', title: '섹션 헤더 폰트 색상 개선', desc: '취득 종류, 물건 및 보유 현황 등 모든 섹션 헤더 색상을 연회색(#999)에서 검정(#1a1a1a)으로 변경.' },
+          { icon: '🚀', title: 'Coming Soon 팝업 모달 적용', desc: '분양권·건물·토지 카드 클릭 시 Coming Soon 뱃지 대신 항목명이 표시되는 팝업 모달로 개선.' },
+          { icon: '✂️', title: '취득 종류 녹색 배경 제거', desc: '"1. 취득 종류" 라벨의 녹색 배경 및 색상 스타일 제거.' },
+        ]
+      },
+      {
+        version: 'v301',
+        date: '2026년 5월 9일 16시 01분',
+        current: false,
+        items: [
+          { icon: '📜', title: '상속 취득 정밀 로직 구현', desc: '동일세대 여부에 따른 비과세 판정용 보유·거주기간 통산(피상속인 취득일 기산), 장특공 기산점 분리(상속개시일), 6개월 이내 양도 특례(양도차익 0) 자동 처리.' },
+          { icon: '🎁', title: '증여 이월과세 비교과세 자동 판정', desc: '증여일·자산유형(부동산/주식)·증여 연도 조합으로 이월과세 기간(5년/10년/1년) 자동 판정. 비교과세(이월과세 적용/미적용 max) 로직 적용.' },
+          { icon: '⚖️', title: '이월과세 적용·배제 조건 반영', desc: '이월과세 시 수증자 취득세 필요경비 불산입, 기납부 증여세 산입. 1세대1주택 비과세 충족 시 배제 안내 플래그 추가.' },
+          { icon: '🏷️', title: '증여취득세 중과(12%) 자동 판정', desc: '2020-08-12 이후 조정지역+시가표준액 3억↑+다주택자 증여 시 12% 중과세율 자동 계산 및 표시. 예외 조건 안내 포함.' },
+          { icon: '🔢', title: '숫자 입력 콤마(,) 포맷 적용', desc: '양도가액·취득가액·필요경비 등 금액 입력 필드에 x,xxx 형식 콤마 자동 삽입. 계산 시 콤마는 자동 제거됩니다.' },
+          { icon: '📊', title: '법령 버전 분기 엔진 탑재', desc: '이월과세 5→10년 전환(2022-12-31), 주식 이월과세 추가(2025-01-01), 증여취득세 중과 시작(2020-08-12) 등 날짜 기반 법령 분기 상수 테이블 내장.' },
+        ]
+      },
+      {
+        version: 'v2.9',
+        date: '2026년 5월 8일 23시',
+        current: false,
+        items: [
+          { icon: '💾', title: '이전 버전 (v2.7 기반)', desc: '2주택 세부 유형 구분 및 일시적 2주택 특례 포함 기존 기능.' },
+        ]
+      },
+      {
+        date: '2026년 5월 9일 02시 12분',
+        current: false,
         items: [
           { icon: '📜', title: '운영 원칙(Skill/Rule) 공식화', desc: '타임스탬프 표기, 상태 문서 선행 읽기, 상시 버전 관리 등 전문가용 작업 수칙을 시스템 규칙으로 등록했습니다.' },
         ]
@@ -2787,7 +3870,11 @@
     function selectItem(item) {
       selectedItem = item;
       const config = itemConfig[item];
+      // 물건선택 페이지 숨기기
+      document.getElementById('itemSelectPage').style.display = 'none';
       document.getElementById('itemSelectPage').classList.remove('on');
+      // 계산기 페이지 표시
+      document.getElementById('calculatorPage').style.display = 'block';
       document.getElementById('calculatorPage').classList.add('on');
       document.getElementById('itemDisplay').innerHTML = `✓ ${config.icon} ${config.name} 계산기 (${config.description})`;
       document.getElementById('calcTopItemLabel').innerHTML = `${config.icon} ${config.name}`;
@@ -2806,10 +3893,50 @@
           <div class="sec" style="margin-top: 1.5rem;">3. 조정대상지역 판정 (취득 시점)
             <span class="tip-wrap">
               <span class="tip-icon" tabindex="0">?</span>
-              <span class="tip-box">
-                <strong>기준 시점: 취득(매입) 시점</strong><br>
-                해당 주택을 취득할 당시 조정대상지역 여부로 판단합니다.<br><br>
-                주소와 취득일을 입력하면 <strong>자동 판단</strong>합니다. 판단 불가 지역은 직접 선택하세요.
+              <span class="tip-box" style="width:320px; max-height:80vh; overflow-y:auto;">
+                <strong style="font-size:12px;">📌 조정대상지역 — 기준 및 역대 지정 이력</strong><br><br>
+
+                <strong>⚖️ 판정 기준: 취득(잔금) 시점</strong><br>
+                해당 주택 취득 당시 조정대상지역인지 여부로 판단.<br>
+                취득 후 해제되어도 취득 시 조정지역이면 거주요건 적용.<br><br>
+
+                <strong style="color:#ffcc66;">🏠 거주요건 영향</strong><br>
+                · 취득 시 <strong>조정지역</strong> → 1세대1주택 비과세 시 <strong>2년 거주 필수</strong><br>
+                · 취득 시 <strong>비조정지역</strong> → 거주요건 없음 (보유 2년만으로 충족)<br>
+                · 단, 조정지역 지정 전 계약금 지급 확인되면 무주택자 거주요건 미적용<br><br>
+
+                <strong style="color:#ffcc66;">📅 역대 조정대상지역 지정 주요 이력</strong><br>
+                <span style="color:#aaa; font-size:10px;">※ 소득세법 §89, 부동산거래신고법 §2에 근거</span><br><br>
+
+                <strong style="color:#90EE90;">① 2017-08-03 최초 지정</strong><br>
+                서울 전역(25구) / 경기 과천·성남(분당) / 광명·하남·고양 등<br>
+                부산 해운대 / 세종 전체<br><br>
+
+                <strong style="color:#90EE90;">② 2018-12-31 2차 확대</strong><br>
+                경기 남양주·하남·구리 / 대구 수성구 추가<br><br>
+
+                <strong style="color:#90EE90;">③ 2020-06-19 3차 대폭 확대</strong><br>
+                경기 수원·안양·의왕·군포·화성(동탄2)·의정부·용인·시흥·오산 추가<br>
+                인천 연수·남동·서구 / 대구·광주·대전·울산 전역<br>
+                충북 청주 4개 구 / 전남 여수·순천·광양 / 경북 포항 / 경남 창원<br><br>
+
+                <strong style="color:#90EE90;">④ 2020-11-20 4차 추가</strong><br>
+                경기 김포·파주·평택·안성 / 부산 10개 구<br>
+                충남 천안·논산·공주<br><br>
+
+                <strong style="color:#FFD700;">⑤ 2021-04-01 일부 해제</strong><br>
+                경기 안성 해제<br><br>
+
+                <strong style="color:#FF8C69;">⑥ 2022-11-14 대규모 해제</strong><br>
+                서울 강남·서초·송파·용산 <strong>4개구만 유지</strong><br>
+                나머지 서울 21개구 포함 전국 대부분 해제<br><br>
+
+                <strong style="color:#90EE90;">⑦ 2023-01-05 서울 추가 해제</strong><br>
+                강남·서초·송파·용산 4개구만 최종 유지<br><br>
+
+                <strong style="color:#FF6B6B;">⑧ 2025-10-16 재지정 (현행)</strong><br>
+                서울 전역(25구) 재지정<br>
+                경기 과천·성남·광명·하남·수원(팔달·영통·장안)·안양(동안)·의왕·용인(수지) 재지정
               </span>
             </span>
             <span class="tip-wrap" style="margin-left: 6px;">
@@ -3010,9 +4137,9 @@
       if (acqChips) {
         const cur = window.acqType || 'buy';
         acqChips.innerHTML = `
-          <div class="chip ${cur === 'buy' ? 'on' : ''}" data-value="buy" onclick="setChip(this, 'acqType')">🏠 매매 취득</div>
-          <div class="chip ${cur === 'inherit' ? 'on' : ''}" data-value="inherit" onclick="alert('상속 취득 기능은 정밀 로직 반영을 위해 Comming Soon ! 상태입니다.')" style="opacity:0.6;">📜 상속 취득 (Soon !)</div>
-          <div class="chip ${cur === 'gift' ? 'on' : ''}" data-value="gift" onclick="alert('증여 취득 기능은 정밀 로직 반영을 위해 Comming Soon ! 상태입니다.')" style="opacity:0.6;">🎁 증여 취득 (Soon !)</div>
+          <div class="chip chip-acq ${cur === 'buy' ? 'on' : ''}" data-value="buy" onclick="setChip(this, 'acqType')">🏠 매매</div>
+          <div class="chip chip-acq ${cur === 'inherit' ? 'on' : ''}" data-value="inherit" onclick="setChip(this, 'acqType')">📜 상속</div>
+          <div class="chip chip-acq ${cur === 'gift' ? 'on' : ''}" data-value="gift" onclick="setChip(this, 'acqType')">🎁 증여</div>
         `;
         updateAcqTypeUI(cur);
       }
@@ -3217,50 +4344,310 @@
       saveState();
     }
 
+    // ══════════════════════════════════════════════════════════
+    //  법령 버전 분기 상수 (이월과세 기간·중과 시작일 등)
+    // ══════════════════════════════════════════════════════════
+    const LAW = {
+      GIFT_CARRYOVER_5YR_END:       new Date('2022-12-31'), // 이월과세 5년→10년 전환
+      GIFT_CARRYOVER_STOCK_START:   new Date('2025-01-01'), // 주식 이월과세 추가
+      GIFT_ACQ_TAX_HEAVY_START:     new Date('2020-08-12'), // 증여취득세 중과 시작
+      RESIDENCE_REQ_START:          new Date('2017-08-03'), // 조정지역 2년 거주 요건
+    };
+
     /**
-     * 취득 유형에 따라 가액 입력 섹션 동적 변경
-     * buy   : 실거래가/환산 선택 가능 + 자동계산 박스 표시
-     * inherit: 취득가액 방식 선택 가능, 자동계산 박스 숨김 (상속세 기준가액)
-     * gift  : 취득가액 방식 선택 가능, 자동계산 박스 숨김 (증여재산가액)
+     * 이월과세 적용 여부 및 기간 자동 판정
+     * assetType: 'realty' | 'stock'
+     * giftDate: Date 객체
+     * sellDate: Date 객체
+     * returns: { applicable: boolean, periodYears: number, reason: string }
+     */
+    function checkGiftCarryover(assetType, giftDate, sellDate) {
+      if (!giftDate || !sellDate) return { applicable: false, periodYears: 0, reason: '날짜 미입력' };
+      const diffMs = sellDate - giftDate;
+      const diffYears = diffMs / (1000 * 60 * 60 * 24 * 365.25);
+
+      if (assetType === 'stock') {
+        // 주식: 2025년 1월 1일 이후 증여분, 1년 이내 양도
+        if (giftDate < LAW.GIFT_CARRYOVER_STOCK_START) {
+          return { applicable: false, periodYears: 0, reason: '2025년 이전 증여 주식 — 이월과세 미적용' };
+        }
+        if (diffYears <= 1) {
+          return { applicable: true, periodYears: 1, reason: '주식 증여 후 1년 이내 양도 → 이월과세 적용' };
+        }
+        return { applicable: false, periodYears: 1, reason: `증여 후 ${diffYears.toFixed(1)}년 경과 (1년 초과) → 이월과세 미적용` };
+      } else {
+        // 부동산·권리·회원권
+        let periodYears = 10;
+        let periodLabel = '10년';
+        if (giftDate <= LAW.GIFT_CARRYOVER_5YR_END) {
+          periodYears = 5;
+          periodLabel = '5년';
+        }
+        if (diffYears <= periodYears) {
+          return { applicable: true, periodYears, reason: `증여 후 ${diffYears.toFixed(1)}년 경과 (${periodLabel} 이내) → 이월과세 적용` };
+        }
+        return { applicable: false, periodYears, reason: `증여 후 ${diffYears.toFixed(1)}년 경과 (${periodLabel} 초과) → 이월과세 미적용` };
+      }
+    }
+
+    /**
+     * 증여취득세 세율 산정 (부동산)
+     * isAdjusted: 조정대상지역 여부
+     * stdPrice: 시가표준액 (만원)
+     * donorMultiHome: 증여자 다주택 여부
+     * giftDate: Date
+     * returns: { rate: number (%), label: string }
+     */
+    function getGiftAcqTaxRate(isAdjusted, stdPrice, donorMultiHome, giftDate) {
+      if (!giftDate) return { rate: 3.5, label: '일반 증여취득세 3.5%' };
+      // 2020-08-12 이후: 조정지역 + 시가표준액 3억↑ + 다주택자 → 12%
+      if (giftDate >= LAW.GIFT_ACQ_TAX_HEAVY_START && isAdjusted && stdPrice >= 30000 && donorMultiHome) {
+        return { rate: 12, label: '조정지역 + 3억 이상 + 다주택자 → 중과 12%' };
+      }
+      return { rate: 3.5, label: '일반 증여취득세 3.5%' };
+    }
+
+    /**
+     * 취득 유형에 따라 가액 입력 섹션 동적 변경 + 상속/증여 추가 입력 필드
      */
     function updateAcqTypeUI(acqType) {
       const guideEl = document.getElementById('acqTypeGuide');
       const autoSection = document.getElementById('autoExpenseSection');
       const priceModeWrap = document.getElementById('priceModeWrap');
       const buyPriceLbl = document.querySelector('#actualPriceMode .lbl');
+      // 상속/증여 추가 입력 패널 (없으면 삽입)
+      let extraPanel = document.getElementById('acqTypeExtraPanel');
+
+      // 취득일 레이블 동적 변경
+      const acquireDateLbl = document.getElementById('acquireDateLbl');
 
       if (acqType === 'inherit') {
         if (guideEl) {
+          guideEl.style.display = 'block';
           guideEl.style.background = '#E8F5E9';
           guideEl.style.borderLeft = '3px solid #4CAF50';
           guideEl.style.color = '#2E7D32';
-          guideEl.innerHTML = '📜 <strong>상속 취득</strong> — 취득가액은 <strong>상속 개시일 현재의 시가(또는 기준시가)</strong>를 입력하세요.<br>취득세·중개수수료 자동계산은 적용되지 않습니다.';
+          guideEl.innerHTML = `📜 <strong>상속 취득</strong> — 취득가액은 <strong>상속개시일 현재 시가(또는 기준시가)</strong>를 입력하세요.<br>
+            <span style="font-size:11px; opacity:0.85;">• 1세대 1주택 비과세 판단 시 피상속인 취득일부터 보유·거주기간 통산 가능 (동일세대 요건)<br>
+            • 장기보유특별공제 보유·거주기간은 상속개시일부터 기산 (별도 기준)</span>`;
         }
+        if (acquireDateLbl) { acquireDateLbl.querySelector('.lbl-text') ? acquireDateLbl.querySelector('.lbl-text').textContent = '상속개시일 (취득일)' : (acquireDateLbl.childNodes[0].textContent = '상속개시일 (취득일)'); }
+        const _acqTip1 = document.getElementById('acquireDateTipWrap');
+        if (_acqTip1) _acqTip1.style.display = 'none';
         if (autoSection) autoSection.style.display = 'none';
         if (priceModeWrap) priceModeWrap.style.display = 'block';
         if (buyPriceLbl) buyPriceLbl.innerHTML = '취득가액 — 상속 시가 (만원)';
+        // 상속 추가 입력 패널 삽입/표시
+        _renderInheritExtraPanel(extraPanel);
       } else if (acqType === 'gift') {
         if (guideEl) {
+          guideEl.style.display = 'block';
           guideEl.style.background = '#FCE4EC';
           guideEl.style.borderLeft = '3px solid #E91E63';
           guideEl.style.color = '#880E4F';
-          guideEl.innerHTML = '🎁 <strong>증여 취득</strong> — 취득가액은 <strong>증여재산가액(증여 당시 시가)</strong>을 입력하세요.<br>취득세·중개수수료 자동계산은 적용되지 않습니다.';
+          guideEl.innerHTML = `🎁 <strong>증여 취득</strong> — 취득가액은 <strong>증여재산가액(증여 당시 시가)</strong>을 입력하세요.<br>
+            <span style="font-size:11px; opacity:0.85;">• 이월과세: 증여일부터 10년 이내(2022년 이전 증여는 5년, 주식은 1년) 양도 시 증여자 취득가액 적용<br>
+            • 이월과세 적용 시 납부한 증여세는 필요경비 산입 가능 (한도 내)</span>`;
         }
+        if (acquireDateLbl) { acquireDateLbl.querySelector('.lbl-text') ? acquireDateLbl.querySelector('.lbl-text').textContent = '증여받은 날 (취득일)' : (acquireDateLbl.childNodes[0].textContent = '증여받은 날 (취득일)'); }
+        const _acqTip2 = document.getElementById('acquireDateTipWrap');
+        if (_acqTip2) _acqTip2.style.display = 'none';
         if (autoSection) autoSection.style.display = 'none';
         if (priceModeWrap) priceModeWrap.style.display = 'block';
         if (buyPriceLbl) buyPriceLbl.innerHTML = '취득가액 — 증여재산가액 (만원)';
+        // 증여 추가 입력 패널 삽입/표시
+        _renderGiftExtraPanel(extraPanel);
       } else {
         // buy (기본)
         if (guideEl) {
-          guideEl.style.background = '';
-          guideEl.style.borderLeft = '';
-          guideEl.style.color = '';
+          guideEl.style.display = 'none';
           guideEl.innerHTML = '';
         }
+        if (acquireDateLbl) { acquireDateLbl.querySelector('.lbl-text') ? acquireDateLbl.querySelector('.lbl-text').textContent = '취득일' : (acquireDateLbl.childNodes[0].textContent = '취득일'); }
+        const _acqTip3 = document.getElementById('acquireDateTipWrap');
+        if (_acqTip3) _acqTip3.style.display = '';
         if (autoSection) autoSection.style.display = 'block';
         if (priceModeWrap) priceModeWrap.style.display = 'block';
         if (buyPriceLbl) buyPriceLbl.innerHTML = '취득가액 (만원)';
+        // 추가 입력 패널 숨김
+        if (extraPanel) extraPanel.style.display = 'none';
       }
+    }
+
+    /** 상속 취득 추가 입력 패널 렌더링 */
+    function _renderInheritExtraPanel(existing) {
+      let panel = existing || document.getElementById('acqTypeExtraPanel');
+      const anchor = document.getElementById('acqTypeExtraPanelAnchor');
+      if (!anchor) return;
+
+      if (!panel) {
+        panel = document.createElement('div');
+        panel.id = 'acqTypeExtraPanel';
+        anchor.appendChild(panel);
+      }
+      panel.style.display = 'block';
+      panel.innerHTML = `
+        <div style="margin-top:10px; padding:14px 16px; background:#F1F8E9; border:1px solid #AED581; border-radius:10px;">
+          <div style="font-size:11px; font-weight:700; color:#33691E; margin-bottom:10px; letter-spacing:0.04em; text-transform:uppercase;">📜 상속 취득 — 추가 정보</div>
+          <div class="g2" style="margin-bottom:0;">
+            <div>
+              <div class="lbl">피상속인과 동일 세대 여부</div>
+              <select id="inheritSameHousehold" class="sel" onchange="updateCalc(); saveState()">
+                <option value="no">별도 세대 (보유기간 통산 불가)</option>
+                <option value="yes">동일 세대 (보유기간 통산 가능)</option>
+              </select>
+              <div class="hint-panel">동일 세대 선택 시 비과세 판정용 보유·거주기간을 피상속인 취득일부터 통산합니다.</div>
+            </div>
+            <div>
+              <div class="lbl">피상속인 취득일 (비과세 통산용)</div>
+              <div class="date-parts">
+                <input type="text" id="inheritAcqDate-y" class="date-part" placeholder="YYYY" maxlength="4">
+                <span class="date-sep">-</span>
+                <input type="text" id="inheritAcqDate-m" class="date-part date-part-sm" placeholder="MM" maxlength="2">
+                <span class="date-sep">-</span>
+                <input type="text" id="inheritAcqDate-d" class="date-part date-part-sm" placeholder="DD" maxlength="2">
+                <input type="hidden" id="inheritAcqDate">
+              </div>
+              <div class="hint-panel">동일 세대인 경우 비과세 판정 시 이 날짜부터 보유기간 계산</div>
+            </div>
+            <div>
+              <div class="lbl">피상속인 실거주 기간 (년)</div>
+              <input type="number" id="inheritDecedentResYears" class="inp" placeholder="예: 3" min="0" max="50" onchange="updateCalc(); saveState()">
+              <div class="hint-panel">동일 세대 시 비과세용 거주기간에 합산됩니다.</div>
+            </div>
+            <div>
+              <div class="lbl">상속개시일 6개월 이내 양도?</div>
+              <select id="inheritEarly6Month" class="sel" onchange="updateCalc(); saveState()">
+                <option value="no">아니오 (일반 과세)</option>
+                <option value="yes">예 (6개월 이내 → 양도차익 0 특례)</option>
+              </select>
+              <div class="hint-panel">상속개시일로부터 6개월 이내 양도 시 양도가액=취득가액으로 간주, 양도세 0원입니다.</div>
+            </div>
+            <div>
+              <div class="lbl">공동상속 여부</div>
+              <select id="inheritJoint" class="sel" onchange="updateCalc(); saveState()">
+                <option value="no">단독 상속</option>
+                <option value="yes_major">공동상속 — 최대지분자 (주택 수에 포함)</option>
+                <option value="yes_minor">공동상속 — 소수지분자 (주택 수 제외 특례)</option>
+              </select>
+              <div class="hint-panel">공동상속주택의 소수지분자는 비과세 판정 시 주택 수에서 제외됩니다 (소득세법 §89②).</div>
+            </div>
+            <div>
+              <div class="lbl">양도하는 주택</div>
+              <select id="inheritSellType" class="sel" onchange="updateCalc(); saveState()">
+                <option value="inherit_house">상속받은 주택을 양도</option>
+                <option value="general_house">상속 외 일반주택을 양도 (상속주택은 보유 중)</option>
+              </select>
+              <div class="hint-panel">1주택+1상속주택 보유 시, 일반주택 양도 시 1세대1주택 특례 적용 가능 (소득세법 시행령 §155②).</div>
+            </div>
+          </div>
+          <div style="margin-top:10px; padding:8px 12px; background:#DCEDC8; border-radius:6px; font-size:11px; color:#33691E; line-height:1.6;">
+            ⚠️ <strong>장기보유특별공제 보유·거주기간</strong>은 동일세대 여부와 관계없이 <strong>상속개시일(취득일)부터</strong> 계산됩니다. 비과세 판정 기간과 다르게 적용됩니다.
+          </div>
+        </div>`;
+      // 날짜 입력 이벤트 초기화
+      setTimeout(() => initDateParts('inheritAcqDate'), 50);
+    }
+
+    /** 증여 취득 추가 입력 패널 렌더링 */
+    function _renderGiftExtraPanel(existing) {
+      let panel = existing || document.getElementById('acqTypeExtraPanel');
+      const anchor = document.getElementById('acqTypeExtraPanelAnchor');
+      if (!anchor) return;
+
+      if (!panel) {
+        panel = document.createElement('div');
+        panel.id = 'acqTypeExtraPanel';
+        anchor.appendChild(panel);
+      }
+      panel.style.display = 'block';
+      panel.innerHTML = `
+        <div style="margin-top:10px; padding:14px 16px; background:#FCE4EC; border:1px solid #F48FB1; border-radius:10px;">
+          <div style="font-size:11px; font-weight:700; color:#880E4F; margin-bottom:10px; letter-spacing:0.04em; text-transform:uppercase;">🎁 증여 취득 — 이월과세 판정</div>
+          <div class="g2" style="margin-bottom:0;">
+            <div>
+              <div class="lbl">증여 자산 유형</div>
+              <select id="giftAssetType" class="sel" onchange="updateCalc(); saveState()">
+                <option value="realty">부동산 / 부동산 취득 권리 / 회원권</option>
+                <option value="stock">주식 (2025년 1월 1일 이후 증여분)</option>
+              </select>
+            </div>
+            <div>
+              <div class="lbl">증여일 (이월과세 기간 판정)</div>
+              <div class="date-parts">
+                <input type="text" id="giftDate-y" class="date-part" placeholder="YYYY" maxlength="4">
+                <span class="date-sep">-</span>
+                <input type="text" id="giftDate-m" class="date-part date-part-sm" placeholder="MM" maxlength="2">
+                <span class="date-sep">-</span>
+                <input type="text" id="giftDate-d" class="date-part date-part-sm" placeholder="DD" maxlength="2">
+                <input type="hidden" id="giftDate">
+              </div>
+            </div>
+            <div>
+              <div class="lbl">증여자 취득가액 (이월과세용, 만원)</div>
+              <input type="number" id="giftDonorBuyPrice" class="inp" placeholder="증여자가 당초 취득한 가액" onchange="updateCalc(); saveState()">
+              <div class="hint-panel">이월과세 적용 시 이 금액을 취득가액으로 사용합니다.</div>
+            </div>
+            <div>
+              <div class="lbl">납부한 증여세 (만원)</div>
+              <input type="number" id="giftTaxPaid" class="inp" placeholder="0" onchange="updateCalc(); saveState()">
+              <div class="hint-panel">이월과세 적용 시 필요경비 산입 (한도 내). 수증자 취득세는 제외.</div>
+            </div>
+            <div>
+              <div class="lbl">조정대상지역 여부 (증여 시점)</div>
+              <select id="giftAdjusted" class="sel" onchange="updateCalc(); saveState()">
+                <option value="no">비조정지역</option>
+                <option value="yes">조정대상지역</option>
+              </select>
+            </div>
+            <div>
+              <div class="lbl">시가표준액 (증여세 기준, 만원)</div>
+              <input type="number" id="giftStdPrice" class="inp" placeholder="3억=30000" onchange="updateCalc(); saveState()">
+              <div class="hint-panel">증여취득세 중과(12%) 판정에 사용됩니다.</div>
+            </div>
+            <div>
+              <div class="lbl">증여자 주택 수 (증여 시점)</div>
+              <select id="giftDonorMultiHome" class="sel" onchange="updateCalc(); saveState()">
+                <option value="no">1주택 (일반 취득세 3.5%)</option>
+                <option value="yes">2주택 이상 (중과 검토 대상)</option>
+              </select>
+            </div>
+            <div>
+              <div class="lbl">양도 시점 조정대상지역 여부</div>
+              <select id="giftSellAdjusted" class="sel" onchange="updateCalc(); saveState()">
+                <option value="no">비조정지역</option>
+                <option value="yes">조정대상지역</option>
+              </select>
+              <div class="hint-panel">다주택 양도세 중과(+20~30%p) 판정은 양도 시점 조정지역 기준으로 판단합니다.</div>
+            </div>
+            <div>
+              <div class="lbl">증여자와 동일 세대 여부</div>
+              <select id="giftSameHousehold" class="sel" onchange="updateCalc(); saveState()">
+                <option value="no">별도 세대</option>
+                <option value="yes">동일 세대 (보유·거주기간 통산 가능)</option>
+              </select>
+              <div class="hint-panel">동일세대원으로부터 증여받은 경우 증여자 보유·거주기간을 통산하여 1세대1주택 비과세 판단합니다.</div>
+            </div>
+          </div>
+          <!-- 이월과세 자동 판정 결과 -->
+          <div id="giftCarryoverResult" style="margin-top:12px; padding:10px 14px; border-radius:8px; font-size:12px; display:none;"></div>
+          <!-- 증여취득세 중과 판정 결과 -->
+          <div id="giftAcqTaxResult" style="margin-top:8px; padding:10px 14px; border-radius:8px; font-size:12px; display:none;"></div>
+        </div>`;
+      // 날짜 입력 이벤트 초기화
+      setTimeout(() => {
+        initDateParts('giftDate');
+        // giftDate hidden 변경 시 자동 계산
+        const giftDateHidden = document.getElementById('giftDate');
+        if (giftDateHidden) {
+          const orig = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+          // fallback: input event on giftDate-d
+          ['giftDate-y','giftDate-m','giftDate-d'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('blur', () => { updateCalc(); saveState(); });
+          });
+        }
+      }, 50);
     }
 
     window.onHcMainChange = function() {
@@ -3461,7 +4848,7 @@
      * 필요경비 자동계산
      */
     function calcAutoExpense() {
-      const buyPrice = parseFloat(document.getElementById('buyPrice').value) || 0;
+      const buyPrice = parseCommaNum(document.getElementById('buyPrice').value);
       const acqDate = document.getElementById('acquireDate').value;
       
       if (!buyPrice || !selectedItem) {
@@ -3517,19 +4904,19 @@
       const totalAuto = acqTax + brokerFee;
       
       // UI 업데이트
-      document.getElementById('acqTaxAmount').textContent = acqTax > 0 ? acqTax.toFixed(1) + ' 만원' : '-';
-      document.getElementById('brokerFeeAmount').textContent = brokerFee > 0 ? brokerFee.toFixed(1) + ' 만원' : '-';
-      document.getElementById('autoExpenseTotal').textContent = totalAuto.toFixed(1) + ' 만원';
+      document.getElementById('acqTaxAmount').textContent = acqTax > 0 ? toCommaStr(acqTax.toFixed(1)) + ' 만원' : '-';
+      document.getElementById('brokerFeeAmount').textContent = brokerFee > 0 ? toCommaStr(brokerFee.toFixed(1)) + ' 만원' : '-';
+      document.getElementById('autoExpenseTotal').textContent = toCommaStr(totalAuto.toFixed(1)) + ' 만원';
 
       // ★ 자동계산 소계를 '필요경비(만원)' 입력 필드에 직접 반영
       const expenseEl = document.getElementById('expense');
       if (expenseEl) {
-        expenseEl.value = totalAuto > 0 ? Math.round(totalAuto * 10) / 10 : '';
+        expenseEl.value = totalAuto > 0 ? toCommaStr(Math.round(totalAuto * 10) / 10) : '';
       }
 
       // 현재 필요경비 합계 = expense 필드 값 그대로 표시
-      const currentExpense = parseFloat(expenseEl?.value) || 0;
-      document.getElementById('totalExpenseDisplay').textContent = currentExpense.toFixed(1) + ' 만원';
+      const currentExpense = parseCommaNum(expenseEl?.value);
+      document.getElementById('totalExpenseDisplay').textContent = toCommaStr(currentExpense.toFixed(1)) + ' 만원';
 
       // ── 계산 근거 HTML 생성 ────────────────────────────────────
       const fmt = v => v.toLocaleString();
@@ -3643,18 +5030,119 @@
       window.residence = res;
       
       const acqType = window.acqType || 'buy';
-      const sp = parseFloat(document.getElementById('sellPrice').value) || 0;
+      const sp = parseCommaNum(document.getElementById('sellPrice').value);
       const pm = document.getElementById('priceMode').value;
       
       let bp, ex;
       if (pm === 'actual') {
-        bp = parseFloat(document.getElementById('buyPrice').value) || 0;
-        ex = parseFloat(document.getElementById('expense').value) || 0;
+        bp = parseCommaNum(document.getElementById('buyPrice').value);
+        ex = parseCommaNum(document.getElementById('expense').value);
       } else {
-        const ga = parseFloat(document.getElementById('stdPriceAcq').value) || 0;
-        const gs = parseFloat(document.getElementById('stdPriceSell').value) || 0;
+        const ga = parseCommaNum(document.getElementById('stdPriceAcq').value);
+        const gs = parseCommaNum(document.getElementById('stdPriceSell').value);
         bp = gs > 0 ? Math.round(sp * (ga / gs)) : 0;
-        ex = parseFloat(document.getElementById('expenseConvert').value) || 0;
+        ex = parseCommaNum(document.getElementById('expenseConvert').value);
+      }
+
+      // ══════════════════════════════════════════════════════
+      //  상속 취득 특례 처리
+      // ══════════════════════════════════════════════════════
+      let inheritInfo = null;
+      if (acqType === 'inherit') {
+        const early6Month = document.getElementById('inheritEarly6Month')?.value;
+        const sameHousehold = document.getElementById('inheritSameHousehold')?.value;
+        const inheritAcqDateStr = document.getElementById('inheritAcqDate')?.value;
+        const decedentResYears = parseFloat(document.getElementById('inheritDecedentResYears')?.value) || 0;
+        const inheritJoint = document.getElementById('inheritJoint')?.value || 'no';
+        const inheritSellType = document.getElementById('inheritSellType')?.value || 'inherit_house';
+        inheritInfo = { early6Month, sameHousehold, inheritAcqDateStr, decedentResYears, inheritJoint, inheritSellType };
+
+        // 6개월 이내 양도 → 양도차익 0 특례
+        if (early6Month === 'yes') {
+          bp = sp; // 양도가액 = 취득가액 → 양도차익 0
+        }
+      }
+
+      // ══════════════════════════════════════════════════════
+      //  증여 취득 이월과세 처리
+      // ══════════════════════════════════════════════════════
+      let giftCarryoverInfo = null;
+      if (acqType === 'gift') {
+        const giftDateStr = document.getElementById('giftDate')?.value;
+        const giftAssetType = document.getElementById('giftAssetType')?.value || 'realty';
+        const donorBuyPrice = parseFloat(document.getElementById('giftDonorBuyPrice')?.value) || 0;
+        const giftTaxPaid = parseFloat(document.getElementById('giftTaxPaid')?.value) || 0;
+        const giftAdjusted = document.getElementById('giftAdjusted')?.value === 'yes';
+        const stdPrice = parseFloat(document.getElementById('giftStdPrice')?.value) || 0;
+        const donorMultiHome = document.getElementById('giftDonorMultiHome')?.value === 'yes';
+        const giftSellAdjusted = document.getElementById('giftSellAdjusted')?.value === 'yes';
+        const giftSameHousehold = document.getElementById('giftSameHousehold')?.value || 'no';
+
+        const giftDate = giftDateStr ? new Date(giftDateStr) : null;
+        const carryover = checkGiftCarryover(giftAssetType, giftDate, sd);
+
+        // 이월과세 적용 여부에 따른 비교과세
+        let bpNoCarryover = bp;   // 수증자 취득가액
+        let exNoCarryover = ex;
+        let bpWithCarryover = donorBuyPrice; // 증여자 취득가액 (이월과세 시)
+        // 이월과세 필요경비: 기납부 증여세 산입 (수증자 취득세는 제외)
+        let exWithCarryover = ex + Math.max(0, giftTaxPaid);
+
+        giftCarryoverInfo = {
+          carryover, giftDate, giftAssetType, donorBuyPrice, giftTaxPaid,
+          bpNoCarryover, exNoCarryover, bpWithCarryover, exWithCarryover,
+          giftAdjusted, stdPrice, donorMultiHome, giftSellAdjusted, giftSameHousehold
+        };
+
+        // 증여취득세 중과 판정 표시
+        if (giftDate && stdPrice > 0) {
+          const acqTaxResult = getGiftAcqTaxRate(giftAdjusted, stdPrice, donorMultiHome, giftDate);
+          const taxEl = document.getElementById('giftAcqTaxResult');
+          if (taxEl) {
+            taxEl.style.display = 'block';
+            taxEl.style.background = acqTaxResult.rate >= 12 ? '#FCE4EC' : '#E8F5E9';
+            taxEl.style.border = acqTaxResult.rate >= 12 ? '1px solid #F48FB1' : '1px solid #A5D6A7';
+            taxEl.style.color = acqTaxResult.rate >= 12 ? '#880E4F' : '#1B5E20';
+            const acqTaxAmt = Math.round(stdPrice * acqTaxResult.rate / 100 * 10) / 10;
+            taxEl.innerHTML = `🏷️ <strong>증여취득세</strong>: ${acqTaxResult.label}<br>
+              시가표준액 ${stdPrice.toLocaleString()}만 × ${acqTaxResult.rate}% = <strong>${acqTaxAmt.toLocaleString()}만원</strong>
+              ${acqTaxResult.rate >= 12 ? '<br>⚠️ 1세대1주택자의 배우자·직계존비속 증여 시 예외적으로 일반세율 3.5% 적용 가능' : ''}`;
+          }
+        }
+
+        // 이월과세 판정 여부에 따라 bp/ex 결정 (비교과세: 높은 세액 선택)
+        if (carryover.applicable && donorBuyPrice > 0) {
+          // 비교과세: 이월과세 적용 시와 미적용 시를 모두 계산 후 max
+          // 여기서는 이월과세 적용 취득가액을 사용하되, 아래 계산 후 플래그 처리
+          bp = bpWithCarryover;
+          ex = exWithCarryover;
+        }
+
+        // 이월과세 판정 결과 UI 표시
+        const resultEl = document.getElementById('giftCarryoverResult');
+        if (resultEl && giftDate) {
+          resultEl.style.display = 'block';
+          if (carryover.applicable && donorBuyPrice > 0) {
+            resultEl.style.background = '#FFF3E0';
+            resultEl.style.border = '1px solid #FFB74D';
+            resultEl.style.color = '#E65100';
+            resultEl.innerHTML = `⚡ <strong>이월과세 적용</strong>: ${carryover.reason}<br>
+              취득가액: ${donorBuyPrice.toLocaleString()}만원 (증여자 원가) + 기납부 증여세 ${giftTaxPaid.toLocaleString()}만원<br>
+              <span style="font-size:11px; color:#BF360C;">※ 수증자의 증여취득세는 이월과세 적용 시 필요경비 불산입</span>`;
+          } else if (carryover.applicable && donorBuyPrice === 0) {
+            resultEl.style.background = '#FFF3E0';
+            resultEl.style.border = '1px solid #FFB74D';
+            resultEl.style.color = '#E65100';
+            resultEl.innerHTML = `⚡ <strong>이월과세 요건 충족</strong>: ${carryover.reason}<br>
+              <strong>증여자 취득가액</strong>을 입력하면 이월과세 적용 세액을 자동 계산합니다.`;
+          } else {
+            resultEl.style.background = '#E8F5E9';
+            resultEl.style.border = '1px solid #A5D6A7';
+            resultEl.style.color = '#1B5E20';
+            resultEl.innerHTML = `✅ <strong>이월과세 미적용</strong>: ${carryover.reason}<br>
+              수증자의 증여재산가액을 취득가액으로 사용합니다.`;
+          }
+        }
       }
 
       const gain = sp - bp - ex;
@@ -3665,13 +5153,58 @@
       const adj = window.adjusted || 'no';
       const isRegulated = (adj === 'yes' || adj === 'speculat' || adj === 'overheated');
       
-      const holdOk = holdY >= 2;
-      const resOk = (resY >= 2) || !isRegulated;
+      // ── 상속 동일세대 보유·거주기간 통산 (비과세 판정용) ────────────
+      let effectiveHoldY = holdY; // 비과세 판정용 보유기간
+      let effectiveResY = resY;   // 비과세 판정용 거주기간
+      let inheritCarryoverNote = '';
+      if (acqType === 'inherit' && inheritInfo) {
+        const { sameHousehold, inheritAcqDateStr, decedentResYears, early6Month, inheritJoint, inheritSellType } = inheritInfo;
+        if (sameHousehold === 'yes' && inheritAcqDateStr) {
+          const inheritAcqDate = new Date(inheritAcqDateStr);
+          if (!isNaN(inheritAcqDate.getTime())) {
+            // 비과세 판정용: 피상속인 취득일부터 통산
+            effectiveHoldY = (sd - inheritAcqDate) / (1000 * 60 * 60 * 24 * 365.25);
+            effectiveResY = resY + decedentResYears; // 수증자 거주기간 + 피상속인 거주기간 합산
+            inheritCarryoverNote = `동일세대 보유기간 통산: 피상속인 취득일(${inheritAcqDateStr})부터 ${effectiveHoldY.toFixed(1)}년 / 거주 ${effectiveResY.toFixed(1)}년`;
+          }
+        }
+        // 소수지분 공동상속 → 주택 수 제외 특례: houseCount를 1로 처리
+        if (inheritJoint === 'yes_minor') {
+          window._inheritMinorShare = true;
+        } else {
+          window._inheritMinorShare = false;
+        }
+        // 일반주택 양도 + 상속주택 보유 중 → 상속주택 특례로 1주택 비과세 판정
+        window._inheritSellGeneralHouse = (inheritSellType === 'general_house');
+      } else {
+        window._inheritMinorShare = false;
+        window._inheritSellGeneralHouse = false;
+      }
+      // ※ 장특공제 보유·거주기간은 holdY(상속개시일/취득일 기준) 그대로 사용
+
+      const holdOk = effectiveHoldY >= 2;
+      const resOk = (effectiveResY >= 2) || !isRegulated;
 
       if (config.hasHouseCount) {
-        if (hc === '1') {
+        // 상속 소수지분 공동상속 → 주택 수 제외 특례 (houseCount를 1로 간주)
+        const effectiveHc = (acqType === 'inherit' && window._inheritMinorShare) ? '1' : hc;
+        // 상속: 일반주택 양도 + 상속주택 보유 → 1주택+1상속주택 특례 (비과세 가능)
+        const isInheritGeneralHouseSale = (acqType === 'inherit' && window._inheritSellGeneralHouse);
+
+        // 증여 동일세대 → 증여자 보유·거주기간 통산 (이미 bp/ex는 위에서 처리)
+        // 증여 동일세대 시 effectiveHoldY, effectiveResY 추가 반영
+        if (acqType === 'gift' && giftCarryoverInfo && giftCarryoverInfo.giftSameHousehold === 'yes') {
+          // 이월과세 비적용이고 동일세대이면 증여일→양도일 기간도 보유기간으로 추가 산정 가능하나
+          // 실무상 수증자의 취득일(=증여일)부터 계산하므로 기존 holdY 유지
+          // 단, 동일세대원 증여 시 증여자 거주기간 통산 가능성 플래그만 설정
+          window._giftSameHouseholdFlag = true;
+        } else {
+          window._giftSameHouseholdFlag = false;
+        }
+
+        if (effectiveHc === '1' || isInheritGeneralHouseSale) {
           nonTaxFull = holdOk && resOk && sp <= 120000;
-        } else if (hc.startsWith('2temp')) {
+        } else if (effectiveHc.startsWith('2temp')) {
           // 일시적 2주택 특례 정밀 판정
           let limitY = 3;
           let isDateNeeded = true;
@@ -3706,8 +5239,10 @@
 
       // ── 장기보유특별공제 계산 (정밀화) ──────────────────────────────
       let ltdcR = 0;
+      // effectiveHc: 상속 소수지분 특례 적용된 실효 주택구분
+      const _eHc = (acqType === 'inherit' && window._inheritMinorShare) ? '1' : hc;
       // 표2(80%): 1세대 1주택(비과세/고가), 일시적 2주택, 거주주택 특례
-      const isTable2 = config.hasHouseCount && (hc === '1' || hc.startsWith('2temp') || hc === '2rent_met') && holdOk;
+      const isTable2 = config.hasHouseCount && (_eHc === '1' || _eHc.startsWith('2temp') || _eHc === '2rent_met' || (acqType === 'inherit' && window._inheritSellGeneralHouse)) && holdOk;
       
       if (holdY < 3) {
         ltdcR = 0;
@@ -3731,10 +5266,14 @@
       const SURCHARGE_RESUME = new Date('2026-05-10');
       const isSurchargeActive = sd >= SURCHARGE_RESUME;
       const adjPre = window.adjusted || 'no';
+      // 증여의 경우 양도 시점 조정지역을 중과 판정 기준으로 사용
+      const isRegulatedForSurcharge = (acqType === 'gift' && giftCarryoverInfo)
+        ? giftCarryoverInfo.giftSellAdjusted
+        : isRegulated;
       let isSurchargeCase = false;
       if (isSurchargeActive && config.hasHouseCount && !nonTaxFull) {
-        if ((window.houseCount === '2gen' || window.houseCount === '2rent_notmet') && isRegulated) isSurchargeCase = true;
-        if (window.houseCount === '3') isSurchargeCase = true;
+        if ((_eHc === '2gen' || _eHc === '2rent_notmet') && isRegulatedForSurcharge) isSurchargeCase = true;
+        if (_eHc === '3') isSurchargeCase = true;
       }
 
       // 중과 대상이면 장기보유특별공제 배제 (소득세법 제104조)
@@ -3771,8 +5310,8 @@
         else { rate_p = 0.45; ded_p = 6594; }
         
         if (isSurchargeActive) {
-          if (config.hasHouseCount && (window.houseCount === '2gen' || window.houseCount === '2rent_notmet') && isRegulated) sur_p = 0.20;
-          if (config.hasHouseCount && window.houseCount === '3') sur_p = 0.30;
+          if (config.hasHouseCount && (_eHc === '2gen' || _eHc === '2rent_notmet') && isRegulatedForSurcharge) sur_p = 0.20;
+          if (config.hasHouseCount && _eHc === '3') sur_p = 0.30;
         }
       }
 
@@ -3807,7 +5346,7 @@
         <div style="margin-top: 1.5rem; background: #fff; border: 1.5px solid #e0e0e0; border-radius: 12px; overflow: hidden;">
           <div style="padding: 12px 16px; background: #f8f9fa; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 13px; font-weight: 700; color: #333;">🔍 비과세 요건 정밀 진단 (Audit Report)</span>
-            <span style="font-size: 11px; color: #1D9E75; font-weight: 600;">PRO v4.0.2</span>
+            <span style="font-size: 11px; color: #1D9E75; font-weight: 600;">PRO v3.0</span>
           </div>
           <div style="padding: 16px;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
@@ -4052,6 +5591,30 @@
 
       const flags = [];
       if (acqType !== 'buy') flags.push('상속·증여 취득 — 취득가액 산정 방식 세무사 별도 검토 필수');
+
+      // 상속 특례 플래그
+      if (acqType === 'inherit' && inheritInfo) {
+        const { early6Month, sameHousehold, inheritJoint, inheritSellType } = inheritInfo;
+        if (early6Month === 'yes') flags.push('🟢 상속개시일 6개월 이내 양도 특례 적용 — 양도차익 0원, 양도소득세 없음');
+        if (sameHousehold === 'yes' && inheritCarryoverNote) flags.push(`📜 ${inheritCarryoverNote}`);
+        if (inheritJoint === 'yes_minor') flags.push('📜 공동상속 소수지분자 특례 — 해당 상속주택은 주택 수 산정에서 제외됩니다 (소득세법 §89②). 최대지분자 여부 정확히 확인하세요.');
+        if (inheritJoint === 'yes_major') flags.push('⚠️ 공동상속 최대지분자 — 해당 상속주택은 주택 수에 포함됩니다.');
+        if (inheritSellType === 'general_house') flags.push('📋 1주택+1상속주택 보유 중 일반주택 양도 → 1세대1주택 특례 적용 가능 (소득세법 시행령 §155②). 세무사 확인 권장.');
+        flags.push('⚠️ 장기보유특별공제 보유·거주기간은 상속개시일(취득일)부터 계산 — 피상속인 기간 불포함');
+      }
+
+      // 증여 이월과세 플래그
+      if (acqType === 'gift' && giftCarryoverInfo) {
+        const { carryover, giftSameHousehold, giftSellAdjusted } = giftCarryoverInfo;
+        if (giftSameHousehold === 'yes') flags.push('📋 동일세대원 증여 — 증여자·수증자의 보유·거주기간 통산 가능 여부 세무사 확인 (소득세법 시행령 §154①). 실무상 개별 판단 필요.');
+        if (giftSellAdjusted) flags.push('📍 양도 시점 조정대상지역 — 다주택 중과(+20~30%p) 판정 기준에 반영됨.');
+        if (carryover.applicable) {
+          // 이월과세 + 1세대1주택 비과세 충족 시 배제 안내
+          if (nonTaxFull) flags.push('⚠️ 이월과세 + 1세대1주택 비과세 충족 → 이월과세 배제 (소득세법 제101조 제5항) — 수증자 취득가액 적용');
+          else flags.push('⚡ 이월과세 적용 — 증여자 취득가액 기준 계산, 수증자 취득세는 필요경비 불산입');
+          flags.push('📋 비교과세: 이월과세 세액과 미적용 세액 중 높은 금액이 결정세액 — 세무사 검토 필수');
+        }
+      }
       if (pm === 'convert') flags.push('환산취득가액 적용 — 국세청 홈택스 기준시가 정확한 조회 필수');
       if (config.hasHouseCount && hc.startsWith('2temp')) flags.push('일시적 2주택 특례 — 선택하신 상세 사유(이사/혼인/상속 등)의 법적 양도기한 준수 여부 재확인 필수');
       if (config.hasHouseCount && hc === '2rent_met') flags.push('장기임대주택 특례 — 임대사업자 등록 유지 및 임대료 5% 증액 제한 준수 여부 확인 필요');
@@ -4064,7 +5627,7 @@
         flags.push('중과세 적용 → 장기보유특별공제 전액 배제 (소득세법 제104조)');
       }
       // 2026-05-10 이전 양도 시 유예 중임을 안내
-      if (!isSurchargeActive && config.hasHouseCount && (window.houseCount === '2gen' || window.houseCount === '3')) {
+      if (!isSurchargeActive && config.hasHouseCount && (_eHc === '2gen' || _eHc === '3')) {
         flags.push('다주택자 중과 한시 유예 기간 (~ 2026-05-09) — 2026-05-10 이후 양도 시 중과세율 +20~30%p 재적용됨에 유의');
       }
       if (holdY >= 3 && config.hasResidence) flags.push('장기보유특별공제 — 보유/거주 기간 분리 적용 재확인');
@@ -4193,6 +5756,7 @@
       });
 
       // ② 숫자/텍스트 인풋
+      const commaFields = ['sellPrice','buyPrice','expense','expenseConvert','stdPriceAcq','stdPriceSell'];
       const fieldMap = {
         sellPrice:       'sellPrice',
         buyPrice:        'buyPrice',
@@ -4204,7 +5768,16 @@
       };
       Object.entries(fieldMap).forEach(([key, id]) => {
         const el = document.getElementById(id);
-        if (el && s[key]) el.value = s[key];
+        if (el && s[key]) {
+          if (commaFields.includes(id)) {
+            // 콤마 포맷 적용하여 복원
+            const raw = String(s[key]).replace(/,/g, '');
+            const n = parseInt(raw, 10);
+            el.value = isNaN(n) ? s[key] : n.toLocaleString('ko-KR');
+          } else {
+            el.value = s[key];
+          }
+        }
       });
 
       // ③ 취득가액 방식 셀렉트
@@ -4310,25 +5883,13 @@
         return;
       }
       try {
+        // 가이드는 항상 표시 — guidePage.on 상태 그대로 유지
+        // 저장된 계산 상태는 메모리에만 파싱해 두고, skipGuide() 시 복원
         const raw = localStorage.getItem(STATE_KEY);
         if (!raw) return;
         const s = JSON.parse(raw);
         if (!s.selectedItem || !itemConfig[s.selectedItem]) return;
-
-        // 물건종류 선택 복원
-        selectedItem = s.selectedItem;
-        document.getElementById('itemSelectPage').classList.remove('on');
-        document.getElementById('calculatorPage').classList.add('on');
-        const config = itemConfig[selectedItem];
-        document.getElementById('itemDisplay').innerHTML =
-          `✓ ${config.icon} ${config.name} 계산기 (${config.description})`;
-        document.getElementById('calcTopItemLabel').innerHTML = `${config.icon} ${config.name}`;
-        initializeForm();
-
-        // initializeForm 이 DOM을 동적으로 생성하므로 두 단계로 나눠 기다림
-        setTimeout(() => {
-          restoreInputs(s);
-        }, 80); // 80ms — 동적 DOM 생성 완료 후 복원
+        window._pendingState = s; // 가이드 종료 후 복원용
 
       } catch(e) {
         console.warn('loadState 실패:', e);
@@ -4340,6 +5901,17 @@
     }
 
     // 홈으로 — 상태 유지, 화면만 전환
+    function showComingSoonPopup(itemName) {
+      document.getElementById('csPopupTitle').textContent = itemName + ' — Coming Soon !';
+      document.getElementById('csPopupOverlay').style.display = 'block';
+      document.getElementById('csPopupModal').style.display = 'block';
+    }
+
+    function closeComingSoonPopup() {
+      document.getElementById('csPopupOverlay').style.display = 'none';
+      document.getElementById('csPopupModal').style.display = 'none';
+    }
+
     function showComingSoon() {
       const toast = document.getElementById('comingSoonToast');
       if (!toast) return;
@@ -4354,8 +5926,23 @@
 
     function goHome() {
       saveState();
-      document.getElementById('calculatorPage').classList.remove('on');
-      document.getElementById('itemSelectPage').classList.add('on');
+      
+      // itemSelectPage 표시
+      const itemSelectPage = document.getElementById('itemSelectPage');
+      if (itemSelectPage) {
+        itemSelectPage.style.display = 'block';
+        itemSelectPage.classList.add('on');
+      }
+      
+      // calculatorPage 숨기기
+      const calcPage = document.getElementById('calculatorPage');
+      if (calcPage) {
+        calcPage.style.display = 'none';
+        calcPage.classList.remove('on');
+      }
+      
+      // 페이지 최상단으로 스크롤
+      window.scrollTo(0, 0);
     }
 
     function resetCalculator() {
@@ -4428,11 +6015,160 @@
       handlePart(d, null, 2, false);
     }
 
-    // 페이지 로드 시 이전 상태 복원
+    // ══════════════════════════════════════════════════════════
+    //  숫자 입력 콤마 포맷 유틸리티
+    //  · 3자리마다 콤마: 1,000 / 10,000 / 100,000,000
+    //  · 커서 위치 보존
+    //  · type="text" + inputmode="numeric" 필드 전용
+    // ══════════════════════════════════════════════════════════
+
+    /** 문자열에서 숫자만 추출 */
+    function parseCommaNum(str) {
+      if (str === null || str === undefined || str === '') return 0;
+      return parseFloat(String(str).replace(/,/g, '')) || 0;
+    }
+
+    /** 숫자 → 콤마 포맷 문자열 (정수/소수 공용) */
+    function toCommaStr(val) {
+      if (val === '' || val === null || val === undefined) return '';
+      const str = String(val).replace(/,/g, '');
+      const n = parseFloat(str);
+      if (isNaN(n)) return '';
+      const parts = str.split('.');
+      const intPart = parseInt(parts[0], 10).toLocaleString('ko-KR');
+      return parts.length > 1 && parts[1] !== '' ? intPart + '.' + parts[1] : intPart;
+    }
+
+    /** 단일 필드에 콤마 포맷 이벤트 바인딩 */
+    function initCommaField(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      el.addEventListener('input', function() {
+        const selStart = this.selectionStart;
+        const selEnd   = this.selectionEnd;
+        const before   = this.value; // 콤마 포함 이전 값
+
+        // 순수 숫자만 추출
+        const raw = before.replace(/[^0-9]/g, '');
+        if (raw === '') { this.value = ''; return; }
+
+        // 콤마 삽입
+        const formatted = parseInt(raw, 10).toLocaleString('ko-KR');
+        this.value = formatted;
+
+        // 커서 위치 보정:
+        // 콤마가 추가/삭제된 만큼 offset 조정
+        const addedCommas = (formatted.match(/,/g) || []).length;
+        const prevCommas  = (before.slice(0, selStart).match(/,/g) || []).length;
+        const rawCursorPos = selStart - prevCommas; // 순수 숫자 기준 커서
+        // 새 formatted 문자열에서 순수 숫자 rawCursorPos번째 위치 찾기
+        let numCount = 0;
+        let newCursor = formatted.length;
+        for (let i = 0; i < formatted.length; i++) {
+          if (formatted[i] !== ',') numCount++;
+          if (numCount === rawCursorPos) { newCursor = i + 1; break; }
+        }
+        this.setSelectionRange(newCursor, newCursor);
+      });
+
+      el.addEventListener('blur', function() {
+        const raw = this.value.replace(/[^0-9]/g, '');
+        if (!raw) { this.value = ''; return; }
+        this.value = parseInt(raw, 10).toLocaleString('ko-KR');
+      });
+    }
+
+    /** 모든 금액 입력 필드에 콤마 포맷 적용 */
+    function initAllCommaFields() {
+      [
+        'sellPrice', 'buyPrice', 'expense', 'expenseConvert',
+        'stdPriceAcq', 'stdPriceSell',
+        'giftDonorBuyPrice', 'giftTaxPaid', 'giftStdPrice'
+      ].forEach(initCommaField);
+    }
+
+    const FONT_VIEW_KEY = 'yangdo_font_view_mode';
+    let _fontViewObserver = null;
+    let _fontViewApplying = false;
+
+    function isFontViewExcluded(el) {
+      return !el || el.closest('#fontViewToggle, .intro-headline');
+    }
+
+    function updateFontViewButtons(big) {
+      const bigBtn = document.getElementById('fontViewBigBtn');
+      const baseBtn = document.getElementById('fontViewBaseBtn');
+      if (bigBtn) bigBtn.classList.toggle('on', big);
+      if (baseBtn) baseBtn.classList.toggle('on', !big);
+    }
+
+    function applyFontViewMode(big) {
+      if (!document.body || _fontViewApplying) return;
+      _fontViewApplying = true;
+
+      const nodes = Array.from(document.body.querySelectorAll('*')).filter(el => {
+        if (!(el instanceof HTMLElement)) return false;
+        if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return false;
+        return !isFontViewExcluded(el);
+      });
+
+      if (big) {
+        nodes.forEach(el => {
+          if (!el.dataset.fontViewBaseSize) {
+            el.dataset.fontViewBaseSize = window.getComputedStyle(el).fontSize;
+            el.dataset.fontViewInlineSize = el.style.fontSize || '__empty__';
+          }
+        });
+        nodes.forEach(el => {
+          const px = parseFloat(el.dataset.fontViewBaseSize || '0');
+          if (px > 0) el.style.fontSize = (px * 2) + 'px';
+        });
+        document.body.classList.add('font-big-mode');
+        localStorage.setItem(FONT_VIEW_KEY, 'big');
+      } else {
+        document.body.querySelectorAll('[data-font-view-base-size]').forEach(el => {
+          const inlineSize = el.dataset.fontViewInlineSize;
+          el.style.fontSize = (!inlineSize || inlineSize === '__empty__') ? '' : inlineSize;
+          delete el.dataset.fontViewBaseSize;
+          delete el.dataset.fontViewInlineSize;
+        });
+        document.body.classList.remove('font-big-mode');
+        localStorage.setItem(FONT_VIEW_KEY, 'base');
+      }
+
+      updateFontViewButtons(big);
+      _fontViewApplying = false;
+    }
+
+    function setFontViewMode(big) {
+      applyFontViewMode(!!big);
+    }
+
+    function initFontViewMode() {
+      const big = localStorage.getItem(FONT_VIEW_KEY) === 'big';
+      applyFontViewMode(big);
+      if (_fontViewObserver) return;
+      _fontViewObserver = new MutationObserver(() => {
+        if (!document.body.classList.contains('font-big-mode')) return;
+        requestAnimationFrame(() => applyFontViewMode(true));
+      });
+      _fontViewObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       initDateParts('acquireDate');
       initDateParts('sellDate');
+      initAllCommaFields();
       loadState();
+      initFontViewMode();
+      
+      // 홈 버튼 이벤트 리스너 추가 (더블 보험)
+      const homeBtn = document.querySelector('.btn-home');
+      if (homeBtn) {
+        homeBtn.addEventListener('click', goHome);
+      }
+      
       // 입력값 변경 시 자동 저장 (이벤트 위임)
       document.addEventListener('input', (e) => {
         if (e.target.matches('input, select, textarea')) saveState();
@@ -4450,8 +6186,8 @@
 취득일: ${document.getElementById('acquireDate').value}
 양도일: ${document.getElementById('sellDate').value}
 
-양도가액: ${(parseFloat(document.getElementById('sellPrice').value) || 0).toLocaleString()}만원
-취득가액: ${(parseFloat(document.getElementById('buyPrice').value || document.getElementById('stdPriceAcq').value) || 0).toLocaleString()}만원
+양도가액: ${parseCommaNum(document.getElementById('sellPrice').value).toLocaleString()}만원
+취득가액: ${parseCommaNum(document.getElementById('buyPrice').value || document.getElementById('stdPriceAcq').value).toLocaleString()}만원
 
 계산 결과는 위의 "계산결과" 탭을 참고하세요.
 
