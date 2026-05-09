@@ -1251,8 +1251,9 @@
 </head>
 <body>
   <div class="font-view-toggle" id="fontViewToggle" aria-label="글자 크기 보기 설정">
-    <button type="button" id="fontViewBigBtn" onclick="setFontViewMode(true)">크게 보기</button>
-    <button type="button" id="fontViewBaseBtn" class="on" onclick="setFontViewMode(false)">기본 보기</button>
+    <button type="button" id="fontView200Btn" onclick="setFontViewMode('200')">200% 보기</button>
+    <button type="button" id="fontView166Btn" onclick="setFontViewMode('166')">166% 보기</button>
+    <button type="button" id="fontViewBaseBtn" class="on" onclick="setFontViewMode('base')">기본 보기</button>
   </div>
   <div class="app">
     <div class="hdr">
@@ -6096,16 +6097,32 @@
       return !el || el.closest('#fontViewToggle, .intro-headline');
     }
 
-    function updateFontViewButtons(big) {
-      const bigBtn = document.getElementById('fontViewBigBtn');
-      const baseBtn = document.getElementById('fontViewBaseBtn');
-      if (bigBtn) bigBtn.classList.toggle('on', big);
-      if (baseBtn) baseBtn.classList.toggle('on', !big);
+    function normalizeFontViewMode(mode) {
+      if (mode === true || mode === 'big' || mode === '200') return '200';
+      if (mode === '166') return '166';
+      return 'base';
     }
 
-    function applyFontViewMode(big) {
+    function getFontViewScale(mode) {
+      if (mode === '200') return 2;
+      if (mode === '166') return 1.66;
+      return 1;
+    }
+
+    function updateFontViewButtons(mode) {
+      const mode200Btn = document.getElementById('fontView200Btn');
+      const mode166Btn = document.getElementById('fontView166Btn');
+      const baseBtn = document.getElementById('fontViewBaseBtn');
+      if (mode200Btn) mode200Btn.classList.toggle('on', mode === '200');
+      if (mode166Btn) mode166Btn.classList.toggle('on', mode === '166');
+      if (baseBtn) baseBtn.classList.toggle('on', mode === 'base');
+    }
+
+    function applyFontViewMode(mode) {
       if (!document.body || _fontViewApplying) return;
       _fontViewApplying = true;
+      mode = normalizeFontViewMode(mode);
+      const scale = getFontViewScale(mode);
 
       const nodes = Array.from(document.body.querySelectorAll('*')).filter(el => {
         if (!(el instanceof HTMLElement)) return false;
@@ -6113,7 +6130,11 @@
         return !isFontViewExcluded(el);
       });
 
-      if (big) {
+      if (scale > 1) {
+        document.body.querySelectorAll('[data-font-view-base-size]').forEach(el => {
+          const inlineSize = el.dataset.fontViewInlineSize;
+          el.style.fontSize = (!inlineSize || inlineSize === '__empty__') ? '' : inlineSize;
+        });
         nodes.forEach(el => {
           if (!el.dataset.fontViewBaseSize) {
             el.dataset.fontViewBaseSize = window.getComputedStyle(el).fontSize;
@@ -6122,10 +6143,10 @@
         });
         nodes.forEach(el => {
           const px = parseFloat(el.dataset.fontViewBaseSize || '0');
-          if (px > 0) el.style.fontSize = (px * 2) + 'px';
+          if (px > 0) el.style.fontSize = (px * scale) + 'px';
         });
         document.body.classList.add('font-big-mode');
-        localStorage.setItem(FONT_VIEW_KEY, 'big');
+        localStorage.setItem(FONT_VIEW_KEY, mode);
       } else {
         document.body.querySelectorAll('[data-font-view-base-size]').forEach(el => {
           const inlineSize = el.dataset.fontViewInlineSize;
@@ -6137,21 +6158,21 @@
         localStorage.setItem(FONT_VIEW_KEY, 'base');
       }
 
-      updateFontViewButtons(big);
+      updateFontViewButtons(mode);
       _fontViewApplying = false;
     }
 
-    function setFontViewMode(big) {
-      applyFontViewMode(!!big);
+    function setFontViewMode(mode) {
+      applyFontViewMode(mode);
     }
 
     function initFontViewMode() {
-      const big = localStorage.getItem(FONT_VIEW_KEY) === 'big';
-      applyFontViewMode(big);
+      const mode = normalizeFontViewMode(localStorage.getItem(FONT_VIEW_KEY));
+      applyFontViewMode(mode);
       if (_fontViewObserver) return;
       _fontViewObserver = new MutationObserver(() => {
         if (!document.body.classList.contains('font-big-mode')) return;
-        requestAnimationFrame(() => applyFontViewMode(true));
+        requestAnimationFrame(() => applyFontViewMode(localStorage.getItem(FONT_VIEW_KEY)));
       });
       _fontViewObserver.observe(document.body, { childList: true, subtree: true });
     }

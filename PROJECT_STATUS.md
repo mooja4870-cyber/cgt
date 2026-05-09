@@ -1,9 +1,10 @@
 # Project Status: Yangdo Tax Calculator AI
 
-## Current Version: v4.0.3
-**Last Updated:** 2026-05-09 20:56:07
+## Current Version: v4.0.4
+**Last Updated:** 2026-05-09 21:12:50
 
 ## Recent Changes
+- **v4.0.4**: Added the "166% 보기" text-size option beside "200% 보기" and "기본 보기"; preserved the intro headline exclusion.
 - **v4.0.3**: Added fixed top-right "크게 보기/기본 보기" text-size controls. Large mode doubles app text size while excluding the intro headline slogan.
 - **v4.0.1**: 용어 정정 - [취득 원인 정의]를 보다 직관적인 **[취득 종류]**로 변경.
 - **v4.0.0**: **구조적 대개편 (Structural Overhaul)** - [취득 원인]을 계산의 최상위 부모 정보로 격상. 전문가용 신고 프로세스(취득->보유->양도) 논리 완성.
