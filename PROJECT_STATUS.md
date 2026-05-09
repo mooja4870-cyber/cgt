@@ -1,9 +1,10 @@
 # Project Status: Yangdo Tax Calculator AI
 
-## Current Version: v4.0.5
-**Last Updated:** 2026-05-09 21:27:12
+## Current Version: v4.0.6
+**Last Updated:** 2026-05-09 22:24:04
 
 ## Recent Changes
+- **v4.0.6**: Changed result report rows to a stacked label/value/note layout so mobile detail links stay inside the card and remain tappable.
 - **v4.0.5**: Updated launcher label to "양도세 계산", replaced the header emoji with the app icon, removed the header version text, and lowered the font view controls.
 - **v4.0.4**: Added the "166% 보기" text-size option beside "200% 보기" and "기본 보기"; preserved the intro headline exclusion.
 - **v4.0.3**: Added fixed top-right "크게 보기/기본 보기" text-size controls. Large mode doubles app text size while excluding the intro headline slogan.
