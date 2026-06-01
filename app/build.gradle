@@ -9,6 +9,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 def gitTagVersion = "v0.0.0"
+def gitTagVersionCode = 1
 try {
     def tagOutput = new ByteArrayOutputStream()
     exec {
@@ -17,7 +18,16 @@ try {
         ignoreExitValue = true
     }
     def resolvedTag = tagOutput.toString().trim()
-    if (resolvedTag) gitTagVersion = resolvedTag
+    if (resolvedTag) {
+        gitTagVersion = resolvedTag
+        def m = (resolvedTag =~ /^v(\d+)\.(\d+)\.(\d+)$/)
+        if (m.matches()) {
+            def major = m[0][1] as int
+            def minor = m[0][2] as int
+            def patch = m[0][3] as int
+            gitTagVersionCode = (major * 10000) + (minor * 100) + patch
+        }
+    }
 } catch (Exception ignored) {
 }
 
@@ -29,7 +39,7 @@ android {
         applicationId "com.yangdotax.calculator"
         minSdk 23
         targetSdk 35
-        versionCode 1
+        versionCode gitTagVersionCode
         versionName gitTagVersion
     }
 
