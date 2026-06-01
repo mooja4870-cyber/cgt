@@ -1,5 +1,11 @@
 # Version History
 
+## v4.0.14 (2026-06-01)
+- 설명: 상속·증여 검증 체계 추가
+- 내용:
+  - `qa/inheritance_gift_test_plan.md` 추가 (배포 전 검증 절차/합격 기준)
+  - `qa/inheritance_gift_cases_template.csv` 추가 (케이스 입력/비교 템플릿)
+
 ## v4.0.13 (2026-06-01)
 - 설명: 설치 실패(앱이 설치되지 않았습니다) 대응 배포
 - 내용:
