@@ -8,6 +8,19 @@ if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
 }
 
+def gitTagVersion = "v0.0.0"
+try {
+    def tagOutput = new ByteArrayOutputStream()
+    exec {
+        commandLine "git", "describe", "--tags", "--abbrev=0"
+        standardOutput = tagOutput
+        ignoreExitValue = true
+    }
+    def resolvedTag = tagOutput.toString().trim()
+    if (resolvedTag) gitTagVersion = resolvedTag
+} catch (Exception ignored) {
+}
+
 android {
     namespace "com.yangdotax.calculator"
     compileSdk 35
@@ -17,7 +30,7 @@ android {
         minSdk 23
         targetSdk 35
         versionCode 1
-        versionName "1.0.0"
+        versionName gitTagVersion
     }
 
     signingConfigs {

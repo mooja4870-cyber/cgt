@@ -1,5 +1,11 @@
 # Version History
 
+## v4.0.11 (2026-06-01)
+- 설명: 앱 버전명을 Git 태그와 자동 동기화
+- 내용:
+  - `app/build.gradle`에서 최신 Git 태그(`git describe --tags --abbrev=0`)를 읽어 `versionName`으로 사용
+  - 태그가 없는 환경에서는 기본값 `v0.0.0` 사용
+
 ## v4.0.10 (2026-06-01)
 - 설명: 복사 버튼 잔존 소스 정리
 - 내용:
