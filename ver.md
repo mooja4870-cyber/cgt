@@ -1,5 +1,12 @@
 # Version History
 
+## v4.0.12 (2026-06-01)
+- 설명: macOS 빌드 환경 복구 및 최신 APK 재배포
+- 내용:
+  - macOS용 SDK/JDK/Gradle 환경으로 디버그 APK 재빌드 성공
+  - `release/CGT.apk`를 최신 코드 기준으로 교체 배포
+  - 로컬 빌드 도구 폴더(`.tools/`, `.android-sdk-mac/`) `.gitignore` 추가
+
 ## v4.0.11 (2026-06-01)
 - 설명: 앱 버전명을 Git 태그와 자동 동기화
 - 내용:
