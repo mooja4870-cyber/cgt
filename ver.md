@@ -1,5 +1,13 @@
 # Version History
 
+## v4.0.16 (2026-06-04)
+- 설명: 화면 회전(가로/세로) 지원 추가
+- 내용:
+  - `AndroidManifest.xml` configChanges에 `screenLayout|smallestScreenSize` 추가 → 모든 화면 크기 변화 대응
+  - `MainActivity.java` `setUseWideViewPort(false)` → `true` 변경 → viewport 메타태그 적용, 가로 모드 반응형 레이아웃 정상 작동
+  - `onConfigurationChanged()` 오버라이드 추가 → 회전 시 WebView 레이아웃 즉시 재조정
+  - `release/CGT.apk` 재빌드 및 교체
+
 ## v4.0.15 (2026-06-04)
 - 설명: 취득종류 상속·증여 칩 Coming Soon 비활성화 + 전문앱 안내 배너 추가
 - 내용:
