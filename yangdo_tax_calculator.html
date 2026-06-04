@@ -332,6 +332,22 @@
       font-size: 12px;
     }
 
+    /* 취득종류 칩 Coming Soon 비활성화 */
+    .chip-acq.chip-coming-soon {
+      opacity: 0.52;
+      cursor: pointer;
+      background: #f5f5f5 !important;
+      color: #aaa !important;
+      border-color: #ddd !important;
+      position: relative;
+    }
+    .chip-acq.chip-coming-soon::after {
+      content: '🚧';
+      font-size: 10px;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
     /* 칩 hover 툴팁 */
     .chip-tip {
       display: none;
@@ -2245,6 +2261,14 @@
           <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:0.5rem;">
             <h2 style="font-size: 18px; font-weight: 600; margin:0;">양도 물건의 종류를 선택해 주세요</h2>
             <button onclick="goToGuideFromItemSelect()" style="flex-shrink:0; padding:6px 14px; background:#E1F5EE; color:#0F6E56; border:1.5px solid #1D9E75; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap;">📖 사용 가이드</button>
+          </div>
+          <!-- 전문앱 안내 배너 -->
+          <div style="display:flex; align-items:flex-start; gap:8px; background:#E8F5EE; border:1.5px solid #A8DEC5; border-radius:10px; padding:10px 13px; margin-bottom:0.7rem;">
+            <span style="font-size:15px; line-height:1.2; flex-shrink:0;">💡</span>
+            <div>
+              <div style="font-size:13px; font-weight:700; color:#0D6647; line-height:1.4;">이 앱은 주택 양도소득세 전문 계산기입니다</div>
+              <div style="font-size:11px; color:#3A8A68; margin-top:2px; line-height:1.5;">매매 취득 · 주택(APT포함) 종류만 지원&nbsp;&nbsp;<span style="color:#999;">|</span>&nbsp;&nbsp;<span style="color:#B0B0B0;">상속·증여·분양권·건물·토지 준비 중</span></div>
+            </div>
           </div>
           <p style="font-size: 12px; color: #999;">선택한 물건종류에 따라 계산 방식이 달라집니다</p>
         </div>
@@ -4168,8 +4192,8 @@
         const cur = window.acqType || 'buy';
         acqChips.innerHTML = `
           <div class="chip chip-acq ${cur === 'buy' ? 'on' : ''}" data-value="buy" onclick="setChip(this, 'acqType')">🏠 매매</div>
-          <div class="chip chip-acq ${cur === 'inherit' ? 'on' : ''}" data-value="inherit" onclick="setChip(this, 'acqType')">📜 상속</div>
-          <div class="chip chip-acq ${cur === 'gift' ? 'on' : ''}" data-value="gift" onclick="setChip(this, 'acqType')">🎁 증여</div>
+          <div class="chip chip-acq chip-coming-soon" data-value="inherit" onclick="showComingSoon()">📜 상속</div>
+          <div class="chip chip-acq chip-coming-soon" data-value="gift" onclick="showComingSoon()">🎁 증여</div>
         `;
         updateAcqTypeUI(cur);
       }
