@@ -1,5 +1,14 @@
 # Version History
 
+## v4.0.17 (2026-06-05)
+- 설명: 단어(어절) 중간 줄바꿈 금지 — 전역 `word-break: keep-all` 적용
+- 내용:
+  - 전역 `*` 선택자에 `word-break: keep-all` + `overflow-wrap: break-word` 추가
+  - 한 단어(한글 어절)가 두 줄에 걸쳐 쪼개지지 않고 공백 기준으로만 줄바꿈
+  - `.rcard .rnote`의 `overflow-wrap: anywhere`(단어 중간 강제 분리) → `break-word`로 완화
+  - `assets/yangdo_tax_calculator.html` 및 루트 `yangdo_tax_calculator.html` 동일 적용
+  - `release/CGT.apk` 재빌드 및 교체
+
 ## v4.0.16 (2026-06-04)
 - 설명: 화면 회전(가로/세로) 지원 추가
 - 내용:

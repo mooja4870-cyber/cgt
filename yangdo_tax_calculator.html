@@ -11,6 +11,9 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      /* 한글 어절(단어) 중간 줄바꿈 금지 — 공백 기준으로만 줄바꿈 */
+      word-break: keep-all;
+      overflow-wrap: break-word;
     }
     
     html, body {
@@ -1287,7 +1290,8 @@
     .rcard .rnote {
       display: block;
       width: 100%;
-      overflow-wrap: anywhere;
+      word-break: keep-all;
+      overflow-wrap: break-word;
     }
 
     .rcard .detail-box,
