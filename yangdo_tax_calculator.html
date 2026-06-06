@@ -1888,7 +1888,8 @@
           <span class="eng-tag">월 1회 절세 리포트</span>
           <div class="eng-report">
             <div class="rl">📊 이번 달 나의 절세 리포트</div>
-            <div class="rb">보유기간이 늘어 장특공제가 <em>+480만원</em> 증가했어요. 지금 예상 양도세는 <em>1억 2,100만원</em>입니다.</div>
+            <div class="rb" id="engReportBody">보유기간이 늘어 장특공제가 <em>+480만원</em> 증가했어요. 지금 예상 양도세는 <em>1억 2,100만원</em>입니다.</div>
+            <div id="engReportNote" style="font-size:10px; color:rgba(255,255,255,0.55); margin-top:8px;">예시 — 계산을 완료하면 매달 내 리포트가 쌓입니다</div>
           </div>
         </div>
 
@@ -2377,9 +2378,56 @@
         if (note) note.textContent = '내 일정 기준 (오늘 ' + engISO(today) + ')';
       }
 
+      /* ───── 월 1회 절세 리포트: 현재 추정 + 월별 스냅샷 비교 ───── */
+      var ENG_REPORT_KEY = 'yangdo_eng_report';
+      function engRenderReport() {
+        var bodyEl = document.getElementById('engReportBody');
+        var note = document.getElementById('engReportNote');
+        if (!bodyEl) return;
+        var s = engGetState();
+        var today = engToday();
+        var cur = s ? engEstimateTax(s, engISO(today), engNum(s.resYear)) : null;
+        if (!s || !cur) {
+          if (note) note.textContent = '예시 — 계산을 완료하면 매달 내 리포트가 쌓입니다';
+          return; // 예시 유지
+        }
+        var curYm = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0');
+        var rec = null;
+        try { rec = JSON.parse(localStorage.getItem(ENG_REPORT_KEY) || 'null'); } catch(e) {}
+
+        var prev = null;
+        if (!rec) {
+          rec = { cur: { ym: curYm, tax: cur.tax, ltd: cur.ltd }, prev: null };
+        } else if (rec.cur && rec.cur.ym !== curYm) {
+          rec.prev = rec.cur;            // 달이 바뀌면 이전 달로 이월
+          rec.cur = { ym: curYm, tax: cur.tax, ltd: cur.ltd };
+        } else {
+          rec.cur = { ym: curYm, tax: cur.tax, ltd: cur.ltd }; // 같은 달이면 최신값 갱신
+        }
+        prev = rec.prev;
+        try { localStorage.setItem(ENG_REPORT_KEY, JSON.stringify(rec)); } catch(e) {}
+
+        var taxStr = (cur.total <= 0) ? '<em>비과세(추정)</em>' : '<em>' + engFmtKRW(cur.total) + '원</em>';
+        var html = '지금 예상 양도세는 ' + taxStr + '입니다.';
+        if (prev) {
+          var dLtd = Math.round(cur.ltd - prev.ltd);
+          var dTax = Math.round((cur.tax + cur.tax*0.1) - (prev.tax + prev.tax*0.1));
+          var parts = [];
+          if (dLtd > 0) parts.push('장특공제가 <em>+' + dLtd.toLocaleString() + '만원</em> 늘었고');
+          if (dTax < 0) parts.push('예상세액이 <em>' + Math.abs(dTax).toLocaleString() + '만원↓</em> 줄었어요');
+          else if (dTax > 0) parts.push('예상세액이 <em>' + dTax.toLocaleString() + '만원↑</em> 늘었어요');
+          if (parts.length) html = '지난달 대비 ' + parts.join(', ') + '. ' + html;
+        } else {
+          html = html + ' 다음 달에 다시 오면 <em>변화</em>를 비교해 드려요.';
+        }
+        bodyEl.innerHTML = html;
+        if (note) note.textContent = '내 계산 기준 추정치 · ' + curYm + ' 기준';
+      }
+
       document.addEventListener('DOMContentLoaded', function(){
         try { engRenderScenario(); } catch(e){}
         try { engRenderDday(); } catch(e){}
+        try { engRenderReport(); } catch(e){}
       });
 
       function _showHeaderTabs() {
