@@ -1863,8 +1863,8 @@
         <div class="eng-sec">
           <span class="eng-tag">세법·시세 속보</span>
           <div class="eng-ticker">
-            <span class="tg">속보</span>
-            <div class="tt"><b>2026.5.10부터 다주택 중과 재개</b> — 2주택 +20%p, 3주택+ +30%p 적용. 계산에 반영되어 있어요.</div>
+            <span class="tg" id="engNewsTag">속보</span>
+            <div class="tt" id="engNewsText"><b>2026.5.10부터 다주택 중과 재개</b> — 2주택 +20%p, 3주택+ +30%p 적용. 계산에 반영되어 있어요.</div>
           </div>
         </div>
 
@@ -2512,11 +2512,40 @@
         if (note) note.textContent = '내 계산 기준 추정치 · ' + curYm + ' 기준';
       }
 
+      /* ───── 세법·시세 속보: 출처 링크가 붙은 검증형 큐레이션 ───── */
+      // ※ 모든 항목에 출처 링크를 달아 사용자가 직접 확인 가능. 시행일 등 변동 사항은 단정하지 않고 출처로 안내.
+      var ENG_NEWS = [
+        { date:'2026-05-10', tag:'세율',
+          html:'<b>다주택자 양도세 중과</b> — 조정대상지역 2주택 <b>+20%p</b>, 3주택 이상 <b>+30%p</b>. 적용 시기·대상은 국세청에서 확인하세요.',
+          link:'https://call.nts.go.kr/call/taxInfo/selectTaxInfo.do?mi=2007', linkLabel:'국세청 확인' },
+        { date:'2025-01-01', tag:'공제',
+          html:'<b>1세대 1주택 비과세 기준 12억원</b> — 양도가액 12억원 초과분만 과세됩니다.',
+          link:'https://www.nts.go.kr', linkLabel:'국세청' },
+        { date:'상시', tag:'시세',
+          html:'<b>공시가격·기준시가</b>는 부동산공시가격알리미에서 조회할 수 있어요.',
+          link:'https://www.realtyprice.kr', linkLabel:'공시가격 알리미' }
+      ];
+      function engRenderNews() {
+        var tagEl = document.getElementById('engNewsTag');
+        var txtEl = document.getElementById('engNewsText');
+        if (!txtEl) return;
+        // 날짜 기준 순환 (매일 다른 속보)
+        var item = ENG_NEWS[Math.floor(Date.now() / 86400000) % ENG_NEWS.length];
+        if (tagEl) tagEl.textContent = (item.date === '상시') ? '안내' : '속보';
+        var dateBadge = (item.date === '상시') ? '' :
+          '<span style="color:#FFD84D; font-weight:800;">[' + item.date + ']</span> ';
+        var srcLink = item.link
+          ? ' <a href="' + item.link + '" target="_blank" rel="noopener" style="color:#FFE89A; text-decoration:underline;">' + (item.linkLabel || '출처') + ' →</a>'
+          : '';
+        txtEl.innerHTML = dateBadge + item.html + srcLink;
+      }
+
       document.addEventListener('DOMContentLoaded', function(){
         try { engRenderScenario(); } catch(e){}
         try { engRenderDday(); } catch(e){}
         try { engRenderReport(); } catch(e){}
         try { engRenderQuiz(); } catch(e){}
+        try { engRenderNews(); } catch(e){}
       });
 
       function _showHeaderTabs() {
