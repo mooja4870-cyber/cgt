@@ -1847,13 +1847,13 @@
         <div class="eng-sec">
           <span class="eng-tag">오늘의 OX 퀴즈</span>
           <div class="eng-quiz">
-            <div class="q">Q. 자녀가 주소만 분리하면 무조건 1세대 1주택으로 비과세 받을 수 있다?</div>
+            <div class="q" id="engQuizQ">Q. 자녀가 주소만 분리하면 무조건 1세대 1주택으로 비과세 받을 수 있다?</div>
             <div class="opts">
               <button class="opt" onclick="engQuizAnswer('O')">O</button>
               <button class="opt" onclick="engQuizAnswer('X')">X</button>
             </div>
-            <div class="ans" id="engQuizAns"><b>정답: X</b> — 주소(전입)만으로는 부족합니다. 실제 생활(거주·생계)이 동일하면 <b>실질 1세대</b>로 보아 비과세가 부인될 수 있습니다.</div>
-            <div class="streak">🔥 연속 정답 6일째 · 내일 풀면 7일 달성!</div>
+            <div class="ans" id="engQuizAns"></div>
+            <div class="streak" id="engQuizStreak">🔥 매일 한 문제씩! 오늘의 퀴즈에 도전하세요.</div>
           </div>
         </div>
 
@@ -2064,9 +2064,86 @@
         engRenderStory(day % ENG_STORIES.length);
       });
 
-      function engQuizAnswer(choice) {
+      /* ───── 오늘의 OX 퀴즈: 문제은행(세법 근거) + 날짜순환 + 스트릭 ───── */
+      var ENG_QUIZ = [
+        { q:'자녀가 주소(전입)만 분리하면 무조건 1세대 1주택으로 비과세 받을 수 있다?', a:'X',
+          ex:'주소만으로는 부족합니다. 실제 생계·거주가 같으면 <b>실질 1세대</b>로 보아 비과세가 부인될 수 있어요.',
+          src:'소득세법 시행령 §154①, 국세기본법 §14(실질과세)' },
+        { q:'1세대 1주택이라도 양도가액 12억원 초과분에는 양도세가 과세된다?', a:'O',
+          ex:'맞습니다. 12억원까지는 비과세, <b>초과분은 안분하여 과세</b>되는 고가주택 규정이 있어요.',
+          src:'소득세법 §89①3호(고가주택)' },
+        { q:'취득 당시 조정대상지역이었다면, 비과세를 받으려면 2년 이상 거주해야 한다?', a:'O',
+          ex:'맞습니다. 취득 시점이 조정대상지역이면 <b>보유 2년 + 거주 2년</b>을 모두 채워야 합니다.',
+          src:'소득세법 시행령 §154①' },
+        { q:'보유기간 2년만 채우면 거주는 안 해도 항상 비과세된다?', a:'X',
+          ex:'조정대상지역(취득 당시)이면 <b>거주 2년</b>도 필요합니다. 비조정지역이면 보유 2년만으로 가능.',
+          src:'소득세법 시행령 §154①' },
+        { q:'일시적 2주택은 신규주택 취득 후 3년 이내 종전주택을 팔면 비과세될 수 있다?', a:'O',
+          ex:'맞습니다. 종전주택 취득 1년 후 신규 취득 + <b>3년 내 종전주택 양도</b> 등 요건 충족 시 비과세.',
+          src:'소득세법 시행령 §155①' },
+        { q:'상속받은 주택은 받자마자 팔면 양도세가 전혀 없다?', a:'X',
+          ex:'상속개시일부터 <b>6개월 이내</b> 양도 시 양도차익을 0으로 보는 특례가 있을 뿐, 항상 0은 아닙니다.',
+          src:'소득세법 시행령 §163⑨ 등' },
+        { q:'장기보유특별공제는 보유기간 3년 이상부터 적용된다?', a:'O',
+          ex:'맞습니다. <b>보유 3년 이상</b>부터 적용되며, 1세대1주택 고가주택은 보유+거주 공제(최대 80%)가 별도예요.',
+          src:'소득세법 §95②(표1·표2)' },
+        { q:'취득 당시 실거래가를 모를 때는 환산취득가액을 쓸 수 있다?', a:'O',
+          ex:'맞습니다. 실제 취득가액을 확인할 수 없으면 <b>환산취득가액</b>을 적용할 수 있습니다.',
+          src:'소득세법 시행령 §176-2' }
+      ];
+      var ENG_QUIZ_KEY = 'yangdo_eng_quiz';
+      function engQuizIdx() { return Math.floor(Date.now() / 86400000) % ENG_QUIZ.length; }
+      function engQuizLoad() {
+        try { return JSON.parse(localStorage.getItem(ENG_QUIZ_KEY) || 'null'); } catch(e) { return null; }
+      }
+      function engRenderQuiz() {
+        var qEl = document.getElementById('engQuizQ');
+        var streakEl = document.getElementById('engQuizStreak');
+        if (!qEl) return;
+        var item = ENG_QUIZ[engQuizIdx()];
+        qEl.textContent = 'Q. ' + item.q;
         var ans = document.getElementById('engQuizAns');
-        if (ans) ans.style.display = 'block';
+        if (ans) ans.style.display = 'none';
+        var rec = engQuizLoad();
+        var streak = rec ? (rec.streak || 0) : 0;
+        if (streakEl) {
+          streakEl.textContent = streak > 0
+            ? '🔥 연속 정답 ' + streak + '일째 · 오늘도 도전해 보세요!'
+            : '🔥 매일 한 문제씩! 오늘의 퀴즈에 도전하세요.';
+        }
+      }
+      function engQuizAnswer(choice) {
+        var item = ENG_QUIZ[engQuizIdx()];
+        var ans = document.getElementById('engQuizAns');
+        var streakEl = document.getElementById('engQuizStreak');
+        var correct = (choice === item.a);
+        var today = engISO(engToday());
+
+        // 스트릭 갱신 (하루 1회만 반영)
+        var rec = engQuizLoad() || { lastYmd:'', streak:0, answeredYmd:'' };
+        if (rec.answeredYmd !== today) {
+          if (correct) {
+            var y = engISO(new Date(engToday().getTime() - 86400000));
+            rec.streak = (rec.lastYmd === y) ? (rec.streak || 0) + 1 : 1;
+            rec.lastYmd = today;
+          } else {
+            rec.streak = 0;
+          }
+          rec.answeredYmd = today;
+          try { localStorage.setItem(ENG_QUIZ_KEY, JSON.stringify(rec)); } catch(e) {}
+        }
+
+        if (ans) {
+          ans.style.display = 'block';
+          ans.innerHTML =
+            '<b>' + (correct ? '⭕ 정답!' : '❌ 오답') + ' (정답: ' + item.a + ')</b> — ' + item.ex +
+            '<div style="margin-top:6px; font-size:11px; color:#9fb;">📖 근거: ' + item.src + '</div>';
+        }
+        if (streakEl) {
+          streakEl.textContent = (rec.streak > 0)
+            ? '🔥 연속 정답 ' + rec.streak + '일째!'
+            : '아쉬워요! 내일 다시 도전하면 스트릭이 시작돼요.';
+        }
       }
       function engShareScenario() {
         var txt = '[양도세 AI 계산기] 양도 시점별 예상세액\n· 오늘 양도: 2억 1,400만\n· 6개월 뒤: 1억 6,800만\n· 2년 거주 충족 후: 3,200만';
@@ -2428,6 +2505,7 @@
         try { engRenderScenario(); } catch(e){}
         try { engRenderDday(); } catch(e){}
         try { engRenderReport(); } catch(e){}
+        try { engRenderQuiz(); } catch(e){}
       });
 
       function _showHeaderTabs() {
