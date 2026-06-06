@@ -2626,8 +2626,8 @@
         var tagEl = document.getElementById('engNewsTag');
         var txtEl = document.getElementById('engNewsText');
         if (!txtEl) return;
-        // 날짜 기준 순환 (매일 다른 속보)
-        var item = ENG_NEWS[Math.floor(Date.now() / 86400000) % ENG_NEWS.length];
+        // 새로고침마다 랜덤 (직전 항목 연속 노출만 회피)
+        var item = ENG_NEWS[engRandPick(ENG_NEWS.length, 'news')];
         if (tagEl) tagEl.textContent = (item.date === '상시') ? '안내' : '속보';
         var dateBadge = (item.date === '상시') ? '' :
           '<span style="color:#FFD84D; font-weight:800;">[' + item.date + ']</span> ';
