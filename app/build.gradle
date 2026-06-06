@@ -16,6 +16,7 @@ try {
         commandLine "git", "describe", "--tags", "--abbrev=0"
         standardOutput = tagOutput
         ignoreExitValue = true
+        workingDir rootProject.rootDir  // ✅ 프로젝트 루트 디렉토리 명시 (CGT/)
     }
     def resolvedTag = tagOutput.toString().trim()
     if (resolvedTag) {
@@ -26,9 +27,15 @@ try {
             def minor = m[0][2] as int
             def patch = m[0][3] as int
             gitTagVersionCode = (major * 10000) + (minor * 100) + patch
+            println "✅ Git Tag 인식: $gitTagVersion → versionCode=$gitTagVersionCode"
+        } else {
+            println "⚠️ 태그 형식 미일치: $resolvedTag (예: v4.0.18)"
         }
+    } else {
+        println "⚠️ Git 태그 없음, 기본값 사용"
     }
-} catch (Exception ignored) {
+} catch (Exception e) {
+    println "⚠️ Git 태그 읽기 실패: ${e.message}, 기본값 사용"
 }
 
 android {
