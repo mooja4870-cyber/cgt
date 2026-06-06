@@ -1,5 +1,19 @@
 # Version History
 
+## v4.0.18 (2026-06-05)
+- 설명: 핀치줌 기능 — 구버전 안드로이드(갤럭시 노트20 등) 호환성 개선
+- 내용:
+  - **원인**: 구버전 안드로이드/웹뷰에서 WebView 줌 설정을 명시하지 않으면 핀치줌 비활성화
+  - **현상**: 갤럭시 노트20 울트라(최신)에는 작동, 갤럭시 노트20(구버전)에는 안 됨
+  - **해결책** (`MainActivity.java`)
+    - `settings.setSupportZoom(true)` — 핀치 제스처 줌 활성화 (매우 중요!)
+    - `settings.setBuiltInZoomControls(true)` — 줌 컨트롤 켜기
+    - `settings.setDisplayZoomControls(false)` — 기본 +/- 버튼은 숨김 (UI)
+  - **viewport 강화** (HTML)
+    - `user-scalable=yes, minimum-scale=0.5, maximum-scale=5.0` 추가
+    - `assets/yangdo_tax_calculator.html` 및 루트 파일 동일 적용
+  - `release/CGT.apk` 재빌드 및 교체
+
 ## v4.0.17 (2026-06-05)
 - 설명: 단어(어절) 중간 줄바꿈 금지 — 전역 `word-break: keep-all` 적용
 - 내용:
