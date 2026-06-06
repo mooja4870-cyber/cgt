@@ -1871,11 +1871,14 @@
           <div class="eng-scen">
             <div class="st">같은 물건, 양도 시점별 예상세액 비교</div>
             <table>
-              <tr class="worst"><td>오늘 양도</td><td class="amt">2억 1,400만</td></tr>
-              <tr><td>6개월 뒤</td><td class="amt">1억 6,800만</td></tr>
-              <tr class="best"><td>2년 거주 충족 후 ✓</td><td class="amt">3,200만</td></tr>
+              <tbody id="engScenBody">
+                <tr class="worst"><td>오늘 양도</td><td class="amt">2억 1,400만</td></tr>
+                <tr><td>6개월 뒤</td><td class="amt">1억 6,800만</td></tr>
+                <tr class="best"><td>2년 거주 충족 후 ✓</td><td class="amt">3,200만</td></tr>
+              </tbody>
             </table>
-            <div class="share" onclick="engShareScenario()">💬 카카오톡으로 결과 공유하기</div>
+            <div id="engScenNote" style="font-size:10px; color:rgba(255,255,255,0.4); margin-top:6px; text-align:right;">예시 — 먼저 계산을 완료하면 내 물건 기준으로 채워집니다</div>
+            <div class="share" onclick="engShareScenarioReal()">💬 카카오톡으로 결과 공유하기</div>
           </div>
         </div>
 
@@ -2107,6 +2110,199 @@
         if (n < 0 || n >= _PGD_TOTAL) return;
         playGo(n, dir < 0);
       }
+
+      /* ════════════════════════════════════════════════════════════
+         재방문 위젯 공용 추정 엔진 (저장된 입력값 → 추정 세액)
+         ※ 표준 세법 공식 기반의 "추정치"이며, 정밀 계산은 본 계산기에서 수행.
+         ════════════════════════════════════════════════════════════ */
+      var ENG_STATE_KEY = 'yangdo_v19_state';
+
+      function engGetState() {
+        try {
+          var raw = localStorage.getItem(ENG_STATE_KEY);
+          if (!raw) return null;
+          return JSON.parse(raw);
+        } catch (e) { return null; }
+      }
+
+      // 만원 단위 숫자 → "X억 Y,YYY만" 표기
+      function engFmtKRW(man) {
+        man = Math.max(0, Math.round(man));
+        if (man >= 10000) {
+          var eok = Math.floor(man / 10000);
+          var rem = man % 10000;
+          return eok + '억' + (rem ? ' ' + rem.toLocaleString() + '만' : '');
+        }
+        return man.toLocaleString() + '만';
+      }
+
+      function engNum(v) {
+        if (v === null || v === undefined || v === '') return 0;
+        return parseFloat(String(v).replace(/,/g, '')) || 0;
+      }
+
+      // 양도소득세 누진세율 (만원 기준 과세표준)
+      function engProgressiveTax(base) {
+        if (base <= 0) return 0;
+        var b = [
+          [1400, 0.06, 0], [5000, 0.15, 126], [8800, 0.24, 576],
+          [15000, 0.35, 1544], [30000, 0.38, 1994], [50000, 0.40, 2594],
+          [100000, 0.42, 3594], [Infinity, 0.45, 4594]
+        ];
+        for (var i = 0; i < b.length; i++) {
+          if (base <= b[i][0]) return base * b[i][1] - b[i][2];
+        }
+        return base * 0.45 - 4594;
+      }
+
+      // 핵심 추정 함수: state + (양도일 override, 거주연수 override) → 추정 세액(만원)
+      function engEstimateTax(s, sellDateStr, resYearsOverride) {
+        if (!s) return null;
+        var acqStr = s.acquireDate;
+        if (!acqStr) return null;
+        var ad = new Date(acqStr);
+        var sd = sellDateStr ? new Date(sellDateStr) : (s.sellDate ? new Date(s.sellDate) : null);
+        if (!sd || isNaN(ad.getTime()) || isNaN(sd.getTime())) return null;
+
+        var sp = engNum(s.sellPrice);
+        var bp, ex;
+        if ((s.priceMode || 'actual') === 'actual') {
+          bp = engNum(s.buyPrice); ex = engNum(s.expense);
+        } else {
+          var ga = engNum(s.stdPriceAcq), gs = engNum(s.stdPriceSell);
+          bp = gs > 0 ? Math.round(sp * (ga / gs)) : 0;
+          ex = engNum(s.expenseConvert);
+        }
+        if (sp <= 0) return null;
+
+        var holdY = (sd - ad) / (1000 * 60 * 60 * 24 * 365.25);
+        if (holdY < 0) return null;
+        var resY = (resYearsOverride !== undefined && resYearsOverride !== null)
+          ? resYearsOverride : engNum(s.resYear);
+
+        var hc = s.houseCount || '1';
+        var adj = s.adjusted || 'no';
+        var isRegulated = (adj === 'yes' || adj === 'speculat' || adj === 'overheated');
+        var gain = sp - bp - ex;
+        if (gain <= 0) return { total: 0, nonTax: false, gain: gain, taxableGain: 0, ltd: 0, taxBase: 0, tax: 0, holdY: holdY, resY: resY };
+
+        // 1세대 1주택 비과세 판정
+        var oneHouse = (hc === '1');
+        var holdOk = holdY >= 2;
+        var resOk = (resY >= 2) || !isRegulated;
+        var eligible = oneHouse && holdOk && resOk;
+
+        var taxableGain = gain;
+        var fullNonTax = false;
+        if (eligible) {
+          if (sp <= 120000) { fullNonTax = true; taxableGain = 0; }
+          else { taxableGain = gain * (sp - 120000) / sp; } // 12억 초과분 안분
+        }
+        if (taxableGain <= 0) return { total: 0, nonTax: true, gain: gain, taxableGain: 0, ltd: 0, taxBase: 0, tax: 0, holdY: holdY, resY: resY };
+
+        // 다주택 중과 여부 (2026.5.10 이후 양도분부터 재개)
+        var multiSurcharge = 0;
+        var ltdExcluded = false;
+        var reopenDate = new Date('2026-05-10');
+        if (!eligible && isRegulated && sd >= reopenDate) {
+          if (hc === '3' || hc === '3plus' || hc === '4' || parseInt(hc, 10) >= 3) { multiSurcharge = 0.30; ltdExcluded = true; }
+          else if (hc === '2') { multiSurcharge = 0.20; ltdExcluded = true; }
+        }
+
+        // 장기보유특별공제
+        var ltdRate = 0;
+        if (!ltdExcluded && holdY >= 3) {
+          if (eligible) { // 표2 (1세대1주택 고가): 보유 4%/년 + 거주 4%/년, 각 최대 40%
+            var hRate = Math.min(0.40, Math.floor(holdY) * 0.04);
+            var rRate = (resY >= 2) ? Math.min(0.40, Math.floor(resY) * 0.04) : 0;
+            ltdRate = Math.min(0.80, hRate + rRate);
+          } else { // 표1 (일반): 보유 2%/년, 최대 30%
+            ltdRate = Math.min(0.30, Math.floor(holdY) * 0.02);
+          }
+        }
+        var ltd = taxableGain * ltdRate;
+
+        var afterLtd = taxableGain - ltd;
+        var taxBase = Math.max(0, afterLtd - 250); // 기본공제 250만원
+        var baseTax = engProgressiveTax(taxBase);
+        if (multiSurcharge > 0) baseTax += taxBase * multiSurcharge;
+        var localTax = baseTax * 0.10; // 지방소득세 10%
+        var total = baseTax + localTax;
+
+        return {
+          total: total, nonTax: false, gain: gain, taxableGain: taxableGain,
+          ltd: ltd, taxBase: taxBase, tax: baseTax, holdY: holdY, resY: resY
+        };
+      }
+
+      // 오늘 날짜(자정) — 위젯 계산 기준
+      function engToday() {
+        var d = new Date();
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      }
+      function engAddMonths(d, m) { var x = new Date(d); x.setMonth(x.getMonth() + m); return x; }
+      function engAddYears(d, y) { var x = new Date(d); x.setFullYear(x.getFullYear() + y); return x; }
+      function engISO(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+
+      /* ───── ④ 지금 팔까 vs 나중에 팔까: 시나리오 비교 ───── */
+      function engRenderScenario() {
+        var body = document.getElementById('engScenBody');
+        var note = document.getElementById('engScenNote');
+        if (!body) return;
+        var s = engGetState();
+        var today = engToday();
+        var base = s ? engEstimateTax(s, engISO(today), engNum(s.resYear)) : null;
+
+        if (!s || !base) {
+          // 데이터 없음 → 예시 유지
+          if (note) note.textContent = '예시 — 먼저 계산을 완료하면 내 물건 기준으로 채워집니다';
+          body.innerHTML =
+            '<tr class="worst"><td>오늘 양도</td><td class="amt">2억 1,400만</td></tr>' +
+            '<tr><td>6개월 뒤</td><td class="amt">1억 6,800만</td></tr>' +
+            '<tr class="best"><td>2년 거주 충족 후 ✓</td><td class="amt">3,200만</td></tr>';
+          return;
+        }
+
+        var curResY = engNum(s.resYear);
+        var rows = [];
+        // 오늘
+        rows.push({ label: '오늘 양도', tax: base.total });
+        // 6개월 뒤 (거주 0.5년 추가)
+        var r6 = engEstimateTax(s, engISO(engAddMonths(today, 6)), curResY + 0.5);
+        if (r6) rows.push({ label: '6개월 뒤', tax: r6.total });
+        // 2년 거주 충족 후 (조정지역·거주요건 미충족 시에만 의미)
+        var adj = s.adjusted || 'no';
+        var isRegulated = (adj === 'yes' || adj === 'speculat' || adj === 'overheated');
+        if ((s.houseCount || '1') === '1' && isRegulated && curResY < 2) {
+          var needY = 2 - curResY;
+          var rFull = engEstimateTax(s, engISO(engAddYears(today, Math.ceil(needY))), 2);
+          if (rFull) rows.push({ label: '2년 거주 충족 후 ✓', tax: rFull.total, best: true });
+        }
+
+        // 최저/최고 표시
+        var taxes = rows.map(function(r){ return r.tax; });
+        var min = Math.min.apply(null, taxes), max = Math.max.apply(null, taxes);
+        body.innerHTML = rows.map(function(r){
+          var cls = (r.tax === min && rows.length > 1) ? 'best' : (r.tax === max && rows.length > 1 ? 'worst' : '');
+          var amt = (r.tax <= 0) ? '<span style="color:#4DD9A8;">비과세</span>' : engFmtKRW(r.tax);
+          return '<tr class="' + cls + '"><td>' + r.label + '</td><td class="amt">' + amt + '</td></tr>';
+        }).join('');
+        if (note) note.textContent = '내 계산 기준 추정치 · 양도 시점만 바꿔 비교';
+      }
+
+      function engShareScenarioReal() {
+        var rows = document.querySelectorAll('#engScenBody tr');
+        var lines = ['[양도세 AI 계산기] 양도 시점별 예상세액(추정)'];
+        rows.forEach(function(tr){
+          var td = tr.querySelectorAll('td');
+          if (td.length >= 2) lines.push('· ' + td[0].textContent.trim() + ': ' + td[1].textContent.trim());
+        });
+        var txt = lines.join('\n');
+        if (navigator.share) { navigator.share({ title: '양도세 시나리오 비교', text: txt }).catch(function(){}); }
+        else { alert(txt); }
+      }
+
+      document.addEventListener('DOMContentLoaded', function(){ try { engRenderScenario(); } catch(e){} });
 
       function _showHeaderTabs() {
         var hdr = document.querySelector('.hdr');
