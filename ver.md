@@ -1,5 +1,16 @@
 # Version History
 
+## v4.1.3 (2026-06-06)
+- 설명: 소제목1·소제목2에 무지개 흐름 + 글로우 점멸 애니메이션 적용 (강조)
+- 내용:
+  - `@keyframes rainbowSweep`(그라데이션 좌→우 흐름) + `@keyframes rainbowGlow`(글로우 점멸) 추가
+  - `.intro-headline.rainbow` 규칙: 7색 무지개 `linear-gradient`를 `background-clip:text`로 글자에 입히고 무한 애니메이션
+  - 적용 대상:
+    - 소제목1 = `전문 세무사도 꺼려하는 양도소득세, AI가 대신합니다` (히어로)
+    - 소제목2 = `양도소득세야, 놀자 ~`
+  - `.hl` 강조 span도 무지개에 포함되도록 처리
+  - `assets/yangdo_tax_calculator.html` 및 루트 파일 동일 적용
+
 ## v4.1.2 (2026-06-06)
 - 설명: 인트로 재방문 섹션에 소제목2 `양도소득세야, 놀자 ~` 추가 (⭐ NEW 배지 대체)
 - 내용:

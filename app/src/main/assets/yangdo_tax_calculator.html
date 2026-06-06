@@ -1387,6 +1387,26 @@
         .intro-headline .hl {
           color: #4DD9A8;
         }
+
+        /* 소제목 무지개 애니메이션 (눈에 띄는 강조) */
+        @keyframes rainbowSweep {
+          to { background-position: 200% center; }
+        }
+        @keyframes rainbowGlow {
+          0%, 100% { filter: drop-shadow(0 0 2px rgba(255,255,255,0.15)); }
+          50%      { filter: drop-shadow(0 0 12px rgba(255,255,255,0.55)); }
+        }
+        .intro-headline.rainbow,
+        .intro-headline.rainbow .hl {
+          background: linear-gradient(90deg,
+            #ff5e7e, #ff9d4d, #ffe14d, #5cff86, #4dc9ff, #9d6cff, #ff6cf0, #ff5e7e);
+          background-size: 200% auto;
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: transparent;
+          animation: rainbowSweep 3.2s linear infinite, rainbowGlow 1.6s ease-in-out infinite;
+        }
         .intro-sub {
           font-size: 14px;
           color: rgba(255,255,255,0.55);
@@ -1671,7 +1691,7 @@
       <div class="intro-hero">
         <div class="intro-eyebrow intro-anim-1">🏠 양도소득세 정밀 계산기</div>
         <div style="display:flex; align-items:flex-start; gap:12px;" class="intro-anim-2">
-          <div class="intro-headline" style="flex:1; margin-bottom:0;">
+          <div class="intro-headline rainbow" style="flex:1; margin-bottom:0;">
             전문 세무사도<br>꺼려하는 양도소득세,<br><span class="hl">AI가 대신합니다</span>
           </div>
           <div class="intro-sub" style="flex:0 0 auto; text-align:right; margin-bottom:0; padding-top:4px;">
@@ -1746,7 +1766,7 @@
 
         <!-- 오늘의 양도세 한 컷 (매일 갱신) -->
         <div class="eng-sec">
-          <div class="intro-headline" style="margin-bottom:14px;">양도소득세야,<br><span class="hl">놀자 ~</span></div>
+          <div class="intro-headline rainbow" style="margin-bottom:14px;">양도소득세야,<br><span class="hl">놀자 ~</span></div>
           <div id="engStory" class="eng-story">
             <div class="cap">📰 오늘의 양도세 한 컷 · 매일 갱신</div>
             <span id="engStoryBadge" class="eng-badge bad">😱 몰라서 손해 본 사례</span>
