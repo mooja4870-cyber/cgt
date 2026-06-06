@@ -1,5 +1,13 @@
 # Version History
 
+## v4.1.1 (2026-06-06)
+- 설명: `바로 양도세 계산하기 →` 버튼 파스텔 라이트 핑크 점멸(blink) 효과 적용
+- 내용:
+  - `@keyframes pastelPinkBlink` 추가 (배경/테두리/글자색/글로우가 1.3초 주기로 부드럽게 깜빡임)
+  - `.intro-cta-btn-outline` 기본색을 녹색 → **파스텔 라이트 핑크**(`#FFC2CE`, `rgba(255,182,193,…)`)로 변경하고 무한 점멸 애니메이션 적용
+  - hover/active 색상도 핑크 계열로 통일
+  - `assets/yangdo_tax_calculator.html` 및 루트 파일 동일 적용
+
 ## v4.1.0 (2026-06-06)
 - 설명: 인트로 화면에 재방문 유도(engagement) 6개 섹션 추가
 - 내용:
