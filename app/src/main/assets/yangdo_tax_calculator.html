@@ -2091,8 +2091,8 @@
         if (s.link) window.open(s.link, '_blank', 'noopener');
       }
       document.addEventListener('DOMContentLoaded', function() {
-        // 사용자별·날짜별 랜덤 사례 노출 (하루 고정, 주기마다 재셔플)
-        engRenderStory(engDailyPick(ENG_STORIES.length, 23));
+        // 새로고침마다 완전 랜덤 사례 노출 (직전 사례 연속 노출만 회피)
+        engRenderStory(engRandPick(ENG_STORIES.length, 'story'));
       });
 
       /* ───── 오늘의 OX 퀴즈: 문제은행(세법 근거) + 날짜순환 + 스트릭 ───── */
@@ -2150,7 +2150,7 @@
           src:'소득세법 시행령 §162(취득·양도 시기)' }
       ];
       var ENG_QUIZ_KEY = 'yangdo_eng_quiz';
-      function engQuizIdx() { return engDailyPick(ENG_QUIZ.length, 11); }
+      var engCurQuizIdx = 0; // 현재 화면에 표시된(=채점 대상) 문항 인덱스
       function engQuizLoad() {
         try { return JSON.parse(localStorage.getItem(ENG_QUIZ_KEY) || 'null'); } catch(e) { return null; }
       }
@@ -2158,7 +2158,8 @@
         var qEl = document.getElementById('engQuizQ');
         var streakEl = document.getElementById('engQuizStreak');
         if (!qEl) return;
-        var item = ENG_QUIZ[engQuizIdx()];
+        engCurQuizIdx = engRandPick(ENG_QUIZ.length, 'quiz'); // 새로고침마다 랜덤
+        var item = ENG_QUIZ[engCurQuizIdx];
         qEl.textContent = 'Q. ' + item.q;
         var ans = document.getElementById('engQuizAns');
         if (ans) ans.style.display = 'none';
@@ -2171,7 +2172,7 @@
         }
       }
       function engQuizAnswer(choice) {
-        var item = ENG_QUIZ[engQuizIdx()];
+        var item = ENG_QUIZ[engCurQuizIdx];
         var ans = document.getElementById('engQuizAns');
         var streakEl = document.getElementById('engQuizStreak');
         var correct = (choice === item.a);
@@ -2299,6 +2300,16 @@
         var pos = ((day % n) + n) % n;
         var order = engSeededShuffle(n, (seed ^ Math.imul(salt, 2654435761)) + cycle * 7919);
         return order[pos];
+      }
+
+      /* 새로고침마다 완전 랜덤 선택 (직전 항목 연속 노출만 회피) */
+      var _engLastPick = {};
+      function engRandPick(n, key) {
+        if (n <= 1) return 0;
+        var idx, tries = 0;
+        do { idx = Math.floor(Math.random() * n); tries++; } while (idx === _engLastPick[key] && tries < 8);
+        _engLastPick[key] = idx;
+        return idx;
       }
 
       // 만원 단위 숫자 → "X억 Y,YYY만" 표기
