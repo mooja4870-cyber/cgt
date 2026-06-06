@@ -1573,6 +1573,83 @@
         .intro-anim-4 { animation: introFadeUp 0.5s ease-out 0.5s both; }
         .intro-anim-5 { animation: introFadeUp 0.5s ease-out 0.65s both; }
         .intro-anim-6 { animation: introFadeUp 0.5s ease-out 0.8s both; }
+
+        /* ════════ 재방문 유도 섹션 (engagement) ════════ */
+        .eng-wrap { background:#111f18; padding:0.25rem 1.5rem 1.25rem; }
+        .eng-sec { margin-top:18px; }
+        .eng-tag { display:inline-block; font-size:9px; font-weight:800; letter-spacing:0.06em;
+          color:#0D1F1A; background:#4DD9A8; padding:2px 8px; border-radius:6px; margin-bottom:8px; }
+        .eng-tag.star { background:#FFD84D; }
+        .eng-tag.pink { background:#FF6B9D; color:#fff; }
+
+        /* 오늘의 양도세 한 컷 (스토리) */
+        .eng-story { background:linear-gradient(135deg,#3a1620 0%,#2a0e16 100%);
+          border:1.5px solid rgba(255,80,120,0.55); border-radius:16px; padding:16px;
+          box-shadow:0 6px 24px rgba(255,60,100,0.18); position:relative; overflow:hidden; }
+        .eng-story::before { content:'📰'; position:absolute; top:-8px; right:10px; font-size:54px; opacity:0.10; transform:rotate(12deg); }
+        .eng-story .cap { font-size:10px; font-weight:800; color:#FF7AA0; letter-spacing:0.06em; margin-bottom:6px; }
+        .eng-badge { display:inline-block; font-size:10px; font-weight:800; color:#fff; padding:2px 8px; border-radius:20px; margin-bottom:8px; }
+        .eng-badge.bad { background:#E5394E; }
+        .eng-badge.good { background:#1D9E75; }
+        .eng-story h3 { font-size:16px; font-weight:900; color:#FFD2DC; line-height:1.4; margin-bottom:8px; }
+        .eng-story.good h3 { color:#CFF5E6; }
+        .eng-story p { font-size:12.5px; color:rgba(255,220,228,0.80); line-height:1.6; }
+        .eng-story.good { background:linear-gradient(135deg,#103024 0%,#0c241b 100%); border-color:rgba(77,217,168,0.5); box-shadow:0 6px 24px rgba(29,158,117,0.18); }
+        .eng-story.good .cap { color:#4DD9A8; }
+        .eng-story.good p { color:rgba(220,255,240,0.80); }
+        .eng-story .more { margin-top:10px; font-size:12px; font-weight:700; color:#FF7AA0; cursor:pointer; }
+        .eng-story.good .more { color:#4DD9A8; }
+        .eng-story .dots { margin-top:10px; display:flex; gap:5px; }
+        .eng-story .dots i { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.2); transition:all 0.2s; }
+        .eng-story .dots i.on { background:#FF7AA0; width:16px; border-radius:3px; }
+        .eng-story.good .dots i.on { background:#4DD9A8; }
+
+        /* 절세 D-Day */
+        .eng-dday { background:#10221b; border:1px solid rgba(29,158,117,0.3); border-radius:16px; padding:6px 16px; }
+        .eng-dday .row { display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px dashed rgba(255,255,255,0.07); }
+        .eng-dday .row:last-child { border-bottom:none; }
+        .eng-dday .dd { flex:0 0 auto; width:58px; text-align:center; font-weight:900; font-size:18px; color:#FFD84D; line-height:1.1; }
+        .eng-dday .dd small { display:block; font-size:9px; color:rgba(255,255,255,0.4); font-weight:600; margin-top:2px; }
+        .eng-dday .di { font-size:12.5px; color:#e8f5f0; line-height:1.5; }
+        .eng-dday .di b { color:#4DD9A8; }
+        .eng-dday .row.urgent .dd { color:#FF6B6B; }
+
+        /* OX 퀴즈 */
+        .eng-quiz { background:linear-gradient(135deg,#16243a 0%,#101a2c 100%); border:1px solid rgba(80,140,255,0.3); border-radius:16px; padding:16px; }
+        .eng-quiz .q { font-size:14px; font-weight:800; color:#cfe0ff; line-height:1.5; margin-bottom:12px; }
+        .eng-quiz .opts { display:flex; gap:10px; }
+        .eng-quiz .opt { flex:1; text-align:center; font-weight:900; font-size:20px; padding:12px 0; border-radius:12px;
+          border:1.5px solid rgba(255,255,255,0.15); color:#fff; cursor:pointer; transition:all 0.15s; background:transparent; font-family:inherit; }
+        .eng-quiz .opt:active { transform:scale(0.97); }
+        .eng-quiz .ans { display:none; margin-top:12px; font-size:12.5px; line-height:1.6; padding:11px 13px; border-radius:12px;
+          background:rgba(77,217,168,0.1); border:1px solid rgba(77,217,168,0.3); color:#cfe0d8; }
+        .eng-quiz .ans b { color:#4DD9A8; }
+        .eng-quiz .streak { margin-top:10px; font-size:11px; color:#FFD84D; font-weight:700; }
+
+        /* 세법·시세 속보 */
+        .eng-ticker { background:rgba(255,204,0,0.08); border:1px solid rgba(255,204,0,0.3); border-radius:12px;
+          padding:11px 14px; display:flex; gap:10px; align-items:center; }
+        .eng-ticker .tg { font-size:9px; font-weight:800; color:#0D1F1A; background:#FFD84D; padding:3px 8px; border-radius:5px; flex:0 0 auto; }
+        .eng-ticker .tt { font-size:12px; color:#FFE89A; line-height:1.5; }
+        .eng-ticker .tt b { color:#fff; }
+
+        /* 시나리오 비교 */
+        .eng-scen { background:#10221b; border:1px solid rgba(29,158,117,0.3); border-radius:16px; padding:16px; }
+        .eng-scen .st { font-size:13px; font-weight:800; color:#e8f5f0; margin-bottom:10px; }
+        .eng-scen table { width:100%; border-collapse:collapse; }
+        .eng-scen td { padding:9px 6px; font-size:12.5px; border-bottom:1px solid rgba(255,255,255,0.06); color:#cfe0d8; }
+        .eng-scen td.amt { text-align:right; font-weight:800; }
+        .eng-scen tr:last-child td { border-bottom:none; }
+        .eng-scen tr.best td { color:#4DD9A8; }
+        .eng-scen tr.worst td.amt { color:#FF8A8A; }
+        .eng-scen .share { margin-top:12px; text-align:center; background:#FEE500; color:#3C1E1E; font-weight:800;
+          font-size:13px; padding:11px; border-radius:12px; cursor:pointer; }
+
+        /* 월간 리포트 */
+        .eng-report { background:linear-gradient(135deg,#1D9E75 0%,#0F6E56 100%); border-radius:16px; padding:16px; box-shadow:0 6px 24px rgba(29,158,117,0.3); }
+        .eng-report .rl { font-size:10px; font-weight:800; color:rgba(255,255,255,0.7); letter-spacing:0.06em; margin-bottom:6px; }
+        .eng-report .rb { font-size:14px; font-weight:800; color:#fff; line-height:1.55; }
+        .eng-report .rb em { font-style:normal; background:rgba(255,255,0,0.25); color:#FFEE88; padding:1px 5px; border-radius:4px; }
       </style>
 
       <!-- 히어로 섹션 -->
@@ -1649,6 +1726,89 @@
         </div>
       </div>
 
+      <!-- ════════ 재방문 유도 섹션 (사용 가이드 보기 직전) ════════ -->
+      <div class="eng-wrap intro-anim-6">
+
+        <!-- 오늘의 양도세 한 컷 (매일 갱신) -->
+        <div class="eng-sec">
+          <span class="eng-tag pink">⭐ NEW</span>
+          <div id="engStory" class="eng-story">
+            <div class="cap">📰 오늘의 양도세 한 컷 · 매일 갱신</div>
+            <span id="engStoryBadge" class="eng-badge bad">😱 몰라서 손해 본 사례</span>
+            <h3 id="engStoryTitle">"세대분리만 믿었다가… 6억 추징"</h3>
+            <p id="engStoryBody">아들이 주소만 옮기고 실제론 부모 아파트에서 먹고 자며 출퇴근. 카드·교통 내역으로 <b style="color:#FFD2DC">실질 1세대 2주택</b> 판정 → 비과세 취소, 양도세 6억 추징.</p>
+            <div class="more" onclick="engStoryDetail()">자세히 보기 →</div>
+            <div class="dots" id="engStoryDots"></div>
+          </div>
+        </div>
+
+        <!-- 절세 D-Day -->
+        <div class="eng-sec">
+          <span class="eng-tag star">① 절세 D-Day · 개인화</span>
+          <div class="eng-dday">
+            <div class="row urgent">
+              <div class="dd">D-23<small>처분기한</small></div>
+              <div class="di">일시적 2주택 <b>3년 처분기한</b>이 23일 남았어요. 기한 내 매도해야 비과세!</div>
+            </div>
+            <div class="row">
+              <div class="dd">D-47<small>거주2년</small></div>
+              <div class="di">앞으로 <b>47일만 더 거주</b>하면 2년 요건 충족 → 비과세 가능</div>
+            </div>
+            <div class="row">
+              <div class="dd">D-12<small>장특공제</small></div>
+              <div class="di">다음 달이면 장기보유특별공제 <b>+2%p</b> 상승 구간 진입</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 오늘의 OX 퀴즈 -->
+        <div class="eng-sec">
+          <span class="eng-tag">② 오늘의 OX 퀴즈</span>
+          <div class="eng-quiz">
+            <div class="q">Q. 자녀가 주소만 분리하면 무조건 1세대 1주택으로 비과세 받을 수 있다?</div>
+            <div class="opts">
+              <button class="opt" onclick="engQuizAnswer('O')">O</button>
+              <button class="opt" onclick="engQuizAnswer('X')">X</button>
+            </div>
+            <div class="ans" id="engQuizAns"><b>정답: X</b> — 주소(전입)만으로는 부족합니다. 실제 생활(거주·생계)이 동일하면 <b>실질 1세대</b>로 보아 비과세가 부인될 수 있습니다.</div>
+            <div class="streak">🔥 연속 정답 6일째 · 내일 풀면 7일 달성!</div>
+          </div>
+        </div>
+
+        <!-- 세법·시세 속보 -->
+        <div class="eng-sec">
+          <span class="eng-tag">③ 세법·시세 속보</span>
+          <div class="eng-ticker">
+            <span class="tg">속보</span>
+            <div class="tt"><b>2026.5.10부터 다주택 중과 재개</b> — 2주택 +20%p, 3주택+ +30%p 적용. 앱에 반영 완료.</div>
+          </div>
+        </div>
+
+        <!-- 지금 팔까 vs 나중에 팔까 -->
+        <div class="eng-sec">
+          <span class="eng-tag">④ 지금 팔까 vs 나중에 팔까</span>
+          <div class="eng-scen">
+            <div class="st">같은 물건, 양도 시점별 예상세액 비교</div>
+            <table>
+              <tr class="worst"><td>오늘 양도</td><td class="amt">2억 1,400만</td></tr>
+              <tr><td>6개월 뒤</td><td class="amt">1억 6,800만</td></tr>
+              <tr class="best"><td>2년 거주 충족 후 ✓</td><td class="amt">3,200만</td></tr>
+            </table>
+            <div class="share" onclick="engShareScenario()">💬 카카오톡으로 결과 공유하기</div>
+          </div>
+        </div>
+
+        <!-- 월 1회 절세 리포트 -->
+        <div class="eng-sec">
+          <span class="eng-tag">⑤ 월 1회 절세 리포트</span>
+          <div class="eng-report">
+            <div class="rl">📊 이번 달 나의 절세 리포트</div>
+            <div class="rb">보유기간이 늘어 장특공제가 <em>+480만원</em> 증가했어요. 지금 예상 양도세는 <em>1억 2,100만원</em>입니다.</div>
+          </div>
+        </div>
+
+      </div>
+
       <!-- CTA 버튼 -->
       <div class="intro-cta-wrap intro-anim-6">
         <button class="intro-cta-btn" onclick="startFromIntro()">
@@ -1671,6 +1831,52 @@
         if (hdr) hdr.style.display = 'none';
         if (tabs) tabs.style.display = 'none';
       });
+
+      /* ════════ 재방문 유도: 오늘의 양도세 한 컷 (큐레이션·매일 갱신) ════════ */
+      var ENG_STORIES = [
+        { type:'bad',  badge:'😱 몰라서 손해 본 사례', title:'"세대분리만 믿었다가… 6억 추징"',
+          body:'아들이 주소만 옮기고 실제론 부모 아파트에서 먹고 자며 출퇴근. 카드·교통 내역으로 <b style="color:#FFD2DC">실질 1세대 2주택</b> 판정 → 비과세 취소, 양도세 6억 추징.' },
+        { type:'good', badge:'😊 잘 알아서 절세한 사례', title:'"일시적 2주택 3년 룰로 1.7억 아꼈다"',
+          body:'새 집으로 갈아타며 기존 주택을 <b style="color:#CFF5E6">3년 처분기한 내</b> 매도. 일시적 2주택 비과세 적용으로 양도세 약 1.7억원을 절감.' },
+        { type:'bad',  badge:'😱 몰라서 손해 본 사례', title:'"잔금 1주일 차이로 비과세 날렸다"',
+          body:'종전주택 취득 <b style="color:#FFD2DC">1년이 안 된 시점</b>에 새 집을 사버려 일시적 2주택 특례 배제 → 1억 6,100만원 양도세 납부.' },
+        { type:'good', badge:'😊 잘 알아서 절세한 사례', title:'"환산취득가액으로 세금 확 줄였다"',
+          body:'오래된 주택이라 취득가액 증빙이 없자 <b style="color:#CFF5E6">환산취득가액</b>을 적용. 양도차익이 크게 줄어 세액 대폭 절감.' },
+        { type:'bad',  badge:'😱 몰라서 손해 본 사례', title:'"양도 직전 위장 세대분리, 결국 적발"',
+          body:'양도일에 임박해 급히 자녀 주소만 분리. 과세당국이 위장분리로 보아 <b style="color:#FFD2DC">실질 1세대 다주택</b> 중과 적용.' }
+      ];
+      function engRenderStory(i) {
+        var s = ENG_STORIES[i], box = document.getElementById('engStory');
+        if (!box) return;
+        box.className = 'eng-story' + (s.type === 'good' ? ' good' : '');
+        document.getElementById('engStoryBadge').className = 'eng-badge ' + (s.type === 'good' ? 'good' : 'bad');
+        document.getElementById('engStoryBadge').textContent = s.badge;
+        document.getElementById('engStoryTitle').textContent = s.title;
+        document.getElementById('engStoryBody').innerHTML = s.body;
+        var dots = document.getElementById('engStoryDots');
+        dots.innerHTML = ENG_STORIES.map(function(_, k){ return '<i class="' + (k === i ? 'on' : '') + '"></i>'; }).join('');
+        box.setAttribute('data-idx', i);
+      }
+      function engStoryDetail() {
+        var i = parseInt(document.getElementById('engStory').getAttribute('data-idx') || '0', 10);
+        var s = ENG_STORIES[i];
+        alert(s.title.replace(/"/g, '') + '\n\n' + s.body.replace(/<[^>]+>/g, ''));
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        // 날짜 기준으로 매일 다른 사례 노출 (큐레이션 순환)
+        var day = Math.floor(Date.now() / 86400000);
+        engRenderStory(day % ENG_STORIES.length);
+      });
+
+      function engQuizAnswer(choice) {
+        var ans = document.getElementById('engQuizAns');
+        if (ans) ans.style.display = 'block';
+      }
+      function engShareScenario() {
+        var txt = '[양도세 AI 계산기] 양도 시점별 예상세액\n· 오늘 양도: 2억 1,400만\n· 6개월 뒤: 1억 6,800만\n· 2년 거주 충족 후: 3,200만';
+        if (navigator.share) { navigator.share({ title: '양도세 시나리오 비교', text: txt }).catch(function(){}); }
+        else { alert(txt); }
+      }
 
       function _showHeaderTabs() {
         var hdr = document.querySelector('.hdr');

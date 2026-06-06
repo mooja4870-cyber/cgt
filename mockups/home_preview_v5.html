@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CGT 홈화면 목업 v5 (6개 기능 추가안)</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; word-break:keep-all; }
+  body {
+    font-family:-apple-system, BlinkMacSystemFont,'Segoe UI','Helvetica Neue','Malgun Gothic',sans-serif;
+    background:#2a2a2a; padding:24px; display:flex; justify-content:center; gap:28px; flex-wrap:wrap;
+  }
+  .phone {
+    width:390px; background:#0D1F1A; border-radius:34px; overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,.6); border:8px solid #000;
+  }
+  .scroll { height:780px; overflow-y:auto; }
+  /* ===== 기존 히어로 ===== */
+  .hero { position:relative; background:linear-gradient(160deg,#1a3a2e 0%,#0D1F1A 60%); padding:28px 22px 22px; }
+  .eyebrow { display:inline-flex; align-items:center; gap:6px; background:rgba(29,158,117,.18);
+    border:1px solid rgba(29,158,117,.35); color:#4DD9A8; font-size:11px; font-weight:700;
+    padding:5px 12px; border-radius:20px; margin-bottom:16px; }
+  .htop { display:flex; gap:12px; align-items:flex-start; }
+  .headline { flex:1; font-size:25px; font-weight:900; color:#fff; line-height:1.25; letter-spacing:-.8px; }
+  .headline .hl { color:#4DD9A8; }
+  .hsub { flex:0 0 auto; text-align:right; }
+  .hsub strong { color:#FF4444; font-weight:800; font-size:12px; line-height:1.6; }
+  /* ===== 핵심 차이 카드(기존) ===== */
+  .main-card { background:linear-gradient(135deg,#1D9E75 0%,#0F6E56 100%); border-radius:18px;
+    padding:20px; margin-top:20px; position:relative; overflow:hidden; box-shadow:0 8px 32px rgba(29,158,117,.35); }
+  .main-card .lbl { font-size:10px; font-weight:800; color:rgba(255,255,255,.65); letter-spacing:.1em; text-transform:uppercase; margin-bottom:8px; }
+  .main-card .txt { font-size:15px; font-weight:700; color:#fff; line-height:1.55; }
+  .main-card .txt strong { background:rgba(255,255,0,.22); color:#FFEE88; padding:1px 4px; border-radius:4px; }
+
+  /* ===== NEW 공통 ===== */
+  .sec { padding:16px 18px 0; }
+  .newtag { display:inline-block; font-size:9px; font-weight:800; letter-spacing:.08em; color:#0D1F1A;
+    background:#4DD9A8; padding:2px 7px; border-radius:6px; margin-bottom:8px; vertical-align:middle; }
+  .newtag.star { background:#FFD84D; }
+  .newtag.pink { background:#FF6B9D; color:#fff; }
+
+  /* === ⭐ 사용자 아이디어: 오늘의 양도세 한 컷 (강조 핑크/레드 스토리) === */
+  .story { background:linear-gradient(135deg,#3a1620 0%,#2a0e16 100%);
+    border:1.5px solid rgba(255,80,120,.55); border-radius:16px; padding:16px;
+    box-shadow:0 6px 24px rgba(255,60,100,.18); position:relative; overflow:hidden; }
+  .story::before { content:'📰'; position:absolute; top:-8px; right:10px; font-size:54px; opacity:.10; transform:rotate(12deg); }
+  .story .cap { font-size:10px; font-weight:800; color:#FF7AA0; letter-spacing:.08em; margin-bottom:6px; }
+  .story .badge-bad { display:inline-block; font-size:10px; font-weight:800; color:#fff; background:#E5394E; padding:2px 8px; border-radius:20px; margin-bottom:8px; }
+  .story h3 { font-size:16px; font-weight:900; color:#FFD2DC; line-height:1.4; margin-bottom:8px; }
+  .story p { font-size:12.5px; color:rgba(255,220,228,.78); line-height:1.6; }
+  .story .more { margin-top:10px; font-size:12px; font-weight:700; color:#FF7AA0; }
+  .story .dots { margin-top:10px; display:flex; gap:5px; }
+  .story .dots i { width:6px; height:6px; border-radius:50%; background:rgba(255,120,160,.3); }
+  .story .dots i.on { background:#FF7AA0; width:16px; border-radius:3px; }
+
+  /* === 1. 절세 D-Day 알림 (개인화) === */
+  .dday { background:#10221b; border:1px solid rgba(29,158,117,.3); border-radius:16px; padding:16px; }
+  .dday .row { display:flex; align-items:center; gap:12px; padding:9px 0; border-bottom:1px dashed rgba(255,255,255,.07); }
+  .dday .row:last-child { border-bottom:none; }
+  .dday .dd { flex:0 0 auto; width:58px; text-align:center; font-weight:900; font-size:18px; color:#FFD84D; }
+  .dday .dd small { display:block; font-size:9px; color:rgba(255,255,255,.4); font-weight:600; }
+  .dday .di { font-size:12.5px; color:#e8f5f0; line-height:1.5; }
+  .dday .di b { color:#4DD9A8; }
+  .dday .urgent .dd { color:#FF6B6B; }
+
+  /* === 2. 오늘의 OX 퀴즈 === */
+  .quiz { background:linear-gradient(135deg,#16243a 0%,#101a2c 100%); border:1px solid rgba(80,140,255,.3); border-radius:16px; padding:16px; }
+  .quiz .q { font-size:14px; font-weight:800; color:#cfe0ff; line-height:1.5; margin-bottom:12px; }
+  .quiz .opts { display:flex; gap:10px; }
+  .quiz .opt { flex:1; text-align:center; font-weight:900; font-size:20px; padding:12px 0; border-radius:12px;
+    border:1.5px solid rgba(255,255,255,.15); color:#fff; }
+  .quiz .opt.o { background:rgba(77,217,168,.12); border-color:#4DD9A8; color:#4DD9A8; }
+  .quiz .opt.x { background:rgba(255,107,107,.1); border-color:rgba(255,107,107,.5); color:#FF8A8A; }
+  .quiz .streak { margin-top:10px; font-size:11px; color:#FFD84D; font-weight:700; }
+
+  /* === 3. 세법·시세 속보 배지 === */
+  .ticker { background:rgba(255,204,0,.08); border:1px solid rgba(255,204,0,.3); border-radius:12px;
+    padding:11px 14px; display:flex; gap:10px; align-items:center; }
+  .ticker .tg { font-size:9px; font-weight:800; color:#0D1F1A; background:#FFD84D; padding:2px 7px; border-radius:5px; flex:0 0 auto; }
+  .ticker .tt { font-size:12px; color:#FFE89A; line-height:1.5; }
+  .ticker .tt b { color:#fff; }
+
+  /* === 4. 시나리오 비교 + 공유 === */
+  .scen { background:#10221b; border:1px solid rgba(29,158,117,.3); border-radius:16px; padding:16px; }
+  .scen .st { font-size:13px; font-weight:800; color:#e8f5f0; margin-bottom:12px; }
+  .scen table { width:100%; border-collapse:collapse; }
+  .scen td { padding:8px 6px; font-size:12px; border-bottom:1px solid rgba(255,255,255,.06); color:#cfe0d8; }
+  .scen td.amt { text-align:right; font-weight:800; }
+  .scen tr.best td { color:#4DD9A8; }
+  .scen tr.best td.amt { color:#4DD9A8; }
+  .scen tr.worst td.amt { color:#FF8A8A; }
+  .scen .share { margin-top:12px; text-align:center; background:#FEE500; color:#3C1E1E; font-weight:800;
+    font-size:13px; padding:11px; border-radius:12px; }
+
+  /* === 5. 월간 절세 리포트 === */
+  .report { background:linear-gradient(135deg,#1D9E75 0%,#0F6E56 100%); border-radius:16px; padding:16px; box-shadow:0 6px 24px rgba(29,158,117,.3); }
+  .report .rl { font-size:10px; font-weight:800; color:rgba(255,255,255,.7); letter-spacing:.08em; margin-bottom:6px; }
+  .report .rb { font-size:14px; font-weight:800; color:#fff; line-height:1.55; }
+  .report .rb em { font-style:normal; background:rgba(255,255,0,.25); color:#FFEE88; padding:1px 5px; border-radius:4px; }
+
+  /* CTA */
+  .cta { padding:18px; margin-top:18px; }
+  .cta .btn { display:block; background:linear-gradient(135deg,#1D9E75,#0F8060); color:#fff; font-size:16px;
+    font-weight:800; padding:16px; border-radius:14px; text-align:center; box-shadow:0 6px 24px rgba(29,158,117,.4); }
+  .label-tab { text-align:center; color:rgba(255,255,255,.35); font-size:11px; padding:10px; }
+  .anno { color:#9fb; font-size:11px; }
+</style>
+</head>
+<body>
+
+<!-- ============ 휴대폰 1: 홈화면 전체 (6기능 배치) ============ -->
+<div>
+  <div style="color:#9fb;font-size:13px;font-weight:800;margin-bottom:10px;text-align:center;">📱 홈(인트로) 화면 — 6개 기능 배치안</div>
+  <div class="phone"><div class="scroll">
+
+    <!-- 기존 히어로 -->
+    <div class="hero">
+      <div class="eyebrow">🏠 양도소득세 정밀 계산기</div>
+      <div class="htop">
+        <div class="headline">전문 세무사도<br>꺼려하는 양도소득세,<br><span class="hl">AI가 대신합니다</span></div>
+        <div class="hsub"><strong>고액 양도차익<br>신고는 세무사도<br>부담스러워하는<br>최고 난이도</strong></div>
+      </div>
+
+      <!-- 기존: 핵심 차이 카드 -->
+      <div class="main-card">
+        <div class="lbl">이 앱의 핵심 차이</div>
+        <div class="txt">시중 계산기는 <strong>러프한 추정값</strong>만 보여줍니다. 이 앱은 <strong>실제 과세 로직 그대로</strong> 반영합니다.</div>
+      </div>
+    </div>
+
+    <!-- ⭐ 사용자 아이디어: 핵심차이 박스 "바로 밑" 강조 스토리 박스 -->
+    <div class="sec">
+      <span class="newtag pink">NEW ⭐ 사용자 아이디어</span>
+      <div class="story">
+        <div class="cap">📰 오늘의 양도세 한 컷 · 매일 갱신</div>
+        <span class="badge-bad">😱 몰라서 손해 본 사례</span>
+        <h3>"세대분리만 믿었다가… 6억 추징"</h3>
+        <p>아들이 주소만 옮기고 실제론 부모 아파트에서 먹고 자며 출퇴근. 카드·교통 내역으로 <b style="color:#FFD2DC">실질 1세대 2주택</b> 판정 → 비과세 취소, 양도세 6억 추징.</p>
+        <div class="more">자세히 보기 →</div>
+        <div class="dots"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+
+    <!-- 1. 절세 D-Day 알림 -->
+    <div class="sec">
+      <span class="newtag star">NEW ① 절세 D-Day · 개인화</span>
+      <div class="dday">
+        <div class="row urgent">
+          <div class="dd">D-23<small>처분기한</small></div>
+          <div class="di">일시적 2주택 <b>3년 처분기한</b>이 23일 남았어요. 기한 내 매도해야 비과세!</div>
+        </div>
+        <div class="row">
+          <div class="dd">D-47<small>거주2년</small></div>
+          <div class="di">앞으로 <b>47일만 더 거주</b>하면 2년 요건 충족 → 비과세 가능</div>
+        </div>
+        <div class="row">
+          <div class="dd">D-12<small>장특공제</small></div>
+          <div class="di">다음 달이면 장기보유특별공제 <b>+2%p</b> 상승 구간 진입</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. OX 퀴즈 -->
+    <div class="sec">
+      <span class="newtag">NEW ② 오늘의 OX 퀴즈</span>
+      <div class="quiz">
+        <div class="q">Q. 자녀가 주소만 분리하면 무조건 1세대 1주택으로 비과세 받을 수 있다?</div>
+        <div class="opts">
+          <div class="opt o">O</div>
+          <div class="opt x">X</div>
+        </div>
+        <div class="streak">🔥 연속 정답 6일째 · 내일 풀면 7일 달성!</div>
+      </div>
+    </div>
+
+    <!-- 3. 세법·시세 속보 -->
+    <div class="sec">
+      <span class="newtag">NEW ③ 세법·시세 속보</span>
+      <div class="ticker">
+        <span class="tg">속보</span>
+        <div class="tt"><b>2026.5.10부터 다주택 중과 재개</b> — 2주택 +20%p, 3주택+ +30%p 적용. 앱에 반영 완료.</div>
+      </div>
+    </div>
+
+    <!-- 4. 시나리오 비교 + 공유 -->
+    <div class="sec">
+      <span class="newtag">NEW ④ 지금 팔까 vs 나중에 팔까</span>
+      <div class="scen">
+        <div class="st">같은 물건, 양도 시점별 예상세액 비교</div>
+        <table>
+          <tr class="worst"><td>오늘 양도</td><td class="amt">2억 1,400만</td></tr>
+          <tr><td>6개월 뒤</td><td class="amt">1억 6,800만</td></tr>
+          <tr class="best"><td>2년 거주 충족 후 ✓</td><td class="amt">3,200만</td></tr>
+        </table>
+        <div class="share">💬 카카오톡으로 결과 공유하기</div>
+      </div>
+    </div>
+
+    <!-- 5. 월간 리포트 -->
+    <div class="sec">
+      <span class="newtag">NEW ⑤ 월 1회 절세 리포트</span>
+      <div class="report">
+        <div class="rl">📊 이번 달 나의 절세 리포트</div>
+        <div class="rb">보유기간이 늘어 장특공제가 <em>+480만원</em> 증가했어요. 지금 예상 양도세는 <em>1억 2,100만원</em>입니다.</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta">
+      <div class="btn">계산 시작하기 →</div>
+    </div>
+    <div class="label-tab">↑ 그 아래로 기존 "다른 계산기와 무엇이 다른가요" 특징 리스트 계속</div>
+
+  </div></div>
+</div>
+
+<!-- ============ 설명 패널 ============ -->
+<div style="max-width:300px;color:#ddd;font-size:13px;line-height:1.7;">
+  <div style="color:#4DD9A8;font-weight:800;font-size:15px;margin-bottom:10px;">배치 설명</div>
+  <p style="margin-bottom:10px;"><b style="color:#FF7AA0;">⭐ 사용자 아이디어 (핑크 박스)</b><br>요청하신 대로 "핵심 차이" 카드 <b>바로 밑</b>에 강조색(레드/핑크) 스토리 박스. 성공/실패 사례를 매일 번갈아 노출. 큐레이션 방식(②)이라 서버 없이 오프라인 작동·저작권 안전.</p>
+  <p style="margin-bottom:10px;"><b style="color:#FFD84D;">① D-Day</b> 저장된 취득·양도일로 개인 데드라인 자동 알림 (재방문 핵심).</p>
+  <p style="margin-bottom:10px;"><b>② OX 퀴즈</b> 정답 해설로 스토리 연결, 스트릭으로 습관화.</p>
+  <p style="margin-bottom:10px;"><b>③ 속보</b> 세법/공시가 변경 알림 배지.</p>
+  <p style="margin-bottom:10px;"><b>④ 시나리오</b> 시점별 세액 비교 + 카톡 공유(바이럴).</p>
+  <p style="margin-bottom:10px;"><b>⑤ 월간 리포트</b> 개인 절세 리포트 월 1회.</p>
+  <p style="color:#9fb;border-top:1px solid #333;padding-top:10px;margin-top:14px;">※ 이건 <b>목업(시안)</b>입니다. 실제 앱 코드는 아직 수정 안 함. 확정 후 ①번부터 단계적으로 실제 구현 + 커밋·태깅·푸시.</p>
+</div>
+
+</body>
+</html>
