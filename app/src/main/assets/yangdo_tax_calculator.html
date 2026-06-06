@@ -1826,7 +1826,7 @@
         <!-- 절세 D-Day -->
         <div class="eng-sec">
           <span class="eng-tag star">절세 D-Day</span>
-          <div class="eng-dday">
+          <div class="eng-dday" id="engDdayBox">
             <div class="row urgent">
               <div class="dd">D-23<small>처분기한</small></div>
               <div class="di">일시적 2주택 <b>3년 처분기한</b>이 23일 남았어요. 기한 내 매도해야 비과세!</div>
@@ -1840,6 +1840,7 @@
               <div class="di">다음 달이면 장기보유특별공제 <b>+2%p</b> 상승 구간 진입</div>
             </div>
           </div>
+          <div id="engDdayNote" style="font-size:10px; color:rgba(255,255,255,0.4); margin-top:6px; text-align:right;">예시 — 먼저 계산을 완료하면 내 일정 기준으로 채워집니다</div>
         </div>
 
         <!-- 오늘의 OX 퀴즈 -->
@@ -2302,7 +2303,84 @@
         else { alert(txt); }
       }
 
-      document.addEventListener('DOMContentLoaded', function(){ try { engRenderScenario(); } catch(e){} });
+      /* ───── 절세 D-Day: 저장된 날짜로 실제 계산 ───── */
+      function engDaysBetween(a, b) { return Math.ceil((b - a) / (1000*60*60*24)); }
+      function engRenderDday() {
+        var box = document.getElementById('engDdayBox');
+        var note = document.getElementById('engDdayNote');
+        if (!box) return;
+        var s = engGetState();
+        if (!s || !s.acquireDate) {
+          if (note) note.textContent = '예시 — 먼저 계산을 완료하면 내 일정 기준으로 채워집니다';
+          return; // 정적 예시 유지
+        }
+        var today = engToday();
+        var ad = new Date(s.acquireDate);
+        if (isNaN(ad.getTime())) { return; }
+        var holdY = (today - ad) / (1000*60*60*24*365.25);
+        var resY = engNum(s.resYear);
+        var adj = s.adjusted || 'no';
+        var isRegulated = (adj === 'yes' || adj === 'speculat' || adj === 'overheated');
+        var hc = s.houseCount || '1';
+        var rows = [];
+
+        // (a) 일시적 2주택 3년 처분기한 (신규주택 취득일 + 3년)
+        if (s.newHouseDate) {
+          var nh = new Date(s.newHouseDate);
+          if (!isNaN(nh.getTime())) {
+            var deadline = engAddYears(nh, 3);
+            var d = engDaysBetween(today, deadline);
+            if (d > 0) rows.push({ d: d, tag: '처분기한', urgent: d <= 30,
+              html: '일시적 2주택 <b>3년 처분기한</b>이 ' + d + '일 남았어요. 기한 내 매도해야 비과세!' });
+            else rows.push({ d: 0, tag: '처분기한', urgent: true, expired: true,
+              html: '일시적 2주택 <b>3년 처분기한이 지났습니다</b>. 비과세 요건을 다시 확인하세요.' });
+          }
+        }
+        // (b) 거주 2년 충족 (조정지역 1주택, 거주 미충족)
+        if (hc === '1' && isRegulated && resY < 2) {
+          var dRes = Math.ceil((2 - resY) * 365.25);
+          rows.push({ d: dRes, tag: '거주2년', urgent: dRes <= 30,
+            html: '앞으로 <b>' + dRes + '일만 더 거주</b>하면 2년 요건 충족 → 비과세 가능' });
+        }
+        // (c) 보유 2년 충족
+        if (holdY < 2) {
+          var hold2 = engAddYears(ad, 2);
+          var dHold = engDaysBetween(today, hold2);
+          if (dHold > 0) rows.push({ d: dHold, tag: '보유2년', urgent: dHold <= 30,
+            html: '앞으로 <b>' + dHold + '일</b>이면 보유 2년 충족 → 비과세 기본요건 달성' });
+        }
+        // (d) 장특공 다음 구간(다음 정수 보유연도) — 보유 2년 이상일 때
+        if (holdY >= 2) {
+          var nextYear = Math.floor(holdY) + 1;
+          var nextDate = engAddYears(ad, nextYear);
+          var dNext = engDaysBetween(today, nextDate);
+          var step = (hc === '1') ? '+4%p' : '+2%p';
+          if (dNext > 0 && dNext <= 400) rows.push({ d: dNext, tag: '장특공제', urgent: dNext <= 30,
+            html: '<b>' + dNext + '일</b> 뒤 장기보유특별공제 <b>' + step + '</b> 상승 구간 진입(보유 ' + nextYear + '년)' });
+        }
+
+        if (!rows.length) {
+          box.innerHTML = '<div class="row"><div class="dd" style="color:#4DD9A8;">🎉<small>달성</small></div>' +
+            '<div class="di">비과세·공제 주요 요건을 <b>이미 충족</b>했어요. 좋은 타이밍입니다!</div></div>';
+          if (note) note.textContent = '내 일정 기준';
+          return;
+        }
+        // 임박한 순으로 정렬, 최대 4개
+        rows.sort(function(a,b){ return a.d - b.d; });
+        rows = rows.slice(0, 4);
+        box.innerHTML = rows.map(function(r){
+          var ddText = r.expired ? '지남' : ('D-' + r.d);
+          return '<div class="row' + (r.urgent ? ' urgent' : '') + '">' +
+            '<div class="dd">' + ddText + '<small>' + r.tag + '</small></div>' +
+            '<div class="di">' + r.html + '</div></div>';
+        }).join('');
+        if (note) note.textContent = '내 일정 기준 (오늘 ' + engISO(today) + ')';
+      }
+
+      document.addEventListener('DOMContentLoaded', function(){
+        try { engRenderScenario(); } catch(e){}
+        try { engRenderDday(); } catch(e){}
+      });
 
       function _showHeaderTabs() {
         var hdr = document.querySelector('.hdr');
