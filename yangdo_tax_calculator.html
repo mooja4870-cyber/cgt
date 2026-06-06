@@ -1818,8 +1818,10 @@
             <span id="engStoryBadge" class="eng-badge bad">😱 몰라서 손해 본 사례</span>
             <h3 id="engStoryTitle">"세대분리만 믿었다가… 6억 추징"</h3>
             <p id="engStoryBody">아들이 주소만 옮기고 실제론 부모 아파트에서 먹고 자며 출퇴근. 카드·교통 내역으로 <b style="color:#FFD2DC">실질 1세대 2주택</b> 판정 → 비과세 취소, 양도세 6억 추징.</p>
-            <div class="more" onclick="engStoryDetail()">자세히 보기 →</div>
+            <div id="engStorySrc" style="margin-top:8px; font-size:11px; color:rgba(255,210,225,0.7);">📖 근거: 소득세법 시행령 §154①, 국세기본법 §14(실질과세)</div>
+            <div class="more" onclick="engStoryDetail()">국세청 양도세 안내에서 확인 →</div>
             <div class="dots" id="engStoryDots"></div>
+            <div style="margin-top:8px; font-size:10px; color:rgba(255,255,255,0.35);">※ 실제 판례·제도를 알기 쉽게 각색한 사례입니다.</div>
           </div>
         </div>
 
@@ -2029,17 +2031,24 @@
       });
 
       /* ════════ 재방문 유도: 오늘의 양도세 한 컷 (큐레이션·매일 갱신) ════════ */
+      // 실제 판례·제도 유형을 알기 쉽게 각색한 사례. 각 사례에 세법 근거와 국세청 확인 링크 표기.
+      var ENG_NTS_QNA = 'https://call.nts.go.kr/call/taxInfo/selectTaxInfo.do?mi=2007';
       var ENG_STORIES = [
         { type:'bad',  badge:'😱 몰라서 손해 본 사례', title:'"세대분리만 믿었다가… 6억 추징"',
-          body:'아들이 주소만 옮기고 실제론 부모 아파트에서 먹고 자며 출퇴근. 카드·교통 내역으로 <b style="color:#FFD2DC">실질 1세대 2주택</b> 판정 → 비과세 취소, 양도세 6억 추징.' },
+          body:'아들이 주소만 옮기고 실제론 부모 아파트에서 먹고 자며 출퇴근. 카드·교통 내역으로 <b style="color:#FFD2DC">실질 1세대 2주택</b> 판정 → 비과세 취소, 양도세 6억 추징.',
+          src:'소득세법 시행령 §154①, 국세기본법 §14(실질과세)', link: ENG_NTS_QNA },
         { type:'good', badge:'😊 잘 알아서 절세한 사례', title:'"일시적 2주택 3년 룰로 1.7억 아꼈다"',
-          body:'새 집으로 갈아타며 기존 주택을 <b style="color:#CFF5E6">3년 처분기한 내</b> 매도. 일시적 2주택 비과세 적용으로 양도세 약 1.7억원을 절감.' },
+          body:'새 집으로 갈아타며 기존 주택을 <b style="color:#CFF5E6">3년 처분기한 내</b> 매도. 일시적 2주택 비과세 적용으로 양도세 약 1.7억원을 절감.',
+          src:'소득세법 시행령 §155①(일시적 2주택)', link: ENG_NTS_QNA },
         { type:'bad',  badge:'😱 몰라서 손해 본 사례', title:'"잔금 1주일 차이로 비과세 날렸다"',
-          body:'종전주택 취득 <b style="color:#FFD2DC">1년이 안 된 시점</b>에 새 집을 사버려 일시적 2주택 특례 배제 → 1억 6,100만원 양도세 납부.' },
+          body:'종전주택 취득 <b style="color:#FFD2DC">1년이 안 된 시점</b>에 새 집을 사버려 일시적 2주택 특례 배제 → 1억 6,100만원 양도세 납부.',
+          src:'소득세법 시행령 §155①(종전주택 취득 1년 경과 요건)', link: ENG_NTS_QNA },
         { type:'good', badge:'😊 잘 알아서 절세한 사례', title:'"환산취득가액으로 세금 확 줄였다"',
-          body:'오래된 주택이라 취득가액 증빙이 없자 <b style="color:#CFF5E6">환산취득가액</b>을 적용. 양도차익이 크게 줄어 세액 대폭 절감.' },
+          body:'오래된 주택이라 취득가액 증빙이 없자 <b style="color:#CFF5E6">환산취득가액</b>을 적용. 양도차익이 크게 줄어 세액 대폭 절감.',
+          src:'소득세법 시행령 §176-2(환산취득가액)', link: ENG_NTS_QNA },
         { type:'bad',  badge:'😱 몰라서 손해 본 사례', title:'"양도 직전 위장 세대분리, 결국 적발"',
-          body:'양도일에 임박해 급히 자녀 주소만 분리. 과세당국이 위장분리로 보아 <b style="color:#FFD2DC">실질 1세대 다주택</b> 중과 적용.' }
+          body:'양도일에 임박해 급히 자녀 주소만 분리. 과세당국이 위장분리로 보아 <b style="color:#FFD2DC">실질 1세대 다주택</b> 중과 적용.',
+          src:'국세기본법 §14(실질과세), 소득세법 시행령 §154①', link: ENG_NTS_QNA }
       ];
       function engRenderStory(i) {
         var s = ENG_STORIES[i], box = document.getElementById('engStory');
@@ -2049,6 +2058,8 @@
         document.getElementById('engStoryBadge').textContent = s.badge;
         document.getElementById('engStoryTitle').textContent = s.title;
         document.getElementById('engStoryBody').innerHTML = s.body;
+        var srcEl = document.getElementById('engStorySrc');
+        if (srcEl) srcEl.innerHTML = '📖 근거: ' + s.src;
         var dots = document.getElementById('engStoryDots');
         dots.innerHTML = ENG_STORIES.map(function(_, k){ return '<i class="' + (k === i ? 'on' : '') + '"></i>'; }).join('');
         box.setAttribute('data-idx', i);
@@ -2056,7 +2067,7 @@
       function engStoryDetail() {
         var i = parseInt(document.getElementById('engStory').getAttribute('data-idx') || '0', 10);
         var s = ENG_STORIES[i];
-        alert(s.title.replace(/"/g, '') + '\n\n' + s.body.replace(/<[^>]+>/g, ''));
+        if (s.link) window.open(s.link, '_blank', 'noopener');
       }
       document.addEventListener('DOMContentLoaded', function() {
         // 날짜 기준으로 매일 다른 사례 노출 (큐레이션 순환)
