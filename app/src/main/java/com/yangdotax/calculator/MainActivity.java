@@ -2,7 +2,13 @@ package com.yangdotax.calculator;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
@@ -11,6 +17,7 @@ import android.webkit.WebViewClient;
 
 public class MainActivity extends Activity {
     private WebView webView;
+    private static final long REMINDER_INTERVAL_MS = 30L * 24 * 60 * 60 * 1000; // 약 30일
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -42,6 +49,35 @@ public class MainActivity extends Activity {
 
         setContentView(webView);
         webView.loadUrl("file:///android_asset/yangdo_tax_calculator.html");
+
+        // 월 1회 절세 리포트 알림: 권한 요청 + 주기 알람 등록
+        requestNotificationPermissionIfNeeded();
+        scheduleMonthlyReminder();
+    }
+
+    /** Android 13+ 알림 런타임 권한 요청 */
+    private void requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(
+                        new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 9001);
+            }
+        }
+    }
+
+    /** 약 30일 주기로 절세 리포트 알림을 예약(중복 등록 시 갱신). 정확 알람 권한 불필요(inexact). */
+    private void scheduleMonthlyReminder() {
+        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        if (am == null) return;
+        Intent i = new Intent(this, ReminderReceiver.class);
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            flags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        PendingIntent pi = PendingIntent.getBroadcast(this, 1000, i, flags);
+        long first = System.currentTimeMillis() + REMINDER_INTERVAL_MS;
+        am.setInexactRepeating(AlarmManager.RTC, first, REMINDER_INTERVAL_MS, pi);
     }
 
     @Override

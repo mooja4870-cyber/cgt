@@ -1,5 +1,15 @@
 # Version History
 
+## v4.4.0 (2026-06-07)
+- 설명: [실동작 7단계·최종] 월 1회 절세 리포트 로컬 알림(네이티브) 구현
+- 내용:
+  - `ReminderReceiver.java` 신규: 월간 리포트 로컬 알림 표시(알림 채널 API26+, PendingIntent FLAG_IMMUTABLE 분기, 탭 시 앱 열기)
+  - `MainActivity.java`: 알림 런타임 권한 요청(Android13+) + `AlarmManager.setInexactRepeating`로 약 30일 주기 예약(정확 알람 권한 불필요)
+  - `AndroidManifest.xml`: `POST_NOTIFICATIONS` 권한 + `ReminderReceiver` 등록
+  - **AndroidX/WorkManager 의존성 추가 없이 프레임워크 API만 사용**(빌드 리스크 최소화)
+  - ⚠️ 본 환경에서 APK 빌드/기기 테스트는 수행 불가 → **개발자 빌드 단계에서 컴파일·동작 확인 필요**
+  - 비고: 알림 탭 시 앱이 열리면 인트로의 월간 리포트 위젯이 최신 계산으로 갱신됨(v4.3.2 연동)
+
 ## v4.3.5 (2026-06-07)
 - 설명: [실동작 6단계] 세법·시세 속보 검증형 큐레이션 + 출처 링크
 - 내용:
