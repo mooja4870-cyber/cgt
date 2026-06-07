@@ -1,5 +1,15 @@
 # Version History
 
+## v4.5.0 (2026-06-07)
+- 설명: 안드로이드 APK 빌드 및 release/CGT.apk 배포 — GitHub raw URL 다운로드 가능
+- 내용:
+  - JDK 17 + Gradle 8.14.3 + Android SDK (android-35, build-tools 35.0.0) 빌드 환경 구축
+  - 업로드 키스토어 생성 (`keystore/upload-keystore.jks`)
+  - `build-play-apk.ps1` 경로 수정 (루트 HTML 자동 참조, gradle 로컬 경로 폴백)
+  - `gradle.properties` 추가 (`android.overridePathCheck=true` — 한글 경로 우회)
+  - v4.4.3 소스 기반 릴리즈 APK 생성 → `release/CGT.apk` 배포
+  - GitHub raw URL에서 직접 다운로드 가능
+
 ## v4.4.3 (2026-06-07)
 - 설명: 세법·시세 속보도 새로고침마다 랜덤으로 변경
 - 내용:

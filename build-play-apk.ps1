@@ -1,5 +1,5 @@
 param(
-    [string]$ReferenceHtml = "D:\AI\project\CCT_org\yangdo_tax_calculator.html",
+    [string]$ReferenceHtml = "",
     [switch]$Release,
     [switch]$Bundle
 )
@@ -9,6 +9,11 @@ $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $assetDir = Join-Path $root "app\src\main\assets"
 $assetHtml = Join-Path $assetDir "yangdo_tax_calculator.html"
 $localSdk = Join-Path $root "android-sdk"
+
+# default: use root yangdo_tax_calculator.html in this repo
+if ([string]::IsNullOrEmpty($ReferenceHtml)) {
+    $ReferenceHtml = Join-Path $root "yangdo_tax_calculator.html"
+}
 
 if (Test-Path -LiteralPath $localSdk) {
     $env:ANDROID_HOME = $localSdk
@@ -34,18 +39,19 @@ $gradleBat = Get-Command gradle -ErrorAction SilentlyContinue
 if ($gradleBat) {
     $gradle = $gradleBat.Source
 } else {
-    $gradle = "C:\Users\mooja\.gradle\wrapper\dists\gradle-8.14.3-all\10utluxaxniiv4wxiphsi49nj\gradle-8.14.3\bin\gradle.bat"
+    # fallback: use locally downloaded gradle
+    $gradle = Join-Path $root ".tools\gradle-8.14.3\bin\gradle.bat"
 }
 if (!(Test-Path -LiteralPath $gradle)) {
     throw "Gradle executable not found: $gradle"
 }
 
 if ($Bundle) {
-    & $gradle --offline --no-daemon bundleRelease
+    & $gradle --no-daemon bundleRelease
 } elseif ($Release) {
-    & $gradle --offline --no-daemon assembleRelease
+    & $gradle --no-daemon assembleRelease
 } else {
-    & $gradle --offline --no-daemon assembleDebug
+    & $gradle --no-daemon assembleDebug
 }
 
 if ($LASTEXITCODE -ne 0) {
