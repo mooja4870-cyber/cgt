@@ -1,5 +1,16 @@
 # Version History
 
+## v4.0.21 (2026-06-09)
+- 설명: 앱 아이콘 배경색 변경 — 핑크에서 진한 그린으로
+- 내용:
+  - **변경 사항**: 앱 아이콘 배경색 #E91E63(핑크) → #1D9E75(진한 그린)
+  - **수정 파일**:
+    - PNG 이미지: app/src/main/assets/app_icon.png + 10개 mipmap (hdpi/mdpi/xhdpi/xxhdpi/xxxhdpi × 일반/원형)
+    - XML 벡터: ic_launcher_background.xml + ic_launcher_foreground.xml
+  - **변경 픽셀**: 총 130,436개
+  - **색상 통일**: 앱 주 색상 #1D9E75로 일관성 유지
+  - 모든 해상도(mdpi 72px ~ xxxhdpi 192px) 동일 적용
+
 ## v4.0.20 (2026-06-09)
 - 설명: 주택임대사업자 거주주택 비과세 특례 계산 로직 정정
 - 내용:
