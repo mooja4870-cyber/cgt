@@ -20,11 +20,8 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Make gradlew executable
-      run: chmod +x ./gradlew
-
     - name: Build with Gradle
-      run: ./gradlew assembleRelease
+      run: gradle assembleRelease --no-daemon
 
     - name: Upload APK to release directory
       run: |
