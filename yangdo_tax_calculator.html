@@ -5286,10 +5286,18 @@
           nonTaxFull = holdOk && resOk && tempPeriodOk && sp <= 120000;
           window._debugTempOk = tempPeriodOk;
         } else if (hc === '2rent_met') {
-          // 거주주택 비과세 특례 (임대사업자 등록 주택 외 1주택 양도)
+          // 거주주택 비과세 특례 (소령 제155조 제20항)
+          // → 임대사업자의 거주주택을 "세법상 1세대 1주택으로 봄" = 1세대 1주택 규칙 적용
           const rentLimitOk = document.getElementById('rentLimitOk')?.checked !== false;
-          // 거주주택 비과세는 거주 2년이 필수임 (조정/비조정 무관)
-          nonTaxFull = holdOk && (resY >= 2) && rentLimitOk && sp <= 120000;
+          // 거주 2년 이상 + 임대료 5% 준수 + 보유기간 요건 충족 시
+          // → 양도가 12억까지는 비과세, 12억 초과분은 분할 과세
+          const isMet = holdOk && (resY >= 2) && rentLimitOk;
+          if (isMet) {
+            nonTaxFull = false;  // 완전 비과세 아님 (12억 초과분 과세)
+            config.taxableGainLimit = 120000;  // 1세대 1주택 고가주택 기준 적용
+          } else {
+            nonTaxFull = false;
+          }
         } else {
           nonTaxFull = false; // 2주택(일반), 3주택 등은 기본 과세
         }
