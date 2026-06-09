@@ -6,34 +6,48 @@ on:
       - master
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
+        cache: gradle
 
-    - name: Build with Gradle
-      run: gradle assembleRelease --no-daemon
+    - name: Make gradlew executable
+      run: |
+        chmod +x ./gradlew
+        ./gradlew --version
 
-    - name: Upload APK to release directory
+    - name: Build Release APK
+      run: ./gradlew assembleRelease
+
+    - name: Copy APK to release directory
       run: |
         mkdir -p release
         cp app/build/outputs/apk/release/app-release.apk release/CGT.apk
+        ls -lh release/CGT.apk
 
-    - name: Commit and push APK
+    - name: Upload APK as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: CGT-APK
+        path: release/CGT.apk
+
+    - name: Push APK to repository
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+        git config --global user.email "github-actions@github.com"
+        git config --global user.name "GitHub Actions"
         git add release/CGT.apk
-        git commit -m "chore: 자동 빌드 APK 업데이트" || echo "No changes to commit"
+        git commit -m "chore: GitHub Actions APK 자동 빌드 (v4.0.21)" || echo "No changes"
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
