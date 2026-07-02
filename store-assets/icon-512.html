@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+* { margin:0; padding:0; }
+body { width:512px; height:512px; overflow:hidden; }
+.bg { position:relative; width:512px; height:512px; background:#18A176; }
+.row { position:absolute; top:120px; left:0; width:512px; text-align:center; }
+.won { font:900 200px -apple-system, 'Helvetica Neue', sans-serif; color:#fff; text-shadow: 6px 6px 0 rgba(0,0,0,0.12); }
+.arrow { position:absolute; top:210px; left:330px; width:130px; height:14px; background:#fff; }
+.arrow:before { content:''; position:absolute; left:-6px; top:-13px; border:20px solid transparent; border-right:24px solid #fff; }
+.arrow:after { content:''; position:absolute; right:-6px; top:-13px; border:20px solid transparent; border-left:24px solid #fff; }
+.d { position:absolute; border-radius:50%; background:#E8557E; }
+.d1 { width:44px; height:44px; left:150px; top:370px; }
+.d2 { width:32px; height:32px; left:240px; top:395px; }
+.d3 { width:44px; height:44px; left:315px; top:370px; }
+.tri { position:absolute; right:0; bottom:0; width:0; height:0; border-bottom:120px solid #C13B66; border-left:120px solid transparent; }
+</style></head>
+<body><div class="bg">
+<div class="row"><span class="won">₩</span></div>
+<div class="arrow"></div>
+<div class="d d1"></div><div class="d d2"></div><div class="d d3"></div>
+<div class="tri"></div>
+</div></body></html>

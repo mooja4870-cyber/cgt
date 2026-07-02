@@ -1,5 +1,19 @@
 # Version History
 
+## v4.0.22 (2026-07-02)
+- 설명: Google Play Store 배포 준비 — 스토어 자산 생성 + 개인정보처리방침 페이지 추가
+- 내용:
+  - **Play Console 앱 등록**: 양도세 계산 (com.yangdotax.calculator), App Bundle 40021(v4.0.21) 업로드
+  - **비공개 테스트 Alpha 트랙**: 국가(대한민국), 테스터(비공개테스터1, 72명), 피드백 이메일 설정
+  - **스토어 등록정보**: 간단한/자세한 설명 입력, 그래픽 자산 업로드 완료
+  - **선언 완료**: 광고(없음), 로그인(제한 없음), 정부 앱(아니요), 금융 기능(없음), 건강(없음), 타겟층(만 18세 이상), 데이터 보안(수집 없음), 광고 ID(미사용), 콘텐츠 등급(전체이용가), 카테고리(금융), 연락처
+  - **신규 파일**:
+    - `store-assets/icon-512.png` — Play 스토어 앱 아이콘 512×512 (PIL 생성)
+    - `store-assets/feature-1024x500.png` — 피처 그래픽 1024×500 (PIL 생성)
+    - `store-assets/screenshot-1.png`, `screenshot-2.png` — 실제 앱 화면 스크린샷 1170×2340 (헤드리스 Chrome 렌더링)
+    - `store-assets/asset_server.py`, `shell.html`, `calc_scrolled.html` — 자산 생성용 로컬 도구
+    - `docs/privacy.html` — 개인정보처리방침 (GitHub Pages 호스팅: https://mooja4870-cyber.github.io/cgt/privacy.html 예정)
+
 ## v4.0.21 (2026-06-09)
 - 설명: 앱 아이콘 배경색 변경 — 핑크에서 진한 그린으로
 - 내용:

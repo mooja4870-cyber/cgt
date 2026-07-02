@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+body { margin:0; background:#666; display:flex; gap:24px; padding:24px; }
+iframe { width:390px; height:700px; border:none; outline:6px solid red; background:#fff; }
+</style></head>
+<body>
+<iframe id="f1" src="/yangdo_tax_calculator.html"></iframe>
+<iframe id="f2" src="/yangdo_tax_calculator.html"></iframe>
+<script>
+window.addEventListener('load', () => {
+  setTimeout(() => { document.getElementById('f2').contentWindow.scrollTo(0, 1000); }, 1500);
+});
+</script>
+</body></html>
