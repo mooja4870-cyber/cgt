@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
+import { Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
+
+const notoSansKr = Noto_Sans_KR({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "900"],
+  variable: "--font-noto-sans-kr",
+});
 
 export const metadata: Metadata = {
   title: "CGT Lab — AI 양도소득세 1초 계산",
@@ -13,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className="antialiased">
+      <body className={`antialiased ${notoSansKr.variable}`}>
         {children}
       </body>
     </html>

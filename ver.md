@@ -1,5 +1,10 @@
 # Version History
 
+## v4.0.24 (2026-07-04)
+- 설명: Next.js (Tailwind v4) 폰트 임포트 빌드 에러 수정
+- 내용:
+  - `globals.css` 내부 `@import url` 폰트 로드 방식을 Next.js 권장 방식(`next/font/google`)으로 전환
+  - `layout.tsx`에 `Noto_Sans_KR` 적용 및 CSS 변수(`--font-noto-sans-kr`) 매핑
 ## v4.0.23 (2026-07-04)
 - 설명: SaaS 랜딩 페이지 및 웹 대시보드 추가 (aibizbotu.com 스타일 벤치마킹)
 - 내용:

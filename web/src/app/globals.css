@@ -1,7 +1,4 @@
 @import "tailwindcss";
-
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
-
 @theme {
   --color-primary: #1E3A8A;
   --color-primary-dark: #1E40AF;
@@ -12,8 +9,7 @@
   --color-foreground: #1A1A2E;
   --color-muted: #6B7280;
   --color-border: #EEF2F7;
-  
-  --font-sans: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-sans: var(--font-noto-sans-kr), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 @layer base {
