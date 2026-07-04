@@ -1,5 +1,12 @@
 # Version History
 
+## v4.0.23 (2026-07-04)
+- 설명: SaaS 랜딩 페이지 및 웹 대시보드 추가 (aibizbotu.com 스타일 벤치마킹)
+- 내용:
+  - **웹 프로젝트 초기화**: `web/` 디렉토리에 Next.js(App Router) + Tailwind CSS 기반 웹 환경 구성
+  - **SaaS 랜딩 페이지 구현**: Hero 섹션, Pain Point, Features, Pricing(요금제) 및 CTA 섹션 구축
+  - **테마 적용**: 블루(#1E3A8A)/오렌지(#F97316) 포인트 컬러, Noto Sans KR 폰트 전역 적용
+  - **기존 앱 통합**: `yangdo_tax_calculator.html`을 `web/public/calculator.html`로 복사하여 대시보드 라우트(`/calculator`)에 연동
 ## v4.0.22 (2026-07-02)
 - 설명: Google Play Store 배포 준비 — 스토어 자산 생성 + 개인정보처리방침 페이지 추가
 - 내용:

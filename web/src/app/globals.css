@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap');
+
+@theme {
+  --color-primary: #1E3A8A;
+  --color-primary-dark: #1E40AF;
+  --color-accent: #F97316;
+  --color-accent-dark: #EA580C;
+  --color-accent-light: #FDBA74;
+  --color-background: #FFFFFF;
+  --color-foreground: #1A1A2E;
+  --color-muted: #6B7280;
+  --color-border: #EEF2F7;
+  
+  --font-sans: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply font-sans text-foreground bg-background leading-relaxed overflow-x-hidden;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-accent text-white border-none py-2.5 px-5 rounded-[10px] font-bold text-sm cursor-pointer transition-all duration-200;
+  }
+  .btn-primary:hover {
+    @apply bg-accent-dark -translate-y-[1px] shadow-[0_4px_12px_rgba(249,115,22,0.35)];
+  }
+
+  .btn-cta-large {
+    @apply inline-flex items-center gap-2.5 bg-gradient-to-r from-accent via-accent-light to-accent text-white border-none py-4 px-10 rounded-[14px] font-extrabold text-[17px] cursor-pointer shadow-[0_8px_24px_rgba(249,115,22,0.35)] transition-transform duration-200;
+    background-size: 200% auto;
+    animation: shimmer 3s linear infinite;
+  }
+  .btn-cta-large:hover {
+    @apply -translate-y-0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes grow {
+  from { width: 0; }
+  to { width: 78%; }
+}
