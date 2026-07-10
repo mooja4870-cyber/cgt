@@ -3,29 +3,8 @@
 import { useState } from "react";
 
 export default function Home() {
-  const [showBanner, setShowBanner] = useState(true);
-
   return (
     <main className="min-h-screen bg-white">
-      {/* 띠배너 */}
-      {showBanner && (
-        <div className="bg-primary text-white py-2.5 px-5 flex justify-center items-center gap-3 text-[13px] relative z-50">
-          🎉 지금 다운로드하면 <strong className="mx-1">7일 무료 체험!</strong> 설치 즉시 자동 시작
-          <span 
-            className="bg-[#F97316] py-[3px] px-3 rounded-full font-bold text-xs cursor-pointer"
-            onClick={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })}
-          >
-            요금제 보기 →
-          </span>
-          <button 
-            className="absolute right-4 bg-transparent border-none text-white text-lg cursor-pointer opacity-70 hover:opacity-100"
-            onClick={() => setShowBanner(false)}
-          >
-            ×
-          </button>
-        </div>
-      )}
-
       {/* GNB */}
       <nav className="sticky top-0 z-40 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] px-10 h-16 flex items-center justify-between">
         <a href="#" className="flex items-center gap-2 no-underline">
@@ -40,14 +19,9 @@ export default function Home() {
           <a href="#features" className="text-sm text-muted font-medium hover:text-primary transition-colors">주요 기능</a>
           <a href="#proof" className="text-sm text-muted font-medium hover:text-primary transition-colors">도입 효과</a>
           <a href="#how" className="text-sm text-muted font-medium hover:text-primary transition-colors">작동 방식</a>
-          <a href="#pricing" className="text-sm text-accent font-bold">요금제</a>
+          {/* <a href="#pricing" className="text-sm text-accent font-bold">요금제</a> */}
         </div>
-        <button 
-          className="btn-primary"
-          onClick={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })}
-        >
-          요금제 보기
-        </button>
+        {/* <button className="btn-primary" onClick={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })}>요금제 보기</button> */}
       </nav>
 
       {/* Hero Section */}
@@ -66,12 +40,12 @@ export default function Home() {
             CGT Lab에 맡기고 안전하게 절세하세요.
           </p>
           <div className="flex flex-wrap items-center gap-3">
-            <button 
-              className="btn-cta-large"
-              onClick={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })}
+            <a 
+              href="#calculator"
+              className="btn-cta-large inline-flex items-center justify-center no-underline"
             >
-              🚀 7일 무료 체험 시작하기
-            </button>
+              🚀 바로 시작하기
+            </a>
             <a 
               href="#calculator"
               className="inline-flex items-center gap-2 bg-[#10B981] text-white font-bold text-[15px] py-3.5 px-6 rounded-xl no-underline whitespace-nowrap hover:bg-[#059669] transition-colors shadow-[0_4px_12px_rgba(16,185,129,0.3)]"
@@ -222,41 +196,56 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="bg-[#F8FAFB] py-[90px] px-10">
+      {/* Proof Section (도입 효과) */}
+      <section id="proof" className="bg-[#F8FAFB] py-[90px] px-10">
         <div className="max-w-[1140px] mx-auto text-center">
-          <h2 className="text-[36px] font-black mb-12">합리적인 요금제</h2>
-          <div className="flex flex-col md:flex-row justify-center gap-6 max-w-4xl mx-auto">
-            <div className="flex-1 bg-white rounded-2xl p-8 border border-border shadow-sm text-left">
-              <h3 className="text-xl font-bold mb-2">스탠다드</h3>
-              <p className="text-sm text-muted mb-6">가벼운 양도세 시뮬레이션용</p>
-              <div className="text-[32px] font-black text-primary mb-6">월 19,000<span className="text-sm text-muted font-normal"> 원</span></div>
-              <ul className="text-sm text-foreground space-y-3 mb-8">
-                <li>✓ 양도소득세 기본 계산</li>
-                <li>✓ 1세대 1주택 비과세 판정</li>
-                <li>✓ 취득세 간편 계산</li>
-              </ul>
-              <button className="w-full py-3.5 bg-border text-primary font-bold rounded-xl hover:bg-gray-200 transition">
-                선택하기
-              </button>
+          <h2 className="text-[36px] font-black mb-[52px] leading-[1.3]">
+            업무 방식의 혁신,<br />
+            <span className="text-primary">압도적인 도입 효과</span>를 경험하세요
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white rounded-[20px] p-8 shadow-sm border border-border hover:-translate-y-1 hover:shadow-md transition-all">
+              <div className="text-[40px] font-black text-primary mb-2">90%</div>
+              <h3 className="text-lg font-bold mb-3">계산 시간 단축</h3>
+              <p className="text-sm text-muted">수기로 작성하고 검증하던 몇 시간의 작업을 단 1분 내외로 단축합니다.</p>
             </div>
-            
-            <div className="flex-1 bg-white rounded-2xl p-8 border-2 border-primary shadow-xl text-left relative transform md:-translate-y-4">
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-bold px-4 py-1 rounded-full">
-                BEST 추천
-              </div>
-              <h3 className="text-xl font-bold mb-2">프로</h3>
-              <p className="text-sm text-muted mb-6">복잡한 절세 시뮬레이션 및 다주택자</p>
-              <div className="text-[32px] font-black text-accent mb-6">월 39,000<span className="text-sm text-muted font-normal"> 원</span></div>
-              <ul className="text-sm text-foreground space-y-3 mb-8">
-                <li>✓ 스탠다드 기능 모두 포함</li>
-                <li className="font-bold">✓ 증여 후 양도 시뮬레이션</li>
-                <li className="font-bold">✓ 다주택자 중과/일반 판정</li>
-                <li className="font-bold">✓ PDF 결과 보고서 무제한 출력</li>
-              </ul>
-              <button className="w-full py-3.5 bg-accent text-white font-bold rounded-xl hover:bg-accent-dark transition shadow-[0_4px_12px_rgba(249,115,22,0.3)]">
-                7일 무료로 시작하기
-              </button>
+            <div className="bg-white rounded-[20px] p-8 shadow-sm border border-border hover:-translate-y-1 hover:shadow-md transition-all">
+              <div className="text-[40px] font-black text-[#10B981] mb-2">0%</div>
+              <h3 className="text-lg font-bold mb-3">가산세 리스크</h3>
+              <p className="text-sm text-muted">최신 세법이 100% 반영된 알고리즘으로 계산 오류로 인한 가산세 위험을 원천 차단합니다.</p>
+            </div>
+            <div className="bg-white rounded-[20px] p-8 shadow-sm border border-border hover:-translate-y-1 hover:shadow-md transition-all">
+              <div className="text-[40px] font-black text-accent mb-2">100%</div>
+              <h3 className="text-lg font-bold mb-3">고객 신뢰도 향상</h3>
+              <p className="text-sm text-muted">깔끔한 PDF 보고서를 즉시 제공하여 고객의 신뢰도와 만족도를 극대화합니다.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How it works Section (작동 방식) */}
+      <section id="how" className="bg-white py-[90px] px-10">
+        <div className="max-w-[1140px] mx-auto">
+          <h2 className="text-center text-[36px] font-black mb-[52px] leading-[1.3]">
+            누구나 쉽게 사용할 수 있는<br />
+            <span className="text-primary">3단계 작동 방식</span>
+          </h2>
+          <div className="flex flex-col md:flex-row gap-8 relative">
+            <div className="hidden md:block absolute top-12 left-[15%] right-[15%] h-0.5 bg-border z-0"></div>
+            <div className="flex-1 text-center relative z-10">
+              <div className="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg border-4 border-white">1</div>
+              <h3 className="text-xl font-bold mb-3">기본 정보 입력</h3>
+              <p className="text-sm text-muted">취득/양도일, 주택 수, 조정대상지역 여부 등 체크리스트를 클릭하여 정보를 입력합니다.</p>
+            </div>
+            <div className="flex-1 text-center relative z-10">
+              <div className="w-16 h-16 bg-[#10B981] text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg border-4 border-white">2</div>
+              <h3 className="text-xl font-bold mb-3">가액 및 경비 입력</h3>
+              <p className="text-sm text-muted">양도가액과 취득가액을 입력하면 중개수수료 및 취득세 등 필요경비가 자동 계산됩니다.</p>
+            </div>
+            <div className="flex-1 text-center relative z-10">
+              <div className="w-16 h-16 bg-accent text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6 shadow-lg border-4 border-white">3</div>
+              <h3 className="text-xl font-bold mb-3">결과 및 리포트 확인</h3>
+              <p className="text-sm text-muted">비과세 판정 결과와 최종 납부 세액을 즉시 확인하고 PDF 보고서로 다운로드합니다.</p>
             </div>
           </div>
         </div>
