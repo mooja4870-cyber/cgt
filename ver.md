@@ -1,5 +1,12 @@
 # Version History
 
+## v4.0.25 (2026-07-10)
+- 설명: Next.js 웹 앱 정적 빌드 전환 및 Cloudflare Pages 프로덕션 배포 완료
+- 내용:
+  - `next.config.ts` 파일에 정적 웹 서버 호스팅을 위한 `output: 'export'` 속성 추가
+  - `@cloudflare/next-on-pages` 및 `wrangler` 라이브러리를 사용해 빌드 파이프라인 구성
+  - Cloudflare Pages에 새 프로젝트 생성(`cgt`) 및 성공적 배포 완료
+
 ## v4.0.24 (2026-07-04)
 - 설명: Next.js (Tailwind v4) 폰트 임포트 빌드 에러 수정
 - 내용:
