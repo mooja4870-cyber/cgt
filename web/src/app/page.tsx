@@ -41,13 +41,13 @@ export default function Home() {
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <a 
-              href="#calculator"
+              href="/calculator"
               className="btn-cta-large inline-flex items-center justify-center no-underline"
             >
               🚀 바로 시작하기
             </a>
             <a 
-              href="#calculator"
+              href="/calculator"
               className="inline-flex items-center gap-2 bg-[#10B981] text-white font-bold text-[15px] py-3.5 px-6 rounded-xl no-underline whitespace-nowrap hover:bg-[#059669] transition-colors shadow-[0_4px_12px_rgba(16,185,129,0.3)]"
             >
               📊 계산기 바로가기
