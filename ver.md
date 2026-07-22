@@ -1,5 +1,11 @@
 # Version History
 
+## v4.0.28 (2026-07-22)
+- 설명: Google Play Console 대상 API 수준(Target SDK 35) 정비 및 AAB/APK 신규 빌드
+- 내용:
+  - `app/build.gradle` 빌드 스크립트 Git 태그 인식 로직 개선 및 Java 17/Target SDK 35 빌드 환경 완전 검증
+  - Google Play Console 2026년 8월 31일 대상 API 수준 요구사항 대비 신규 AAB(`app/build/outputs/bundle/release/app-release.aab`) 및 APK(`release/CGT.apk`) 생성 완료
+
 ## v4.0.27 (2026-07-10)
 - 설명: 랜딩페이지 내 메인 CTA 버튼 경로 수정
 - 내용:
