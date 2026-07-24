@@ -1,5 +1,12 @@
 # Version History
 
+## v4.0.29 (2026-07-24)
+- 설명: Google Play Console 정책 경고 대응 — Target SDK 36 (Android 16) 업데이트 및 신규 빌드
+- 내용:
+  - `app/build.gradle` 대상 API 수준(`targetSdk`) 및 컴파일 SDK(`compileSdk`)를 35에서 36(Android 16)으로 업데이트
+  - Google Play Console 2026년 8월 31일 권고/필수 요구사항(API 수준 36 이상) 충족
+  - 신규 AAB(`app/build/outputs/bundle/release/app-release.aab`) 및 APK(`release/CGT.apk`) 재빌드
+
 ## v4.0.28 (2026-07-22)
 - 설명: Google Play Console 대상 API 수준(Target SDK 35) 정비 및 AAB/APK 신규 빌드
 - 내용:

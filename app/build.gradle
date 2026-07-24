@@ -33,12 +33,12 @@ try {
 
 android {
     namespace "com.yangdotax.calculator"
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.yangdotax.calculator"
         minSdk 23
-        targetSdk 35
+        targetSdk 36
         versionCode gitTagVersionCode
         versionName gitTagVersion
     }
